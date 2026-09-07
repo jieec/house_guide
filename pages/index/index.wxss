@@ -1,0 +1,140 @@
+.hero {
+  background: linear-gradient(160deg, #1a3d8f 0%, #2f6bff 70%, #5b8cff 100%);
+  padding: 48rpx 40rpx 56rpx;
+  color: #ffffff;
+  border-radius: 0 0 40rpx 40rpx;
+}
+
+.hero-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 24rpx;
+  padding: 6rpx 20rpx;
+  font-size: 22rpx;
+  margin-bottom: 20rpx;
+}
+
+.hero-title {
+  font-size: 48rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+}
+
+.hero-sub {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  opacity: 0.85;
+}
+
+.hero-stats {
+  margin-top: 40rpx;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 24rpx;
+  padding: 24rpx 8rpx;
+  display: flex;
+  align-items: center;
+}
+
+.hero-stat {
+  flex: 1;
+  text-align: center;
+}
+
+.hero-stat-num {
+  font-size: 40rpx;
+  font-weight: 700;
+}
+
+.hero-stat-label {
+  font-size: 22rpx;
+  opacity: 0.8;
+  margin-top: 4rpx;
+}
+
+.hero-arrow {
+  font-size: 40rpx;
+  opacity: 0.7;
+  padding-right: 16rpx;
+}
+
+.loc-card {
+  background: #ffffff;
+  margin: -28rpx 24rpx 0;
+  border-radius: 24rpx;
+  padding: 28rpx;
+  box-shadow: 0 8rpx 30rpx rgba(31, 56, 110, 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+.loc-head {
+  display: flex;
+  align-items: center;
+}
+
+.loc-icon {
+  font-size: 44rpx;
+  margin-right: 16rpx;
+}
+
+.loc-body {
+  flex: 1;
+}
+
+.loc-value {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1f2430;
+}
+
+.loc-sub {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: #8a93a6;
+}
+
+.loc-empty {
+  font-size: 28rpx;
+  color: #b0b8cc;
+}
+
+.loc-edit {
+  font-size: 26rpx;
+  color: #2f6bff;
+  flex-shrink: 0;
+}
+
+.quick-grid {
+  display: flex;
+  padding: 8rpx 12rpx;
+}
+
+.quick-item {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+}
+
+.quick-icon {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 28rpx;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44rpx;
+}
+
+.quick-name {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #5a6478;
+}
+
+.cell-time {
+  font-size: 22rpx;
+  color: #b0b8cc;
+  flex-shrink: 0;
+  margin-left: 12rpx;
+}

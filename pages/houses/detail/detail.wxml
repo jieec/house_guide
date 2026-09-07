@@ -1,0 +1,64 @@
+<view wx:if="{{item}}" class="detail">
+  <view class="d-hero">
+    <view class="d-title">{{item.title || item.community || '房源'}}</view>
+    <view class="d-tags">
+      <view class="d-tag">{{item.category}}</view>
+      <view class="d-tag" wx:if="{{item.status}}">{{item.status}}</view>
+    </view>
+    <view class="d-price" wx:if="{{item.total_price}}">{{item.total_price}}</view>
+    <view class="d-price" wx:elif="{{item.rent_month}}">{{item.rent_month}}<text class="d-unit2">元/月</text></view>
+    <view class="d-price" wx:elif="{{item.unit_price}}">{{item.unit_price}}</view>
+    <view class="d-unit" wx:if="{{item.unit_price && item.category !== '新房'}}">单价 {{item.unit_price}}元/㎡</view>
+  </view>
+
+  <view class="d-card" wx:if="{{locationDetails.length}}">
+    <view class="d-card-title">位置与配套</view>
+    <view class="ld-row" wx:for="{{locationDetails}}" wx:key="title">
+      <view class="ld-icon">{{item.icon}}</view>
+      <view class="ld-body">
+        <view class="ld-title">{{item.title}}</view>
+        <view class="ld-text">{{item.text}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="d-card">
+    <view class="d-card-title">基础信息</view>
+    <view class="d-grid">
+      <view class="d-cell" wx:if="{{item.city}}"><view class="d-cell-v">{{item.city}}</view><view class="d-cell-k">城市</view></view>
+      <view class="d-cell" wx:if="{{item.community}}"><view class="d-cell-v">{{item.community}}</view><view class="d-cell-k">小区</view></view>
+      <view class="d-cell" wx:if="{{item.district}}"><view class="d-cell-v">{{item.district}}</view><view class="d-cell-k">区域</view></view>
+      <view class="d-cell" wx:if="{{item.rooms}}"><view class="d-cell-v">{{item.rooms}}</view><view class="d-cell-k">户型</view></view>
+      <view class="d-cell" wx:if="{{item.area_sqm}}"><view class="d-cell-v">{{item.area_sqm}}㎡</view><view class="d-cell-k">面积</view></view>
+      <view class="d-cell" wx:if="{{item.floor}}"><view class="d-cell-v">{{item.floor}}</view><view class="d-cell-k">楼层</view></view>
+      <view class="d-cell" wx:if="{{item.orientation}}"><view class="d-cell-v">{{item.orientation}}</view><view class="d-cell-k">朝向</view></view>
+      <view class="d-cell" wx:if="{{item.house_types}}"><view class="d-cell-v">{{item.house_types}}</view><view class="d-cell-k">户型</view></view>
+      <view class="d-cell" wx:if="{{item.rent_type}}"><view class="d-cell-v">{{item.rent_type}}</view><view class="d-cell-k">租赁</view></view>
+      <view class="d-cell" wx:if="{{item.tel}}"><view class="d-cell-v">{{item.tel}}</view><view class="d-cell-k">电话</view></view>
+    </view>
+  </view>
+
+  <view class="d-card" wx:if="{{item.address || item.block}}">
+    <view class="d-card-title">位置交通</view>
+    <view class="d-row" wx:if="{{item.address}}"><text class="d-k">地址</text><text class="d-v">{{item.address}}</text></view>
+    <view class="d-row" wx:if="{{item.block}}"><text class="d-k">板块</text><text class="d-v">{{item.block}}</text></view>
+  </view>
+
+  <view class="d-card" wx:if="{{tagsList.length}}">
+    <view class="d-card-title">特色标签</view>
+    <view class="d-tag-row">
+      <view class="tag" wx:for="{{tagsList}}" wx:key="*this">{{item}}</view>
+    </view>
+  </view>
+
+  <view class="d-card" wx:if="{{item.agent}}">
+    <view class="d-card-title">经纪人</view>
+    <view class="d-row"><text class="d-k">姓名</text><text class="d-v">{{item.agent}}</text></view>
+  </view>
+
+  <view class="d-actions">
+    <view class="btn-primary" bindtap="goAnalyze">📊 金融分析此房源</view>
+    <view class="btn-ghost" wx:if="{{item.url}}" bindtap="copyUrl">复制房源链接</view>
+    <view class="btn-ghost" wx:if="{{item.tel}}" bindtap="callPhone">拨打咨询电话</view>
+  </view>
+</view>

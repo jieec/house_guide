@@ -1,0 +1,66 @@
+<view class="hero">
+  <view class="hero-badge">购房决策助手</view>
+  <view class="hero-title">房产价值 · 购房指南</view>
+  <view class="hero-sub">定位选房 · 价格分析 · 税费按揭测算 · 房源数据参考</view>
+  <view class="hero-stats" wx:if="{{total > 0}}" bindtap="goHouses">
+    <view class="hero-stat">
+      <view class="hero-stat-num">{{total}}</view>
+      <view class="hero-stat-label">云库房源</view>
+    </view>
+    <view class="hero-stat">
+      <view class="hero-stat-num">3</view>
+      <view class="hero-stat-label">房源类型</view>
+    </view>
+    <view class="hero-stat">
+      <view class="hero-stat-num">7</view>
+      <view class="hero-stat-label">评估维度</view>
+    </view>
+    <view class="hero-arrow">›</view>
+  </view>
+</view>
+
+<view class="loc-card">
+  <view class="loc-head">
+    <view class="loc-icon">📍</view>
+    <view class="loc-body" wx:if="{{location && location.city}}" bindtap="goLocation">
+      <view class="loc-value">{{location.province}} {{location.city}} {{location.district}}</view>
+      <view class="loc-sub">{{location.estate || '未填写楼盘'}}{{location.community ? ' · ' + location.community : ''}}</view>
+    </view>
+    <view class="loc-body" wx:else bindtap="goLocation">
+      <view class="loc-empty">选择 省份 / 城市 / 区 / 楼盘 / 小区</view>
+    </view>
+    <view class="loc-edit" bindtap="goLocation">修改</view>
+  </view>
+</view>
+
+<view class="section-title">快捷工具</view>
+<view class="quick-grid">
+  <view class="quick-item" wx:for="{{quickModules}}" wx:key="key" data-key="{{item.key}}" bindtap="goModule">
+    <view class="quick-icon" style="background: {{item.color}}">{{item.icon}}</view>
+    <view class="quick-name">{{item.name}}</view>
+  </view>
+</view>
+
+<view class="section-title">全部评估维度</view>
+<view class="cell" bindtap="goGuide">
+  <view class="cell-left">
+    <view class="cell-icon" style="background:#eef4ff">📋</view>
+    <view>
+      <view class="cell-name">评估报告</view>
+      <view class="cell-desc">基本信息 · 房源分析 · 评估结论 · 融资 · 风险 · 税费 · 按揭</view>
+    </view>
+  </view>
+  <view class="cell-arrow">›</view>
+</view>
+
+<view class="section-title" wx:if="{{records.length}}">最近登记</view>
+<view class="cell" wx:for="{{records}}" wx:key="id">
+  <view class="cell-left">
+    <view class="cell-icon" style="background:#ecfbf3">📌</view>
+    <view>
+      <view class="cell-name">{{item.estate || item.place}}</view>
+      <view class="cell-desc">{{item.purpose}} · 差额{{item.gap}}元 · {{item.grade}}档</view>
+    </view>
+  </view>
+  <view class="cell-time">{{item.time}}</view>
+</view>

@@ -1,0 +1,5 @@
+.result-total {
+  border-top: 1rpx solid #dbe7ff;
+  margin-top: 8rpx;
+  padding-top: 16rpx;
+}

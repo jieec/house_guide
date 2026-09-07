@@ -1,0 +1,36 @@
+.locate-bar {
+  background: linear-gradient(160deg, #1a3d8f 0%, #2f6bff 100%);
+  margin: 20rpx 24rpx;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  color: #ffffff;
+  text-align: center;
+  box-shadow: 0 8rpx 24rpx rgba(47, 107, 255, 0.3);
+}
+
+.locate-btn {
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.locate-btn.locating {
+  opacity: 0.7;
+}
+
+.locate-hint {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  opacity: 0.8;
+}
+
+.preview {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #2f6bff;
+}
+
+.preview-sub {
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  color: #5a6478;
+}

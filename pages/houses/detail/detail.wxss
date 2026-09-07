@@ -1,0 +1,157 @@
+.detail {
+  padding-bottom: 40rpx;
+}
+
+.d-hero {
+  background: linear-gradient(160deg, #1a3d8f 0%, #2f6bff 100%);
+  padding: 40rpx;
+  color: #ffffff;
+  border-radius: 0 0 40rpx 40rpx;
+}
+
+.d-title {
+  font-size: 38rpx;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.d-tags {
+  margin-top: 16rpx;
+}
+
+.d-tag {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8rpx;
+  padding: 4rpx 16rpx;
+  font-size: 22rpx;
+  margin-right: 12rpx;
+}
+
+.d-price {
+  margin-top: 24rpx;
+  font-size: 52rpx;
+  font-weight: 700;
+}
+
+.d-unit2 {
+  font-size: 26rpx;
+  font-weight: 400;
+}
+
+.d-unit {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  opacity: 0.85;
+}
+
+.d-card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  margin: 20rpx 24rpx;
+  padding: 28rpx;
+  box-shadow: 0 4rpx 20rpx rgba(31, 56, 110, 0.05);
+}
+
+.d-card-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1f2430;
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.d-card-title::before {
+  content: '';
+  width: 8rpx;
+  height: 30rpx;
+  background: linear-gradient(180deg, #2f6bff, #5b8cff);
+  border-radius: 4rpx;
+  margin-right: 14rpx;
+}
+
+.d-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.d-cell {
+  width: 33.33%;
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+
+.d-cell-v {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1f2430;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 8rpx;
+}
+
+.d-cell-k {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #9aa4ba;
+}
+
+.d-row {
+  display: flex;
+  padding: 14rpx 0;
+  font-size: 28rpx;
+  color: #1f2430;
+}
+
+.d-k {
+  width: 120rpx;
+  flex-shrink: 0;
+  color: #9aa4ba;
+  font-size: 26rpx;
+}
+
+.d-v {
+  flex: 1;
+}
+
+.d-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.ld-row {
+  display: flex;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #f0f2f8;
+}
+
+.ld-row:last-child {
+  border-bottom: none;
+}
+
+.ld-icon {
+  font-size: 34rpx;
+  margin-right: 16rpx;
+}
+
+.ld-body {
+  flex: 1;
+}
+
+.ld-title {
+  font-size: 26rpx;
+  color: #9aa4ba;
+}
+
+.ld-text {
+  margin-top: 6rpx;
+  font-size: 28rpx;
+  color: #1f2430;
+  line-height: 1.6;
+}
+
+.d-actions {
+  margin-top: 32rpx;
+}

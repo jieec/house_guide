@@ -1,0 +1,41 @@
+<view class="card">
+  <view class="card-title">按揭测算</view>
+  <view class="form-row">
+    <view class="form-label">评估价(元/平)</view>
+    <input class="form-input" type="digit" placeholder="评估单价" value="{{evalPrice}}" data-field="evalPrice" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">按揭金额(85%)</view>
+    <input class="form-input" type="digit" placeholder="评估价×85%" value="{{loanAmount}}" data-field="loanAmount" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">当前利率(%)</view>
+    <input class="form-input" type="digit" placeholder="如 3.6" value="{{rate}}" data-field="rate" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">本人年龄</view>
+    <input class="form-input" type="number" placeholder="周岁" value="{{age}}" data-field="age" bindinput="onInput" />
+  </view>
+  <view class="result">
+    <view class="result-line">
+      <view class="result-label">建议贷款年限(年龄+年限≤70)</view>
+      <view class="result-num">{{maxYears}} 年</view>
+    </view>
+  </view>
+</view>
+
+<view class="card">
+  <view class="card-title">建议银行</view>
+  <picker class="form-input-wrap" range="{{bankTypes}}" value="{{bankTypeIndex}}" bindchange="onBankType">
+    <view>{{bankTypes[bankTypeIndex]}}<text class="picker-arrow">▾</text></view>
+  </picker>
+  <view class="bank" wx:for="{{banks}}" wx:key="name">
+    <view class="bank-info">
+      <view class="bank-name">{{item.name}}</view>
+      <view class="bank-type">{{item.type}}</view>
+    </view>
+    <view class="bank-call" data-phone="{{item.phone}}" bindtap="callBank">{{item.phone}}</view>
+  </view>
+</view>
+
+<view class="btn-primary" bindtap="save">保存融资方案</view>

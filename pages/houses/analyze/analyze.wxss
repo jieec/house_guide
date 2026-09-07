@@ -1,0 +1,97 @@
+.a-hero {
+  background: linear-gradient(160deg, #1a3d8f 0%, #2f6bff 100%);
+  padding: 40rpx;
+  color: #ffffff;
+  border-radius: 0 0 40rpx 40rpx;
+}
+
+.a-city {
+  font-size: 24rpx;
+  opacity: 0.85;
+}
+
+.a-title {
+  margin-top: 10rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.a-price {
+  margin-top: 20rpx;
+  font-size: 44rpx;
+  font-weight: 700;
+}
+
+.a-unit2 {
+  font-size: 24rpx;
+  font-weight: 400;
+}
+
+.a-meta {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  opacity: 0.85;
+}
+
+.bank {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18rpx 0;
+  border-bottom: 1rpx solid #f0f2f8;
+}
+
+.bank:last-child {
+  border-bottom: none;
+}
+
+.bank-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #1f2430;
+}
+
+.bank-type {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #9aa4ba;
+}
+
+.bank-call {
+  color: #2f6bff;
+  font-size: 26rpx;
+  padding: 8rpx 26rpx;
+  border: 2rpx solid #2f6bff;
+  border-radius: 40rpx;
+}
+
+.risk-line {
+  padding: 10rpx 0;
+  font-size: 26rpx;
+  color: #5a6478;
+  line-height: 1.6;
+}
+
+.warn-tip {
+  margin-top: 8rpx;
+  background: #fff6e6;
+  color: #c07a2e;
+  border-radius: 14rpx;
+  padding: 16rpx 20rpx;
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+.result-total {
+  border-top: 1rpx solid #dbe7ff;
+  margin-top: 8rpx;
+  padding-top: 16rpx;
+}
+
+.load-tip {
+  text-align: center;
+  padding: 60rpx;
+  font-size: 26rpx;
+  color: #b0b8cc;
+}

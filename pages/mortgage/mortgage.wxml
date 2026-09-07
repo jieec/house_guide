@@ -1,0 +1,51 @@
+<view class="card">
+  <view class="card-title">按揭测算</view>
+  <view class="card-sub">等额本息/等额本金月供对比</view>
+  <view class="form-row">
+    <view class="form-label">贷款金额</view>
+    <input class="form-input" type="digit" placeholder="贷款总额(元)" value="{{loanAmount}}" data-field="loanAmount" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">利率类型</view>
+    <picker class="form-input-wrap" range="{{rateTypes}}" value="{{rateTypeIndex}}" bindchange="onRateType">
+      <view>{{rateTypes[rateTypeIndex]}}<text class="picker-arrow">▾</text></view>
+    </picker>
+  </view>
+  <view class="form-row">
+    <view class="form-label">利率(%)</view>
+    <input class="form-input" type="digit" placeholder="如 3.6" value="{{rate}}" data-field="rate" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">贷款年限</view>
+    <picker class="form-input-wrap" range="{{years}}" value="{{yearsIndex}}" bindchange="onYears">
+      <view>{{years[yearsIndex]}}<text class="picker-arrow">▾</text></view>
+    </picker>
+  </view>
+  <view class="form-row">
+    <view class="form-label">还款方式</view>
+    <picker class="form-input-wrap" range="{{payMethods}}" value="{{payMethodIndex}}" bindchange="onPayMethod">
+      <view>{{payMethods[payMethodIndex]}}<text class="picker-arrow">▾</text></view>
+    </picker>
+  </view>
+  <view class="btn-ghost" bindtap="calc">开始测算</view>
+  <view class="result" wx:if="{{monthly || firstMonth}}">
+    <view class="result-line" wx:if="{{monthly}}">
+      <view class="result-label">月供(等额本息)</view>
+      <view class="result-num">{{monthly}} 元</view>
+    </view>
+    <view class="result-line" wx:if="{{firstMonth}}">
+      <view class="result-label">首月(等额本金)</view>
+      <view class="result-num">{{firstMonth}} 元</view>
+    </view>
+    <view class="result-line">
+      <view class="result-label">总利息</view>
+      <view class="result-num">{{totalInterest}} 元</view>
+    </view>
+    <view class="result-line">
+      <view class="result-label">总还款额</view>
+      <view class="result-num">{{totalRepay}} 元</view>
+    </view>
+  </view>
+</view>
+
+<view class="btn-primary" bindtap="save">保存测算结果</view>

@@ -1,0 +1,237 @@
+page {
+  background: #f5f7fb;
+  font-size: 28rpx;
+  color: #1f2430;
+  padding-bottom: 60rpx;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", sans-serif;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  margin: 20rpx 24rpx;
+  padding: 28rpx;
+  box-shadow: 0 4rpx 20rpx rgba(31, 56, 110, 0.05);
+}
+
+.card-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1f2430;
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.card-title::before {
+  content: '';
+  width: 8rpx;
+  height: 30rpx;
+  background: linear-gradient(180deg, #2f6bff, #5b8cff);
+  border-radius: 4rpx;
+  margin-right: 14rpx;
+}
+
+.card-sub {
+  font-size: 24rpx;
+  color: #8a93a6;
+  margin: -14rpx 0 20rpx;
+  line-height: 1.5;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 22rpx;
+}
+
+.form-label {
+  width: 200rpx;
+  color: #5a6478;
+  flex-shrink: 0;
+  font-size: 28rpx;
+}
+
+.form-input {
+  flex: 1;
+  border: 2rpx solid #e8ecf5;
+  border-radius: 16rpx;
+  padding: 16rpx 20rpx;
+  background: #f8fafd;
+  font-size: 28rpx;
+  color: #1f2430;
+}
+
+textarea.form-input {
+  width: 100%;
+  min-height: 120rpx;
+  box-sizing: border-box;
+}
+
+.form-input-wrap {
+  flex: 1;
+  border: 2rpx solid #e8ecf5;
+  border-radius: 16rpx;
+  padding: 16rpx 20rpx;
+  background: #f8fafd;
+  color: #1f2430;
+  font-size: 28rpx;
+}
+
+.picker-arrow {
+  float: right;
+  color: #9aa4ba;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #2f6bff, #5b8cff);
+  color: #ffffff;
+  border-radius: 48rpx;
+  padding: 24rpx 0;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 600;
+  margin: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(47, 107, 255, 0.25);
+}
+
+.btn-primary:active {
+  opacity: 0.85;
+}
+
+.btn-ghost {
+  background: #ffffff;
+  color: #2f6bff;
+  border: 2rpx solid #2f6bff;
+  border-radius: 48rpx;
+  padding: 18rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  margin: 20rpx 24rpx;
+}
+
+.result {
+  margin-top: 20rpx;
+  background: linear-gradient(135deg, #eef4ff, #f6f9ff);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  border: 2rpx solid #dbe7ff;
+}
+
+.result-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8rpx 0;
+}
+
+.result-label {
+  color: #5a6478;
+  font-size: 26rpx;
+}
+
+.result-num {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #2f6bff;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1f2430;
+  padding: 28rpx 28rpx 8rpx;
+  display: flex;
+  align-items: center;
+}
+
+.section-title::before {
+  content: '';
+  width: 8rpx;
+  height: 30rpx;
+  background: linear-gradient(180deg, #2f6bff, #5b8cff);
+  border-radius: 4rpx;
+  margin-right: 14rpx;
+}
+
+.tag {
+  display: inline-block;
+  background: #eef4ff;
+  color: #2f6bff;
+  border-radius: 8rpx;
+  padding: 6rpx 16rpx;
+  font-size: 22rpx;
+  margin-right: 12rpx;
+  margin-bottom: 8rpx;
+}
+
+.tag-orange {
+  background: #fff3ec;
+  color: #ff7a45;
+}
+
+.tag-green {
+  background: #ecfbf3;
+  color: #23c343;
+}
+
+.cell {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 24rpx;
+  margin: 16rpx 24rpx;
+  padding: 28rpx;
+  box-shadow: 0 4rpx 20rpx rgba(31, 56, 110, 0.05);
+}
+
+.cell-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.cell-icon {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34rpx;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.cell-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1f2430;
+}
+
+.cell-desc {
+  font-size: 22rpx;
+  color: #9aa4ba;
+  margin-top: 6rpx;
+  line-height: 1.4;
+}
+
+.cell-arrow {
+  color: #c3cad8;
+  font-size: 28rpx;
+  margin-left: 16rpx;
+}
+
+.empty-tip {
+  text-align: center;
+  padding: 120rpx 40rpx;
+  font-size: 28rpx;
+  color: #b0b8cc;
+}
+
+.empty-emoji {
+  font-size: 80rpx;
+  display: block;
+  margin-bottom: 20rpx;
+}

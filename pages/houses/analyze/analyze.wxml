@@ -1,0 +1,166 @@
+<view wx:if="{{loading}}" class="load-tip">加载中...</view>
+
+<block wx:elif="{{item}}">
+  <view class="a-hero">
+    <view class="a-city">{{item.city}} · {{item.community || item.district || ''}}</view>
+    <view class="a-title">{{item.title}}</view>
+    <view class="a-price" wx:if="{{saleTotal}}">{{saleTotal}}万<text class="a-unit2" wx:if="{{salePer}}"> · {{salePer}}元/㎡</text></view>
+    <view class="a-meta" wx:if="{{item.rooms || area}}">{{item.rooms}} {{area}}㎡ {{item.orientation}}</view>
+  </view>
+
+  <block wx:if="{{isRent}}">
+    <view class="card">
+      <view class="card-title">租售比参考</view>
+      <view class="card-sub">当前为租房房源：租金单价 {{rentPerSqm}} 元/平/月</view>
+      <view class="form-row">
+        <view class="form-label">房价(元/平)</view>
+        <input class="form-input" type="digit" placeholder="输入房价计算租售比" value="{{pricePerSqm}}" data-field="pricePerSqm" bindinput="onInput" />
+      </view>
+      <view class="btn-ghost" bindtap="calcRentRatio">计算租售比</view>
+      <view class="result" wx:if="{{rentRatioResult}}">
+        <view class="result-line">
+          <view class="result-label">租售比(月)</view>
+          <view class="result-num">{{rentRatioResult}}</view>
+        </view>
+        <view class="result-line">
+          <view class="result-label">年化回报率</view>
+          <view class="result-num">{{annualReturn}}</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="card">
+      <view class="card-title">分析参数</view>
+      <view class="card-sub">已自动填入房源数据，只需确认或微调</view>
+      <view class="form-row">
+        <view class="form-label">购房目的</view>
+        <picker class="form-input-wrap" range="{{purposes}}" value="{{purposeIndex}}" bindchange="onPurpose">
+          <view>{{purposes[purposeIndex]}}<text class="picker-arrow">▾</text></view>
+        </picker>
+      </view>
+      <view class="form-row">
+        <view class="form-label">销售价(元/平)</view>
+        <input class="form-input" type="digit" placeholder="房源挂牌单价" value="{{salePer}}" data-field="salePer" bindinput="onInput" />
+      </view>
+      <view class="form-row">
+        <view class="form-label">评估价(元/平)</view>
+        <input class="form-input" type="digit" placeholder="可参考世联/贝壳评估" value="{{evalPer}}" data-field="evalPer" bindinput="onInput" />
+      </view>
+      <view class="form-row">
+        <view class="form-label">面积(平)</view>
+        <input class="form-input" type="digit" value="{{area}}" data-field="area" bindinput="onInput" />
+      </view>
+      <view class="form-row">
+        <view class="form-label">本人年龄</view>
+        <input class="form-input" type="number" value="{{age}}" data-field="age" bindinput="onInput" />
+      </view>
+      <view class="form-row">
+        <view class="form-label">利率(%)</view>
+        <input class="form-input" type="digit" value="{{rate}}" data-field="rate" bindinput="onInput" />
+      </view>
+      <view class="form-row">
+        <view class="form-label">是否首套</view>
+        <picker class="form-input-wrap" range="{{suiteType}}" value="{{suiteIndex}}" bindchange="onSuite">
+          <view>{{suiteType[suiteIndex]}}<text class="picker-arrow">▾</text></view>
+        </picker>
+      </view>
+      <view class="form-row">
+        <view class="form-label">是否满2年</view>
+        <picker class="form-input-wrap" range="{{fullTwo}}" value="{{fullTwoIndex}}" bindchange="onFullTwo">
+          <view>{{fullTwo[fullTwoIndex]}}<text class="picker-arrow">▾</text></view>
+        </picker>
+      </view>
+      <view class="form-row">
+        <view class="form-label">满五唯一</view>
+        <picker class="form-input-wrap" range="{{fullFive}}" value="{{fullFiveIndex}}" bindchange="onFullFive">
+          <view>{{fullFive[fullFiveIndex]}}<text class="picker-arrow">▾</text></view>
+        </picker>
+      </view>
+      <view class="warn-tip" wx:if="{{missingTip}}">⚠️ {{missingTip}}</view>
+      <view class="btn-ghost" bindtap="calc">重新分析</view>
+    </view>
+
+    <view class="card" wx:if="{{gap}}">
+      <view class="card-title">性价比测算</view>
+      <view class="card-sub">(销售价 - 评估价) × 面积 × 85折</view>
+      <view class="result">
+        <view class="result-line">
+          <view class="result-label">测算差额</view>
+          <view class="result-num">{{gap}} 元</view>
+        </view>
+        <view class="result-line">
+          <view class="result-label">性价比等级</view>
+          <view class="result-num">{{grade}}档 · {{gradeDesc}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{loanAmount}}">
+      <view class="card-title">融资建议</view>
+      <view class="result">
+        <view class="result-line">
+          <view class="result-label">可贷金额(评估价×85%)</view>
+          <view class="result-num">{{loanAmount}} 元</view>
+        </view>
+        <view class="result-line">
+          <view class="result-label">建议年限(年龄+年限≤70)</view>
+          <view class="result-num">{{maxYears}} 年</view>
+        </view>
+      </view>
+      <view class="bank" wx:for="{{banks}}" wx:key="name">
+        <view class="bank-info">
+          <view class="bank-name">{{item.name}}</view>
+          <view class="bank-type">{{item.type}}</view>
+        </view>
+        <view class="bank-call" data-phone="{{item.phone}}" bindtap="callBank">{{item.phone}}</view>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{monthly}}">
+      <view class="card-title">按揭测算</view>
+      <view class="result">
+        <view class="result-line">
+          <view class="result-label">月供(等额本息)</view>
+          <view class="result-num">{{monthly}} 元</view>
+        </view>
+        <view class="result-line">
+          <view class="result-label">总利息</view>
+          <view class="result-num">{{totalInterest}} 元</view>
+        </view>
+        <view class="result-line">
+          <view class="result-label">总还款额</view>
+          <view class="result-num">{{totalRepay}} 元</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{totalTax}}">
+      <view class="card-title">税费测算</view>
+      <view class="result">
+        <view class="result-line">
+          <view class="result-label">契税</view>
+          <view class="result-num">{{deedTax}} 元</view>
+        </view>
+        <view class="result-line">
+          <view class="result-label">增值税</view>
+          <view class="result-num">{{vatTax}} 元</view>
+        </view>
+        <view class="result-line">
+          <view class="result-label">个税</view>
+          <view class="result-num">{{incomeTax}} 元</view>
+        </view>
+        <view class="result-line result-total">
+          <view class="result-label">税费合计</view>
+          <view class="result-num">{{totalTax}} 元</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{risks.length}}">
+      <view class="card-title">风险提示</view>
+      <view class="risk-line" wx:for="{{risks}}" wx:key="*this">⚠️ {{item}}</view>
+    </view>
+  </block>
+</block>

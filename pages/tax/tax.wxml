@@ -1,0 +1,49 @@
+<view class="card">
+  <view class="card-title">税费测算</view>
+  <view class="card-sub">按二手房交易常见税费规则估算（契税/增值税/个税）</view>
+  <view class="form-row">
+    <view class="form-label">总价(万)</view>
+    <input class="form-input" type="digit" placeholder="房屋总价(万元)" value="{{totalPrice}}" data-field="totalPrice" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">面积(平)</view>
+    <input class="form-input" type="digit" placeholder="建筑面积" value="{{area}}" data-field="area" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">是否首套</view>
+    <picker class="form-input-wrap" range="{{suiteType}}" value="{{suiteIndex}}" bindchange="onSuite">
+      <view>{{suiteType[suiteIndex]}}<text class="picker-arrow">▾</text></view>
+    </picker>
+  </view>
+  <view class="form-row">
+    <view class="form-label">是否满2年</view>
+    <picker class="form-input-wrap" range="{{fullTwoYears}}" value="{{fullTwoIndex}}" bindchange="onFullTwo">
+      <view>{{fullTwoYears[fullTwoIndex]}}<text class="picker-arrow">▾</text></view>
+    </picker>
+  </view>
+  <view class="form-row">
+    <view class="form-label">满五唯一</view>
+    <picker class="form-input-wrap" range="{{fullFiveOnly}}" value="{{fullFiveIndex}}" bindchange="onFullFive">
+      <view>{{fullFiveOnly[fullFiveIndex]}}<text class="picker-arrow">▾</text></view>
+    </picker>
+  </view>
+  <view class="btn-ghost" bindtap="calc">计算税费</view>
+  <view class="result" wx:if="{{totalTax}}">
+    <view class="result-line">
+      <view class="result-label">契税</view>
+      <view class="result-num">{{deedTax}} 元</view>
+    </view>
+    <view class="result-line">
+      <view class="result-label">增值税</view>
+      <view class="result-num">{{vatTax}} 元</view>
+    </view>
+    <view class="result-line">
+      <view class="result-label">个税</view>
+      <view class="result-num">{{incomeTax}} 元</view>
+    </view>
+    <view class="result-line result-total">
+      <view class="result-label">税费合计</view>
+      <view class="result-num">{{totalTax}} 元</view>
+    </view>
+  </view>
+</view>

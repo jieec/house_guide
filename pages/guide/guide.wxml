@@ -1,0 +1,149 @@
+<view class="page">
+  <view class="query-card">
+    <view class="query-title">选择位置和小区</view>
+    <view class="location-row" bindtap="goLocation">
+      <view>
+        <view class="location-label">当前位置</view>
+        <view class="location-value" wx:if="{{location && location.city}}">{{location.province}} {{location.city}} {{location.district}}</view>
+        <view class="location-empty" wx:else>请先选择省 / 市 / 区</view>
+      </view>
+      <view class="change">修改 ›</view>
+    </view>
+    <view class="search-box">
+      <text class="search-icon">⌕</text>
+      <input class="search-input" value="{{keyword}}" placeholder="输入小区名称" bindinput="onKeyword" />
+      <text class="searching" wx:if="{{searching}}">查询中</text>
+    </view>
+    <view class="search-results" wx:if="{{searchResults.length}}">
+      <view class="search-item" wx:for="{{searchResults}}" wx:key="_id" data-index="{{index}}" bindtap="pickCommunity">
+        <view class="search-name">{{item.community}}</view>
+        <view class="search-address">{{item.displayAddress}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:if="{{!selectedCommunity && !loading}}">
+    <view class="empty-icon">⌂</view>
+    <view class="empty-title">选择小区后自动生成分析</view>
+    <view class="empty-text">页面只读取后台爬取的数据，不需要用户逐项填写。</view>
+  </view>
+
+  <block wx:if="{{selectedCommunity || loading}}">
+    <view class="report-head">
+      <view>
+        <view class="report-name">{{selectedCommunity.community}}</view>
+        <view class="report-meta">{{dataStatus}} · 更新 {{updatedAt}}</view>
+      </view>
+      <view class="reload" bindtap="reloadReport">刷新</view>
+    </view>
+    <scroll-view class="tabs" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="tabs-inner">
+        <view class="tab {{activeTab === index ? 'active' : ''}}" wx:for="{{tabs}}" wx:key="*this" data-index="{{index}}" bindtap="switchTab">{{item}}</view>
+      </view>
+    </scroll-view>
+    <view class="loading" wx:if="{{loading}}">正在汇总小区、房源和政策数据…</view>
+
+    <block wx:if="{{!loading}}">
+      <view wx:if="{{activeTab === 0}}">
+        <view class="section-title">小区档案</view>
+        <view class="data-card">
+          <view class="data-row" wx:for="{{report.basic}}" wx:key="label">
+            <view class="data-label">{{item.label}}</view>
+            <view class="data-value {{item.value === '暂无数据' ? 'muted' : ''}}">{{item.value}}</view>
+          </view>
+        </view>
+        <view class="section-title">位置配套</view>
+        <view class="data-card">
+          <view class="sub-title">交通</view>
+          <view class="tags" wx:if="{{report.traffic.length}}"><text class="tag" wx:for="{{report.traffic}}" wx:key="*this">{{item}}</text></view>
+          <view class="no-data" wx:else>后台暂无交通配套数据</view>
+          <view class="divider"></view>
+          <view class="sub-title">教育</view>
+          <view class="tags" wx:if="{{report.schools.length}}"><text class="tag blue" wx:for="{{report.schools}}" wx:key="*this">{{item}}</text></view>
+          <view class="no-data" wx:else>后台暂无教育配套数据</view>
+        </view>
+        <view class="section-title">竞品分析</view>
+        <view class="data-card">
+          <view class="competitor" wx:for="{{report.competitors}}" wx:key="name">
+            <view><view class="competitor-name">{{item.name}}</view><view class="competitor-meta">{{item.meta}}</view></view>
+            <view class="competitor-price">{{item.value}}</view>
+          </view>
+          <view class="no-data" wx:if="{{!report.competitors.length}}">后台暂无周边竞品数据</view>
+        </view>
+      </view>
+
+      <view wx:if="{{activeTab === 1}}">
+        <view class="section-title">价格全景</view>
+        <view class="price-grid">
+          <view class="price-card" wx:for="{{report.prices}}" wx:key="label">
+            <view class="price-label">{{item.label}}</view>
+            <view class="price-value {{item.value === '暂无数据' ? 'muted' : ''}}">{{item.value}}</view>
+            <view class="price-note" wx:if="{{item.note}}">{{item.note}}</view>
+          </view>
+        </view>
+      </view>
+
+      <view wx:if="{{activeTab === 2}}">
+        <view class="section-title">自动购置建议</view>
+        <view class="advice-card {{expandedAdvice === index ? 'expanded' : ''}}" wx:for="{{report.advice}}" wx:key="title">
+          <view class="advice-summary" data-index="{{index}}" bindtap="toggleAdvice">
+            <view class="advice-score-ring"><text class="advice-score">{{item.score}}</text><text class="advice-percent">%</text></view>
+            <view class="advice-summary-body">
+              <view class="advice-title">{{item.title}}</view>
+              <view class="advice-level">{{item.level}}</view>
+            </view>
+            <view class="advice-arrow">{{expandedAdvice === index ? '⌃' : '⌄'}}</view>
+          </view>
+          <view class="score-track"><view class="score-fill" style="width:{{item.score}}%"></view></view>
+          <view class="advice-detail" wx:if="{{expandedAdvice === index}}">
+            <view class="advice-conclusion-title">判断结论</view>
+            <view class="advice-text">{{item.summary}}</view>
+            <view class="advice-conclusion-title metrics-title">指标明细</view>
+            <view class="metric-row" wx:for="{{item.metrics}}" wx:for-item="metric" wx:key="name">
+              <view class="metric-main">
+                <view class="metric-name">{{metric.name}}</view>
+                <view class="metric-value">{{metric.value}}</view>
+              </view>
+              <view class="metric-result {{metric.good ? 'good' : ''}}">{{metric.result}}</view>
+            </view>
+          </view>
+        </view>
+        <view class="notice">建议由后台数据自动生成，仅作为筛选参考；成交、产权、学区和贷款条件仍需线下核实。</view>
+      </view>
+
+      <view wx:if="{{activeTab === 3}}">
+        <view class="section-title">自动测算</view>
+        <view class="tool-card {{expandedTool === index ? 'expanded' : ''}}" wx:for="{{report.tools}}" wx:key="label">
+          <view class="tool-summary" data-index="{{index}}" bindtap="toggleTool">
+            <view class="tool-summary-body">
+              <view class="tool-label">{{item.label}}</view>
+              <view class="tool-note">{{item.note}}</view>
+            </view>
+            <view class="tool-result">
+              <view class="tool-value">{{item.value}}</view>
+              <view class="tool-arrow">{{expandedTool === index ? '⌃' : '⌄'}}</view>
+            </view>
+          </view>
+          <view class="tool-detail" wx:if="{{expandedTool === index}}">
+            <view class="formula-box">
+              <view class="formula-title">计算公式</view>
+              <view class="formula-text">{{item.formula}}</view>
+            </view>
+            <view class="part-title">计算过程</view>
+            <view class="part-row" wx:for="{{item.parts}}" wx:for-item="part" wx:key="name">
+              <view class="part-name">{{part.name}}</view>
+              <view class="part-value">{{part.value}}</view>
+            </view>
+            <view class="tool-warning">{{item.warning}}</view>
+          </view>
+        </view>
+        <view class="section-title">后台数据完整性</view>
+        <view class="audit-card {{report.missing.length ? 'warn' : 'ok'}}">
+          <view class="audit-title">{{report.missing.length ? '发现缺失字段' : '本报告字段完整'}}</view>
+          <view class="tags" wx:if="{{report.missing.length}}"><text class="missing-tag" wx:for="{{report.missing}}" wx:key="*this">{{item}}</text></view>
+          <view class="audit-text" wx:else>基本信息、价格和建议所需数据均已从后台取得。</view>
+        </view>
+      </view>
+    </block>
+  </block>
+</view>

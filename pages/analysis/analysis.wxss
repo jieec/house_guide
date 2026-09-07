@@ -1,0 +1,12 @@
+.auto-banner {
+  background: #ecfbf3;
+  border-radius: 14rpx;
+  padding: 18rpx;
+  font-size: 26rpx;
+  color: #23a94d;
+  line-height: 1.6;
+}
+
+.card {
+  margin-top: 24rpx;
+}

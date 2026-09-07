@@ -1,0 +1,113 @@
+<view class="card" wx:if="{{autoFilled}}">
+  <view class="auto-banner">✅ 已从基本信息自动带入小区价格/楼龄/成交量等数据，下方可手动修正</view>
+</view>
+
+<view class="card">
+  <view class="card-title">价格分析</view>
+  <view class="form-row">
+    <view class="form-label">销售价</view>
+    <input class="form-input" type="digit" placeholder="房源挂牌销售价" value="{{salePrice}}" data-field="salePrice" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">评估价来源</view>
+    <picker class="form-input-wrap" range="{{evalSources}}" value="{{evalSourceIndex}}" bindchange="onEvalSource">
+      <view>{{evalSources[evalSourceIndex]}}<text class="picker-arrow">▾</text></view>
+    </picker>
+  </view>
+  <view class="form-row">
+    <view class="form-label">评估价</view>
+    <input class="form-input" type="digit" placeholder="评估单价" value="{{evalPrice}}" data-field="evalPrice" bindinput="onInput" />
+  </view>
+</view>
+
+<view class="card">
+  <view class="card-title">好成交价格测算</view>
+  <view class="card-sub">参考同小区近期成交价与拍卖折价率，测算建议好成交价</view>
+  <view class="form-row">
+    <view class="form-label">拍卖成交价</view>
+    <input class="form-input" type="digit" placeholder="历史拍卖成交单价" value="{{auctionPrice}}" data-field="auctionPrice" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">回报率(%)</view>
+    <input class="form-input" type="digit" placeholder="预期年回报率" value="{{returnRate}}" data-field="returnRate" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">楼龄(年)</view>
+    <input class="form-input" type="number" placeholder="房源楼龄" value="{{age}}" data-field="age" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">房源定价</view>
+    <input class="form-input" type="digit" placeholder="当前挂牌定价" value="{{listingPrice}}" data-field="listingPrice" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">近期成交价</view>
+    <input class="form-input" type="digit" placeholder="同小区近期成交单价" value="{{recentDealPrice}}" data-field="recentDealPrice" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">拍卖折价率</view>
+    <input class="form-input" type="digit" placeholder="相对市场价折让比例" value="{{discountRate}}" data-field="discountRate" bindinput="onInput" />
+  </view>
+  <view class="btn-ghost" bindtap="calcSuggest">测算好成交价</view>
+  <view class="result" wx:if="{{suggestPrice}}">
+    <view class="result-line">
+      <view class="result-label">建议好成交价</view>
+      <view class="result-num">{{suggestPrice}} 元/平</view>
+    </view>
+  </view>
+</view>
+
+<view class="card">
+  <view class="card-title">租售比分析</view>
+  <view class="card-sub">租售比 = 租金水平(元/平/月) / 房价(元/平)，不同业态房价口径不同</view>
+  <view class="form-row">
+    <view class="form-label">业态</view>
+    <picker class="form-input-wrap" range="{{bizTypes}}" value="{{bizIndex}}" bindchange="onBizChange">
+      <view>{{bizTypes[bizIndex]}}<text class="picker-arrow">▾</text></view>
+    </picker>
+  </view>
+  <view class="form-row">
+    <view class="form-label">租金水平</view>
+    <input class="form-input" type="digit" placeholder="元/平/月" value="{{rentPerSqm}}" data-field="rentPerSqm" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">房价</view>
+    <input class="form-input" type="digit" placeholder="元/平" value="{{pricePerSqm}}" data-field="pricePerSqm" bindinput="onInput" />
+  </view>
+  <view class="btn-ghost" bindtap="calcRentRatio">计算租售比</view>
+  <view class="result" wx:if="{{rentRatioResult}}">
+    <view class="result-line">
+      <view class="result-label">租售比(月)</view>
+      <view class="result-num">{{rentRatioResult}}</view>
+    </view>
+    <view class="result-line">
+      <view class="result-label">年化回报率</view>
+      <view class="result-num">{{annualReturnResult}}</view>
+    </view>
+  </view>
+</view>
+
+<view class="card">
+  <view class="card-title">成交量与走势</view>
+  <view class="form-row">
+    <view class="form-label">近期成交量</view>
+    <input class="form-input" type="number" placeholder="套" value="{{dealVolume}}" data-field="dealVolume" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">走势分析</view>
+    <textarea class="form-input" placeholder="成交走势判断" value="{{trendNote}}" data-field="trendNote" bindinput="onInput" auto-height maxlength="200" />
+  </view>
+</view>
+
+<view class="card">
+  <view class="card-title">政策面</view>
+  <view class="form-row">
+    <view class="form-label">基本政策</view>
+    <textarea class="form-input" placeholder="国家房地产基本政策" value="{{basePolicy}}" data-field="basePolicy" bindinput="onInput" auto-height maxlength="300" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">地方政策</view>
+    <textarea class="form-input" placeholder="当地限购/限售/信贷政策" value="{{localPolicy}}" data-field="localPolicy" bindinput="onInput" auto-height maxlength="300" />
+  </view>
+</view>
+
+<view class="btn-primary" bindtap="save">保存分析结果</view>

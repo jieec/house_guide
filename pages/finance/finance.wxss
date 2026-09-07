@@ -1,0 +1,31 @@
+.bank {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f2f8;
+}
+
+.bank:last-child {
+  border-bottom: none;
+}
+
+.bank-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #1f2430;
+}
+
+.bank-type {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #9aa4ba;
+}
+
+.bank-call {
+  color: #2f6bff;
+  font-size: 28rpx;
+  padding: 10rpx 28rpx;
+  border: 2rpx solid #2f6bff;
+  border-radius: 40rpx;
+}

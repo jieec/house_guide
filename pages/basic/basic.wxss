@@ -1,0 +1,72 @@
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #f2f4f9;
+  border-radius: 40rpx;
+  padding: 16rpx 28rpx;
+  margin-bottom: 16rpx;
+}
+
+.search-icon {
+  font-size: 28rpx;
+  margin-right: 12rpx;
+  opacity: 0.6;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 28rpx;
+}
+
+.search-tip {
+  font-size: 24rpx;
+  color: #9aa4ba;
+  padding: 8rpx 0;
+}
+
+.result-item {
+  padding: 20rpx;
+  border-bottom: 1rpx solid #f0f2f8;
+}
+
+.result-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1f2430;
+}
+
+.result-sub {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #9aa4ba;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auto-banner {
+  margin-top: 16rpx;
+  background: #ecfbf3;
+  border-radius: 14rpx;
+  padding: 18rpx;
+  font-size: 26rpx;
+  color: #23a94d;
+  line-height: 1.6;
+}
+
+.auto-note {
+  font-size: 22rpx;
+  color: #7aa98a;
+}
+
+.city-view {
+  display: flex;
+  align-items: center;
+  color: #5a6478;
+}
+
+textarea.form-input {
+  width: 100%;
+  min-height: 100rpx;
+  box-sizing: border-box;
+}

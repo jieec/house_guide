@@ -1,0 +1,63 @@
+.risk-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f2f8;
+}
+
+.risk-item:last-child {
+  border-bottom: none;
+}
+
+.risk-check {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 10rpx;
+  border: 2rpx solid #c9d2e3;
+  text-align: center;
+  line-height: 40rpx;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+  color: #ffffff;
+  font-size: 26rpx;
+}
+
+.risk-check.checked {
+  background: #2f6bff;
+  border-color: #2f6bff;
+}
+
+.risk-body {
+  flex: 1;
+}
+
+.risk-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #1f2430;
+}
+
+.risk-desc {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: #9aa4ba;
+  line-height: 1.5;
+}
+
+.warn {
+  margin-top: 16rpx;
+  background: #fdf0ef;
+  color: #d6453c;
+  border-radius: 14rpx;
+  padding: 18rpx;
+  font-size: 26rpx;
+}
+
+.ok {
+  margin-top: 16rpx;
+  background: #ecfbf3;
+  color: #23a94d;
+  border-radius: 14rpx;
+  padding: 18rpx;
+  font-size: 26rpx;
+}

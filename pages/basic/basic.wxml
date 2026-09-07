@@ -1,0 +1,87 @@
+<view class="card">
+  <view class="card-title">小区信息</view>
+  <view class="card-sub">输入小区名自动抓取全部信息，你只需要填这一项</view>
+  <view class="form-row">
+    <view class="form-label">城市</view>
+    <view class="form-input city-view">{{city || '请先在首页设置定位'}}</view>
+  </view>
+  <view class="search-box">
+    <view class="search-icon">🔍</view>
+    <input class="search-input" placeholder="输入小区名搜索，如: 华发新城" value="{{keyword}}" bindinput="onKeyword" />
+  </view>
+  <view class="search-tip" wx:if="{{searching}}">搜索中...</view>
+  <view class="result-item" wx:for="{{searchResults}}" wx:key="_id" data-name="{{item.community}}" bindtap="pickCommunity">
+    <view class="result-name">{{item.community}}</view>
+    <view class="result-sub" wx:if="{{item.summary}}">{{item.summary}}</view>
+  </view>
+  <view class="auto-banner" wx:if="{{autoFilled}}">
+    ✅ 已自动填充「{{communityName}}」的全部信息<text class="auto-note" wx:if="{{fillNote}}">（{{fillNote}}）</text>
+    <view class="auto-note">下方字段可手动修正</view>
+  </view>
+</view>
+
+<view class="card">
+  <view class="card-title">区位信息</view>
+  <view class="form-row">
+    <view class="form-label">房产区域</view>
+    <input class="form-input" placeholder="自动填充" value="{{form.areaRank}}" data-field="areaRank" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">区域排名</view>
+    <input class="form-input" placeholder="手动补充" value="{{form.areaRank2}}" data-field="areaRank2" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">交通</view>
+    <textarea class="form-input" placeholder="自动填充地铁/公交" value="{{form.traffic}}" data-field="traffic" bindinput="onInput" auto-height maxlength="200" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">学区</view>
+    <textarea class="form-input" placeholder="自动填充周边学校" value="{{form.school}}" data-field="school" bindinput="onInput" auto-height maxlength="200" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">周边竞品</view>
+    <textarea class="form-input" placeholder="自动填充同小区房源情况" value="{{form.competitors}}" data-field="competitors" bindinput="onInput" auto-height maxlength="200" />
+  </view>
+</view>
+
+<view class="card">
+  <view class="card-title">价格信息(元/平)</view>
+  <view class="form-row">
+    <view class="form-label">平均价格</view>
+    <input class="form-input" type="digit" placeholder="自动填充小区均价" value="{{form.avgPrice}}" data-field="avgPrice" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">近期成交价</view>
+    <input class="form-input" type="digit" placeholder="自动填充最低挂牌价" value="{{form.recentDealPrice}}" data-field="recentDealPrice" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">近期成交量</view>
+    <input class="form-input" type="number" placeholder="自动填充在售套数" value="{{form.recentDealVolume}}" data-field="recentDealVolume" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">历史成交价</view>
+    <input class="form-input" type="digit" placeholder="自动填充平均挂牌价" value="{{form.historyPrice}}" data-field="historyPrice" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">历史成交套数</view>
+    <input class="form-input" type="number" placeholder="自动填充收录总数" value="{{form.historyDealCount}}" data-field="historyDealCount" bindinput="onInput" />
+  </view>
+</view>
+
+<view class="card">
+  <view class="card-title">房屋属性</view>
+  <view class="form-row">
+    <view class="form-label">楼龄(年)</view>
+    <input class="form-input" type="number" placeholder="自动计算(今年-竣工年)" value="{{form.age}}" data-field="age" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">税费(元)</view>
+    <input class="form-input" type="digit" placeholder="自动估算契税" value="{{form.tax}}" data-field="tax" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">面积(平)</view>
+    <input class="form-input" type="digit" placeholder="自动填充在售平均面积" value="{{form.area}}" data-field="area" bindinput="onInput" />
+  </view>
+</view>
+
+<view class="btn-primary" bindtap="save">保存基本信息</view>

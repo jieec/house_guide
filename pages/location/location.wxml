@@ -1,0 +1,56 @@
+<view class="locate-bar">
+  <view class="locate-btn {{locating ? 'locating' : ''}}" bindtap="locateMe">
+    📍 {{locating ? '定位中...' : 'GPS自动定位'}}
+  </view>
+  <view class="locate-hint">自动识别所在省市，识别后可再微调</view>
+</view>
+
+<view class="card">
+  <view class="card-title">选择位置</view>
+  <view class="form-row">
+    <view class="form-label">省份</view>
+    <picker class="form-input-wrap" range="{{provinces}}" value="{{pIndex}}" bindchange="onProvinceChange">
+      <view>{{provinces[pIndex]}}<text class="picker-arrow">▾</text></view>
+    </picker>
+  </view>
+  <view class="form-row">
+    <view class="form-label">城市</view>
+    <picker class="form-input-wrap" range="{{cities}}" value="{{cIndex}}" bindchange="onCityChange">
+      <view>{{cities[cIndex]}}<text class="picker-arrow">▾</text></view>
+    </picker>
+  </view>
+  <view class="form-row" wx:if="{{districts.length}}">
+    <view class="form-label">区/县</view>
+    <picker class="form-input-wrap" range="{{districts}}" value="{{dIndex}}" bindchange="onDistrictChange">
+      <view>{{districts[dIndex]}}<text class="picker-arrow">▾</text></view>
+    </picker>
+  </view>
+  <view class="form-row" wx:else>
+    <view class="form-label">区/县</view>
+    <input class="form-input" placeholder="手动输入区/县" value="{{districtInput}}" data-field="districtInput" bindinput="onInput" />
+  </view>
+</view>
+
+<view class="card">
+  <view class="card-title">楼盘信息</view>
+  <view class="form-row">
+    <view class="form-label">楼盘名称</view>
+    <input class="form-input" placeholder="如: 华发新城" value="{{estate}}" data-field="estate" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">栋数</view>
+    <input class="form-input" type="number" placeholder="如: 19" value="{{buildingCount}}" data-field="buildingCount" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">小区</view>
+    <input class="form-input" placeholder="如: 华发新城六期" value="{{community}}" data-field="community" bindinput="onInput" />
+  </view>
+</view>
+
+<view class="card" wx:if="{{provinces[pIndex] && cities[cIndex]}}">
+  <view class="card-title">预览</view>
+  <view class="preview">{{provinces[pIndex]}} {{cities[cIndex]}} {{districts.length ? districts[dIndex] : districtInput}}</view>
+  <view class="preview-sub" wx:if="{{estate}}">{{estate}} · {{buildingCount}}栋{{community ? ' · ' + community : ''}}</view>
+</view>
+
+<view class="btn-primary" bindtap="save">保存定位</view>

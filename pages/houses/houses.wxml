@@ -1,0 +1,87 @@
+<view class="city-card" bindtap="openCityPanel">
+  <view class="city-icon">📍</view>
+  <view class="city-body">
+    <view class="city-name">{{cities[cityIndex]}}</view>
+    <view class="city-arrow">▾ 点击搜索/切换城市</view>
+  </view>
+  <view class="locate-btn" catchtap="locateMe">{{locating ? '定位中...' : 'GPS定位'}}</view>
+</view>
+
+<view class="city-mask" wx:if="{{showCityPanel}}" bindtap="closeCityPanel"></view>
+<view class="city-panel" wx:if="{{showCityPanel}}">
+  <view class="city-search-box">
+    <view class="search-icon">🔍</view>
+    <input class="city-search-input" placeholder="输入城市名搜索，如: 太原" value="{{citySearch}}" bindinput="onCitySearch" focus="{{true}}" />
+    <view class="search-clear" wx:if="{{citySearch}}" catchtap="clearCitySearch">✕</view>
+  </view>
+  <scroll-view scroll-y class="city-list">
+    <view class="city-item {{item.idx === cityIndex ? 'city-item-active' : ''}}" wx:for="{{cityFiltered}}" wx:key="name"
+      data-idx="{{item.idx}}" bindtap="pickCity">
+      <text>{{item.name}}</text>
+      <text class="city-check" wx:if="{{item.idx === cityIndex}}">✓</text>
+    </view>
+    <view class="city-empty" wx:if="{{!cityFiltered.length}}">未找到该城市</view>
+  </scroll-view>
+</view>
+
+<view class="type-bar">
+  <view wx:for="{{types}}" wx:key="key" class="type-chip {{typeIndex === index ? 'type-active' : ''}}"
+    data-index="{{index}}" bindtap="onTypeChange">{{item.name}}</view>
+</view>
+
+<block wx:if="{{types[typeIndex].key !== '新房'}}">
+  <view class="search-bar">
+    <view class="search-box">
+      <view class="search-icon">🔍</view>
+      <input class="search-input" placeholder="搜索{{cities[cityIndex]}}的小区名" value="{{keyword}}" bindinput="onKeyword" />
+    </view>
+  </view>
+
+  <view class="count-bar" wx:if="{{communities.length}}">{{cities[cityIndex]}} · 共 {{communities.length}} 个小区{{fromCommDb ? '（小区库数据，暂无房源）' : ''}}</view>
+
+  <view class="cell" wx:for="{{communities}}" wx:key="_id" data-name="{{item._id}}" bindtap="goCommunity">
+    <view class="cell-left">
+      <view class="cell-icon" style="background:#eef4ff">🏘️</view>
+      <view>
+        <view class="cell-name">{{item._id}}</view>
+        <view class="cell-desc" wx:if="{{item.count > 0}}">{{item.count}} 套房源</view>
+        <view class="cell-desc" wx:elif="{{item.summary}}">{{item.summary}}</view>
+        <view class="cell-desc" wx:else>小区数据已收录</view>
+      </view>
+    </view>
+    <view class="cell-score" wx:if="{{item.score}}">{{item.score}}分</view>
+    <view class="cell-arrow">›</view>
+  </view>
+
+  <view wx:if="{{!communities.length && !loading}}" class="empty-tip">
+    <text class="empty-emoji">🏚️</text>
+    该城市暂无小区数据
+  </view>
+</block>
+
+<block wx:else>
+  <view class="count-bar" wx:if="{{newHouses.length}}">{{cities[cityIndex]}} · 新房楼盘</view>
+  <view class="house-card" wx:for="{{newHouses}}" wx:key="_id" data-id="{{item._id}}" bindtap="goDetail">
+    <view class="house-head">
+      <view class="house-title">{{item.title}}</view>
+      <view class="house-tag">新房</view>
+    </view>
+    <view class="house-meta">
+      <text class="meta-item" wx:if="{{item.house_types}}">🏠 {{item.house_types}}</text>
+      <text class="meta-item" wx:if="{{item.status}}">{{item.status}}</text>
+    </view>
+    <view class="house-loc" wx:if="{{item.district || item.address}}">📍 {{item.district}} {{item.address}}</view>
+    <view class="house-foot">
+      <view class="house-price" wx:if="{{item.unit_price}}">{{item.unit_price}}</view>
+      <view class="house-unit" wx:if="{{item.total_price}}">{{item.total_price}}</view>
+      <view class="analyze-chip" data-id="{{item._id}}" catchtap="goAnalyze">📊 分析</view>
+    </view>
+  </view>
+  <view wx:if="{{!newHouses.length && !loading}}" class="empty-tip">
+    <text class="empty-emoji">🏚️</text>
+    该城市暂无新房数据
+  </view>
+</block>
+
+<view wx:if="{{loading}}" class="load-tip">加载中...</view>
+<view wx:if="{{!cloudOk}}" class="load-tip">云数据库未连接，请检查权限设置</view>

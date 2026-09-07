@@ -1,0 +1,45 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/houses/houses",
+    "pages/houses/community/community",
+    "pages/houses/detail/detail",
+    "pages/houses/analyze/analyze",
+    "pages/guide/guide",
+    "pages/mine/mine",
+    "pages/location/location",
+    "pages/basic/basic",
+    "pages/analysis/analysis",
+    "pages/conclusion/conclusion",
+    "pages/finance/finance",
+    "pages/risk/risk",
+    "pages/tax/tax",
+    "pages/mortgage/mortgage"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "购房指南",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f5f7fb"
+  },
+  "tabBar": {
+    "color": "#9aa4ba",
+    "selectedColor": "#2f6bff",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "首页" },
+      { "pagePath": "pages/houses/houses", "text": "房源" },
+      { "pagePath": "pages/guide/guide", "text": "指南" },
+      { "pagePath": "pages/mine/mine", "text": "我的" }
+    ]
+  },
+  "style": "v2",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于定位您所在城市，展示当地房源和小区"
+    }
+  },
+  "requiredPrivateInfos": ["getLocation"],
+  "sitemapLocation": "sitemap.json"
+}

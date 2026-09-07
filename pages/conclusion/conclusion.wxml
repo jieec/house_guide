@@ -1,0 +1,50 @@
+<view class="card">
+  <view class="card-title">购房目的</view>
+  <picker class="form-input-wrap" range="{{purposes}}" value="{{purposeIndex}}" bindchange="onPurpose">
+    <view>{{purposes[purposeIndex]}}<text class="picker-arrow">▾</text></view>
+  </picker>
+  <view class="tips" wx:if="{{purposeIndex === 0}}">💡 首次刚需：关注自住舒适度、学区、交通与价格承受能力</view>
+  <view class="tips" wx:if="{{purposeIndex === 1}}">💡 投资：回报率 = 租售比，关注租金水平与增值空间</view>
+  <view class="tips" wx:if="{{purposeIndex === 2}}">💡 极致性价比：针对金融客户，测算销售价与评估价差额</view>
+</view>
+
+<view class="card">
+  <view class="card-title">极致性价比测算</view>
+  <view class="card-sub">(销售价 - 评估价) × 面积 × 85折，分档：高50万以上 / 中20-50万 / 低0-20万</view>
+  <view class="form-row">
+    <view class="form-label">销售价(元/平)</view>
+    <input class="form-input" type="digit" placeholder="销售单价" value="{{salePrice}}" data-field="salePrice" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">评估价(元/平)</view>
+    <input class="form-input" type="digit" placeholder="评估单价" value="{{evalPrice}}" data-field="evalPrice" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">面积(平)</view>
+    <input class="form-input" type="digit" placeholder="建筑面积" value="{{area}}" data-field="area" bindinput="onInput" />
+  </view>
+  <view class="btn-ghost" bindtap="calcBest">测算性价比</view>
+  <view class="result" wx:if="{{gap}}">
+    <view class="result-line">
+      <view class="result-label">测算差额</view>
+      <view class="result-num">{{gap}} 元</view>
+    </view>
+    <view class="result-line">
+      <view class="result-label">性价比等级</view>
+      <view class="result-num">{{grade}}档 · {{gradeDesc}}</view>
+    </view>
+  </view>
+  </view>
+
+<view class="card" wx:if="{{records.length}}">
+  <view class="card-title">登记记录</view>
+  <view class="record" wx:for="{{records}}" wx:key="id">
+    <view class="record-head">
+      <view class="record-place">{{item.place}} {{item.estate}} {{item.community}}</view>
+      <view class="record-del" data-id="{{item.id}}" catchtap="removeRecord">删除</view>
+    </view>
+    <view class="record-line">{{item.purpose}} | 销售价{{item.salePrice}} 评估价{{item.evalPrice}} 面积{{item.area}}平</view>
+    <view class="record-line">差额{{item.gap}}元 · {{item.grade}}档({{item.gradeDesc}})</view>
+    <view class="record-time">{{item.time}}</view>
+  </view>
+</view>

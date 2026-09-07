@@ -1,0 +1,28 @@
+<view class="card">
+  <view class="card-title">房龄融资风险</view>
+  <view class="card-sub">楼龄较大或贷款年限过长时，融资可能受限</view>
+  <view class="form-row">
+    <view class="form-label">楼龄(年)</view>
+    <input class="form-input" type="number" placeholder="房龄" value="{{age}}" data-field="age" bindinput="onInput" />
+  </view>
+  <view class="form-row">
+    <view class="form-label">贷款年限(年)</view>
+    <input class="form-input" type="number" placeholder="拟贷款年限" value="{{loanYears}}" data-field="loanYears" bindinput="onInput" />
+  </view>
+  <view class="warn" wx:if="{{ageRisk}}">⚠️ 楼龄≥45年 或 楼龄+贷款年限>70，存在融资受限风险</view>
+  <view class="ok" wx:else>✓ 房龄融资条件正常</view>
+</view>
+
+<view class="card">
+  <view class="card-title">风险检查清单</view>
+  <view class="card-sub">逐项核对潜在风险，点击勾选已确认的风险项</view>
+  <view class="risk-item" wx:for="{{risks}}" wx:key="key" data-key="{{item.key}}" bindtap="onCheck">
+    <view class="risk-check {{item.checked ? 'checked' : ''}}">{{item.checked ? '✓' : ''}}</view>
+    <view class="risk-body">
+      <view class="risk-name">{{item.name}}</view>
+      <view class="risk-desc">{{item.desc}}</view>
+    </view>
+  </view>
+</view>
+
+<view class="btn-primary" bindtap="save">保存风险提示</view>

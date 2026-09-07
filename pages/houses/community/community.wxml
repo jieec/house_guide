@@ -1,0 +1,109 @@
+<view class="c-head">
+  <view class="c-city">{{city}}</view>
+  <view class="c-name">{{name}}</view>
+  <view class="c-count" wx:if="{{total}}">共 {{total}} 套房源</view>
+  <view class="c-count" wx:if="{{commInfo && commInfo.summary}}">{{commInfo.summary}}</view>
+</view>
+
+<view class="d-card" wx:if="{{commInfo && commInfo.grade.score}}">
+  <view class="d-card-title">小区评分</view>
+  <view class="grade-row">
+    <view class="grade-score">{{commInfo.grade.score}}</view>
+    <view class="grade-list">
+      <view class="grade-item" wx:for="{{commInfo.gradeItems}}" wx:key="name">
+        <text class="grade-name">{{item.name}}</text>
+        <text class="grade-val">{{item.score}}</text>
+        <text class="grade-tips">{{item.tips}}</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<view class="d-card" wx:if="{{commInfo && commInfo.base}}">
+  <view class="d-card-title">小区概况</view>
+  <view class="info-grid">
+    <view class="info-cell" wx:if="{{commInfo.price.price}}"><view class="info-v">{{commInfo.price.price}}元/㎡</view><view class="info-k">挂牌均价<text wx:if="{{commInfo.price.monthChange}}">(环比{{commInfo.price.monthChange}}%)</text></view></view>
+    <view class="info-cell" wx:if="{{commInfo.base.completionTime}}"><view class="info-v">{{commInfo.base.completionTime}}年</view><view class="info-k">竣工时间</view></view>
+    <view class="info-cell" wx:if="{{commInfo.base.buildType}}"><view class="info-v">{{commInfo.base.buildType}}</view><view class="info-k">建筑类型</view></view>
+    <view class="info-cell" wx:if="{{commInfo.base.shipType}}"><view class="info-v">{{commInfo.base.shipType}}</view><view class="info-k">物业类型</view></view>
+    <view class="info-cell" wx:if="{{commInfo.base.propertyMoney}}"><view class="info-v">{{commInfo.base.propertyMoney}}</view><view class="info-k">物业费</view></view>
+    <view class="info-cell" wx:if="{{commInfo.base.landscapingRatio}}"><view class="info-v">{{commInfo.base.landscapingRatio}}%</view><view class="info-k">绿化率</view></view>
+    <view class="info-cell" wx:if="{{commInfo.base.plotRatio}}"><view class="info-v">{{commInfo.base.plotRatio}}</view><view class="info-k">容积率</view></view>
+    <view class="info-cell" wx:if="{{commInfo.base.totalHouseHoldNum}}"><view class="info-v">{{commInfo.base.totalHouseHoldNum}}</view><view class="info-k">总户数</view></view>
+    <view class="info-cell" wx:if="{{commInfo.base.parking}}"><view class="info-v">{{commInfo.base.parking}}</view><view class="info-k">车位</view></view>
+    <view class="info-cell" wx:if="{{commInfo.base.developer}}"><view class="info-v">{{commInfo.base.developer}}</view><view class="info-k">开发商</view></view>
+    <view class="info-cell" wx:if="{{commInfo.base.propertyCompany}}"><view class="info-v">{{commInfo.base.propertyCompany}}</view><view class="info-k">物业公司</view></view>
+    <view class="info-cell" wx:if="{{commInfo.base.landUsagePeriod}}"><view class="info-v">{{commInfo.base.landUsagePeriod}}</view><view class="info-k">产权年限</view></view>
+  </view>
+</view>
+
+<view class="d-card" wx:if="{{commInfo && commInfo.poiList}}">
+  <view class="d-card-title">周边配套</view>
+  <block wx:for="{{commInfo.poiList}}" wx:key="title">
+    <view class="poi-group" wx:if="{{item.items.length}}">
+      <view class="poi-title">{{item.icon}} {{item.title}}<text class="poi-count">（{{item.items.length}}个）</text></view>
+      <view class="poi-item" wx:for="{{item.items}}" wx:for-item="poi" wx:key="title" wx:for-index="pi">
+        <block wx:if="{{pi < 3 || showAllPois}}">
+          <view class="poi-name">{{poi.title}}</view>
+          <view class="poi-dist">{{poi.dist}}</view>
+          <view class="poi-info" wx:if="{{poi.info}}">{{poi.info}}</view>
+        </block>
+      </view>
+    </view>
+  </block>
+  <view class="poi-toggle" bindtap="toggleAllPois">{{showAllPois ? '收起' : '展开全部配套'}}</view>
+</view>
+
+<view class="d-card" wx:if="{{commInfo && commInfo.nearComms.length}}">
+  <view class="d-card-title">周边竞品小区</view>
+  <view class="near-item" wx:for="{{commInfo.nearComms}}" wx:key="name">
+    <view class="near-left">
+      <view class="near-name">{{item.name}}</view>
+      <view class="near-meta">距离约{{item.dist}}米</view>
+    </view>
+    <view class="near-right">
+      <view class="near-price" wx:if="{{item.price}}">{{item.price}}元/㎡</view>
+      <view class="near-score" wx:if="{{item.score}}">评分{{item.score}}</view>
+    </view>
+  </view>
+</view>
+
+<view class="d-card" wx:if="{{commInfo && commInfo.introduction}}">
+  <view class="d-card-title">小区介绍</view>
+  <view class="intro {{showIntro ? '' : 'intro-clamp'}}">{{commInfo.introduction}}</view>
+  <view class="intro-toggle" bindtap="toggleIntro">{{showIntro ? '收起' : '展开全文'}}</view>
+</view>
+
+<view class="type-bar">
+  <view wx:for="{{types}}" wx:key="key" class="type-chip {{typeIndex === index ? 'type-active' : ''}}"
+    data-index="{{index}}" bindtap="switchType">{{item.name}}</view>
+</view>
+
+<view class="house-card" wx:for="{{list}}" wx:key="_id" data-id="{{item._id}}" bindtap="goDetail">
+  <view class="house-head">
+    <view class="house-title">{{item.title}}</view>
+    <view class="house-tag" wx:if="{{item.category === '二手房'}}">二手</view>
+    <view class="house-tag tag-green" wx:if="{{item.category === '租房'}}">租房</view>
+  </view>
+  <view class="house-meta">
+    <text class="meta-item" wx:if="{{item.rooms}}">🏠 {{item.rooms}}</text>
+    <text class="meta-item" wx:if="{{item.area_sqm}}">📐 {{item.area_sqm}}㎡</text>
+    <text class="meta-item" wx:if="{{item.floor}}">🪜 {{item.floor}}</text>
+    <text class="meta-item" wx:if="{{item.orientation}}">🧭 {{item.orientation}}</text>
+  </view>
+  <view class="house-loc" wx:if="{{item.district || item.address}}">📍 {{item.district}} {{item.address}}</view>
+  <view class="house-foot">
+    <view class="house-price" wx:if="{{item.total_price}}">{{item.total_price}}</view>
+    <view class="house-price" wx:elif="{{item.rent_month}}">{{item.rent_month}}<text class="price-unit">元/月</text></view>
+    <view class="house-unit" wx:if="{{item.unit_price}}">{{item.unit_price}}元/㎡</view>
+    <view class="analyze-chip" wx:if="{{item.category !== '租房'}}" data-id="{{item._id}}" catchtap="goAnalyze">📊 分析</view>
+  </view>
+  <view class="house-tags" wx:if="{{item.tags}}">{{item.tags}}</view>
+</view>
+
+<view wx:if="{{!list.length && !loading}}" class="empty-tip">
+  <text class="empty-emoji">🏚️</text>
+  该小区暂无此类房源
+</view>
+<view wx:if="{{loading}}" class="load-tip">加载中...</view>
+<view wx:if="{{!hasMore && list.length > 0}}" class="load-tip">— 没有更多了 —</view>
