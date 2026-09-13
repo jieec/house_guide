@@ -1,11 +1,12 @@
 .locate-bar {
-  background: linear-gradient(160deg, #1a3d8f 0%, #2f6bff 100%);
+  background: linear-gradient(135deg, #0f2244 0%, #1a3d8f 100%);
+  border: 1rpx solid rgba(0, 180, 255, 0.2);
   margin: 20rpx 24rpx;
   border-radius: 24rpx;
   padding: 32rpx;
   color: #ffffff;
   text-align: center;
-  box-shadow: 0 8rpx 24rpx rgba(47, 107, 255, 0.3);
+  box-shadow: 0 8rpx 30rpx rgba(0, 50, 120, 0.4);
 }
 
 .locate-btn {
@@ -20,17 +21,17 @@
 .locate-hint {
   margin-top: 10rpx;
   font-size: 22rpx;
-  opacity: 0.8;
+  color: #8aa4cc;
 }
 
 .preview {
   font-size: 32rpx;
   font-weight: 600;
-  color: #2f6bff;
+  color: #00d4ff;
 }
 
 .preview-sub {
   margin-top: 10rpx;
   font-size: 26rpx;
-  color: #5a6478;
+  color: #7b8fb0;
 }

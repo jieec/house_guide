@@ -2,7 +2,7 @@
   display: flex;
   align-items: flex-start;
   padding: 20rpx 0;
-  border-bottom: 1rpx solid #f0f2f8;
+  border-bottom: 1rpx solid rgba(0, 180, 255, 0.08);
 }
 
 .risk-item:last-child {
@@ -13,7 +13,7 @@
   width: 40rpx;
   height: 40rpx;
   border-radius: 10rpx;
-  border: 2rpx solid #c9d2e3;
+  border: 1rpx solid rgba(0, 180, 255, 0.2);
   text-align: center;
   line-height: 40rpx;
   margin-right: 20rpx;
@@ -23,8 +23,8 @@
 }
 
 .risk-check.checked {
-  background: #2f6bff;
-  border-color: #2f6bff;
+  background: linear-gradient(135deg, #1a5cff, #00d4ff);
+  border-color: transparent;
 }
 
 .risk-body {
@@ -34,20 +34,21 @@
 .risk-name {
   font-size: 28rpx;
   font-weight: 500;
-  color: #1f2430;
+  color: #ffffff;
 }
 
 .risk-desc {
   margin-top: 6rpx;
   font-size: 24rpx;
-  color: #9aa4ba;
+  color: #7b8fb0;
   line-height: 1.5;
 }
 
 .warn {
   margin-top: 16rpx;
-  background: #fdf0ef;
-  color: #d6453c;
+  background: rgba(255, 107, 53, 0.1);
+  color: #ff6b35;
+  border: 1rpx solid rgba(255, 107, 53, 0.15);
   border-radius: 14rpx;
   padding: 18rpx;
   font-size: 26rpx;
@@ -55,8 +56,9 @@
 
 .ok {
   margin-top: 16rpx;
-  background: #ecfbf3;
-  color: #23a94d;
+  background: rgba(35, 195, 67, 0.1);
+  color: #5ddb7a;
+  border: 1rpx solid rgba(35, 195, 67, 0.15);
   border-radius: 14rpx;
   padding: 18rpx;
   font-size: 26rpx;

@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 20rpx 0;
-  border-bottom: 1rpx solid #f0f2f8;
+  border-bottom: 1rpx solid rgba(0, 180, 255, 0.08);
 }
 
 .bank:last-child {
@@ -13,19 +13,19 @@
 .bank-name {
   font-size: 28rpx;
   font-weight: 500;
-  color: #1f2430;
+  color: #e8f0fe;
 }
 
 .bank-type {
   margin-top: 4rpx;
   font-size: 22rpx;
-  color: #9aa4ba;
+  color: #7b8fb0;
 }
 
 .bank-call {
-  color: #2f6bff;
+  color: #00d4ff;
   font-size: 28rpx;
   padding: 10rpx 28rpx;
-  border: 2rpx solid #2f6bff;
+  border: 1rpx solid rgba(0, 212, 255, 0.4);
   border-radius: 40rpx;
 }

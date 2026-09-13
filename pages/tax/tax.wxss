@@ -1,5 +1,5 @@
 .result-total {
-  border-top: 1rpx solid #dbe7ff;
+  border-top: 1rpx solid rgba(0, 180, 255, 0.08);
   margin-top: 8rpx;
   padding-top: 16rpx;
 }

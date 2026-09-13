@@ -1,27 +1,53 @@
 <view class="hero">
-  <view class="hero-badge">购房决策助手</view>
-  <view class="hero-title">房产价值 · 购房指南</view>
-  <view class="hero-sub">定位选房 · 价格分析 · 税费按揭测算 · 房源数据参考</view>
-  <view class="hero-stats" wx:if="{{total > 0}}" bindtap="goHouses">
-    <view class="hero-stat">
-      <view class="hero-stat-num">{{total}}</view>
-      <view class="hero-stat-label">云库房源</view>
+  <image class="hero-bg" src="/images/bg-city.png" mode="aspectFill"></image>
+  <view class="hero-overlay"></view>
+  <view class="hero-content">
+    <view class="hero-top">
+      <view class="hero-text">
+        <view class="hero-slogan">用数据<br/>看见更好的家</view>
+      </view>
+      <view class="hero-bear-wrap">
+        <image class="hero-bear" src="/images/bear.png" mode="aspectFit"></image>
+        <view class="bear-speech">
+          <view class="bear-hi">Hi!</view>
+          <view class="bear-desc">我是Alpha熊<br/>您的房产智能助手</view>
+        </view>
+      </view>
     </view>
-    <view class="hero-stat">
-      <view class="hero-stat-num">3</view>
-      <view class="hero-stat-label">房源类型</view>
+    
+    <view class="hero-title-row">
+      <view class="hero-title">一秒搞定房产价值多维度评估</view>
+      <view class="hero-sub">专业 · 全面 · 让房产决策更简单</view>
     </view>
-    <view class="hero-stat">
-      <view class="hero-stat-num">7</view>
-      <view class="hero-stat-label">评估维度</view>
+    
+    <view class="hero-card">
+      <view class="hero-card-left">
+        <image class="hero-house" src="/images/house.png" mode="aspectFit"></image>
+      </view>
+      <view class="hero-card-right">
+        <view class="hero-card-title">房产诊断报告</view>
+        <view class="hero-card-sub">多维一体，综合评估</view>
+        <view class="hero-tags">
+          <view class="hero-tag">✓ 权威数据</view>
+          <view class="hero-tag">✓ 多维分析</view>
+          <view class="hero-tag">✓ 专业评估</view>
+          <view class="hero-tag">✓ 决策参考</view>
+        </view>
+      </view>
     </view>
-    <view class="hero-arrow">›</view>
+    
+    <view class="hero-btn" bindtap="goGuide">
+      <text>立即查看评估报告</text>
+      <view class="hero-btn-icon">›</view>
+    </view>
   </view>
 </view>
 
 <view class="loc-card">
   <view class="loc-head">
-    <view class="loc-icon">📍</view>
+    <view class="loc-icon-wrap">
+      <view class="loc-icon">📍</view>
+    </view>
     <view class="loc-body" wx:if="{{location && location.city}}" bindtap="goLocation">
       <view class="loc-value">{{location.province}} {{location.city}} {{location.district}}</view>
       <view class="loc-sub">{{location.estate || '未填写楼盘'}}{{location.community ? ' · ' + location.community : ''}}</view>
@@ -29,38 +55,35 @@
     <view class="loc-body" wx:else bindtap="goLocation">
       <view class="loc-empty">选择 省份 / 城市 / 区 / 楼盘 / 小区</view>
     </view>
-    <view class="loc-edit" bindtap="goLocation">修改</view>
+    <view class="loc-edit" bindtap="goLocation">修改 ›</view>
   </view>
 </view>
 
-<view class="section-title">快捷工具</view>
+<view class="section-header">
+  <view class="section-title">快捷工具</view>
+  <view class="section-sub">专业工具 · 助您全面了解房产</view>
+</view>
 <view class="quick-grid">
   <view class="quick-item" wx:for="{{quickModules}}" wx:key="key" data-key="{{item.key}}" bindtap="goModule">
-    <view class="quick-icon" style="background: {{item.color}}">{{item.icon}}</view>
+    <view class="quick-icon-wrap" style="background: {{item.bg}}">
+      <view class="quick-icon">{{item.icon}}</view>
+    </view>
     <view class="quick-name">{{item.name}}</view>
+    <view class="quick-desc">{{item.desc}}</view>
   </view>
 </view>
 
-<view class="section-title">全部评估维度</view>
-<view class="cell" bindtap="goGuide">
-  <view class="cell-left">
-    <view class="cell-icon" style="background:#eef4ff">📋</view>
-    <view>
-      <view class="cell-name">评估报告</view>
-      <view class="cell-desc">基本信息 · 房源分析 · 评估结论 · 融资 · 风险 · 税费 · 按揭</view>
+<view class="ad-banner">
+  <image class="ad-bg" src="/images/bg-city.png" mode="aspectFill"></image>
+  <view class="ad-overlay"></view>
+  <view class="ad-content">
+    <view class="ad-left">
+      <view class="ad-title">数据驱动决策</view>
+      <view class="ad-sub">让房产价值更清晰</view>
+      <view class="ad-desc">专业 · 准确 · 全面</view>
+    </view>
+    <view class="ad-right">
+      <view class="ad-slogan">好房子<br/>让生活更美好</view>
     </view>
   </view>
-  <view class="cell-arrow">›</view>
-</view>
-
-<view class="section-title" wx:if="{{records.length}}">最近登记</view>
-<view class="cell" wx:for="{{records}}" wx:key="id">
-  <view class="cell-left">
-    <view class="cell-icon" style="background:#ecfbf3">📌</view>
-    <view>
-      <view class="cell-name">{{item.estate || item.place}}</view>
-      <view class="cell-desc">{{item.purpose}} · 差额{{item.gap}}元 · {{item.grade}}档</view>
-    </view>
-  </view>
-  <view class="cell-time">{{item.time}}</view>
 </view>

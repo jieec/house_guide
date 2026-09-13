@@ -17,16 +17,17 @@
     "pages/mortgage/mortgage"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarBackgroundColor": "#0a1628",
     "navigationBarTitleText": "购房指南",
-    "navigationBarTextStyle": "black",
-    "backgroundColor": "#f5f7fb"
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#0a1628",
+    "backgroundTextStyle": "light"
   },
   "tabBar": {
-    "color": "#9aa4ba",
-    "selectedColor": "#2f6bff",
-    "backgroundColor": "#ffffff",
-    "borderStyle": "white",
+    "color": "#5b7aa8",
+    "selectedColor": "#00d4ff",
+    "backgroundColor": "#0d1d35",
+    "borderStyle": "black",
     "list": [
       { "pagePath": "pages/index/index", "text": "首页" },
       { "pagePath": "pages/houses/houses", "text": "房源" },

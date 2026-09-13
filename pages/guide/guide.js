@@ -155,6 +155,30 @@ Page({
     const salePrices = sales.map(it => num(it.unit_price)).filter(Boolean)
     const dealPrices = deals.map(it => num(first(it.deal_unit_price, it.unit_price))).filter(Boolean)
     const saleAreas = sales.map(it => num(it.area_sqm)).filter(Boolean)
+    
+    // 面积段分布
+    const areaRanges = { '50㎡以下': 0, '50-70㎡': 0, '70-90㎡': 0, '90-120㎡': 0, '120-150㎡': 0, '150㎡以上': 0 }
+    saleAreas.forEach(a => {
+      if (a < 50) areaRanges['50㎡以下']++
+      else if (a < 70) areaRanges['50-70㎡']++
+      else if (a < 90) areaRanges['70-90㎡']++
+      else if (a < 120) areaRanges['90-120㎡']++
+      else if (a < 150) areaRanges['120-150㎡']++
+      else areaRanges['150㎡以上']++
+    })
+    const areaRangeText = Object.entries(areaRanges).filter(([_, v]) => v > 0).map(([k, v]) => k + ' ' + v + '套').join('｜')
+    
+    // 户型分布
+    const layoutCounts = {}
+    sales.forEach(it => {
+      const rooms = first(it.rooms, it.house_type, '')
+      if (rooms) {
+        const m = rooms.match(/(\d+室)/)
+        const key = m ? m[1] : rooms.split(' ')[0]
+        if (key) layoutCounts[key] = (layoutCounts[key] || 0) + 1
+      }
+    })
+    const layoutText = Object.entries(layoutCounts).sort((a, b) => b[1] - a[1]).map(([k, v]) => k + ' ' + v + '套').join('｜')
     const saleTotals = sales.map(it => {
       const n = num(it.total_price)
       return String(it.total_price || '').includes('万') ? n : (n > 10000 ? n / 10000 : n)
@@ -209,6 +233,7 @@ Page({
     return {
       basic: [
         { label: '位置', value: show(location) }, { label: '小区名称', value: show(doc.community) },
+        { label: '面积段分布', value: areaRangeText || '暂无数据' }, { label: '户型分布', value: layoutText || '暂无数据' },
         { label: '平均面积', value: show(areaAvg ? Math.round(areaAvg) : '', '㎡') }, { label: '房屋性质', value: show(propertyType) },
         { label: '建成年代', value: show(completion) }, { label: '区域排名', value: show(areaRank) },
         { label: '成交/在售样本', value: show(first(price.saleCount, sales.length), '套') },
@@ -304,7 +329,8 @@ Page({
           ], warning: '建成年代不等同于产权起算时间，贷款要求也会因银行和房屋性质不同而变化。'
         }
       ],
-      competitors, traffic, schools, missing
+      competitors, traffic, schools, missing,
+      areaRangeText, layoutText
     }
   },
 

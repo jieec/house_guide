@@ -52,6 +52,14 @@
             <view class="data-value {{item.value === '暂无数据' ? 'muted' : ''}}">{{item.value}}</view>
           </view>
         </view>
+        <view class="section-title" wx:if="{{report.areaRangeText}}">面积段分布</view>
+        <view class="data-card" wx:if="{{report.areaRangeText}}">
+          <view class="data-value">{{report.areaRangeText}}</view>
+        </view>
+        <view class="section-title" wx:if="{{report.layoutText}}">户型分布</view>
+        <view class="data-card" wx:if="{{report.layoutText}}">
+          <view class="data-value">{{report.layoutText}}</view>
+        </view>
         <view class="section-title">位置配套</view>
         <view class="data-card">
           <view class="sub-title">交通</view>
