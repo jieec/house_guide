@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>购置建议 - 真实数据预览</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0a1628; color: #e8f0fe; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; padding: 0; min-height: 100vh; }
+.wrap { max-width: 420px; margin: 0 auto; padding: 24rpx 24px 80px; }
+
+h1 { color: #fff; font-size: 18px; padding: 12px 0; text-align: center; font-weight: 700; }
+.hint { color: #7b8fb0; font-size: 12px; padding: 8px 0 16px; text-align: center; }
+
+/* ── 维度卡片 ── */
+.dimension-card {
+  background: rgba(16, 32, 64, 0.7);
+  border: 1px solid rgba(0, 180, 255, 0.12);
+  border-radius: 22px;
+  padding: 24px 22px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 50, 120, 0.15);
+}
+.dimension-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.dimension-title { font-size: 22px; font-weight: 800; color: #fff; min-width: 50px; }
+.dimension-level { font-size: 13px; padding: 5px 12px; border-radius: 20px; font-weight: 600; }
+.dimension-level.high { background: rgba(35, 195, 67, 0.15); color: #5ddb7a; border: 1px solid rgba(35, 195, 67, 0.25); }
+.dimension-level.mid { background: rgba(255, 154, 108, 0.15); color: #ff9a6c; border: 1px solid rgba(255, 154, 108, 0.25); }
+.dimension-level.low { background: rgba(255, 80, 80, 0.12); color: #ff7070; border: 1px solid rgba(255, 80, 80, 0.2); }
+.dimension-total { margin-left: auto; font-size: 36px; font-weight: 900; color: #00d4ff; line-height: 1; }
+.dimension-total-label { font-size: 13px; color: #7b8fb0; margin-left: 4px; align-self: flex-end; padding-bottom: 4px; }
+
+/* ── 饼图区域 ── */
+.pie-section { display: flex; align-items: center; gap: 22px; margin-bottom: 20px; padding: 16px; background: rgba(10, 22, 48, 0.5); border-radius: 14px; border: 1px solid rgba(0, 180, 255, 0.08); }
+.pie-wrap { flex-shrink: 0; width: 150px; height: 150px; position: relative; }
+.pie-donut { width: 150px; height: 150px; border-radius: 50%; position: relative; }
+.pie-hole { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 92px; height: 92px; border-radius: 50%; background: rgba(10, 22, 48, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 16px rgba(0,0,0,0.4); }
+.pie-center-score { font-size: 28px; font-weight: 900; color: #fff; line-height: 1; }
+.pie-center-label { font-size: 11px; color: #7b8fb0; margin-top: 3px; }
+
+/* ── 图例（带百分比）── */
+.pie-legend { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+.legend-item { display: flex; align-items: center; gap: 10px; }
+.legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.legend-info { flex: 1; min-width: 0; }
+.legend-name { font-size: 14px; font-weight: 700; color: #fff; }
+.legend-desc { font-size: 11px; color: #7b8fb0; margin-top: 2px; }
+.legend-score { font-size: 14px; font-weight: 800; flex-shrink: 0; text-align: right; min-width: 78px; }
+.legend-pct { font-size: 11px; color: #7b8fb0; font-weight: 500; margin-top: 2px; }
+.legend-right { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
+
+/* ── 分类卡片 ── */
+.category-cards { display: flex; flex-direction: column; gap: 10px; }
+.category-card { background: rgba(10, 22, 48, 0.5); border: 1px solid rgba(0, 180, 255, 0.08); border-radius: 14px; overflow: hidden; cursor: pointer; transition: 0.2s; }
+.category-card.expanded { border-color: rgba(0, 212, 255, 0.25); box-shadow: 0 0 16px rgba(0, 150, 255, 0.1); }
+.cat-card-header { display: flex; align-items: center; gap: 10px; padding: 14px 14px; }
+.cat-indicator { width: 5px; height: 32px; border-radius: 4px; flex-shrink: 0; }
+.cat-name { font-size: 15px; font-weight: 700; color: #fff; min-width: 70px; }
+.cat-desc-small { font-size: 12px; color: #7b8fb0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cat-right { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
+.cat-score { font-size: 18px; font-weight: 900; }
+.cat-pct { font-size: 10px; color: #7b8fb0; margin-top: 1px; }
+.cat-arrow { font-size: 14px; color: #5b7aa8; flex-shrink: 0; width: 20px; text-align: center; }
+.cat-card-body { padding: 0 14px 14px 28px; border-top: 1px dashed rgba(0, 180, 255, 0.08); }
+.cat-threshold { font-size: 12px; color: #5b7aa8; padding: 10px 0 6px; }
+.cat-detail-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 7px 0; border-bottom: 1px dashed rgba(0, 180, 255, 0.06); }
+.cat-detail-row:last-child { border-bottom: 0; }
+.cat-detail-label { font-size: 13px; color: #7b8fb0; flex-shrink: 0; }
+.cat-detail-value { font-size: 13px; color: #e8f0fe; text-align: right; max-width: 240px; }
+.cat-detail-label.highlight, .cat-detail-value.highlight { color: #00d4ff; font-weight: 600; }
+
+.notice { color: #ff9a6c; background: rgba(255, 122, 69, 0.1); border: 1px solid rgba(255, 122, 69, 0.15); border-radius: 14px; padding: 14px 16px; font-size: 12px; line-height: 1.6; margin-top: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>购置建议 · 双维度三分类（带百分比）</h1>
+  <div class="hint">点击分类卡片可展开/收起明细</div>
+
+  <!-- 维度一：投资 -->
+  <div class="dimension-card">
+    <div class="dimension-header">
+      <div class="dimension-title">投资</div>
+      <div class="dimension-level mid">较为推荐</div>
+      <div class="dimension-total">59</div>
+      <div class="dimension-total-label">分</div>
+    </div>
+
+    <div class="pie-section">
+      <div class="pie-wrap">
+        <div class="pie-donut" style="background: conic-gradient(#00d4ff 0deg 140.4deg, #23c343 140.4deg 183.6deg, #ff9a6c 183.6deg 212.4deg);">
+          <div class="pie-hole">
+            <div class="pie-center-score">59</div>
+            <div class="pie-center-label">综合评分</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pie-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#00d4ff"></div>
+          <div class="legend-info">
+            <div class="legend-name">租赁指数</div>
+            <div class="legend-desc">长期持有 · 租售比</div>
+          </div>
+          <div class="legend-right">
+            <div class="legend-score" style="color:#00d4ff">39分</div>
+            <div class="legend-pct">66.1%</div>
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#23c343"></div>
+          <div class="legend-info">
+            <div class="legend-name">销售指数</div>
+            <div class="legend-desc">成交活跃 · 差价大</div>
+          </div>
+          <div class="legend-right">
+            <div class="legend-score" style="color:#23c343">12分</div>
+            <div class="legend-pct">20.3%</div>
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#ff9a6c"></div>
+          <div class="legend-info">
+            <div class="legend-name">融资指数</div>
+            <div class="legend-desc">评估价高 · 流通性低</div>
+          </div>
+          <div class="legend-right">
+            <div class="legend-score" style="color:#ff9a6c">8分</div>
+            <div class="legend-pct">13.6%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="category-cards">
+      <div class="category-card expanded">
+        <div class="cat-card-header">
+          <div class="cat-indicator" style="background:#00d4ff"></div>
+          <div class="cat-name">租赁指数</div>
+          <div class="cat-desc-small">长期持有 · 租售比</div>
+          <div class="cat-right">
+            <div class="cat-score" style="color:#00d4ff">39分</div>
+            <div class="cat-pct">66.1%</div>
+          </div>
+          <div class="cat-arrow">⌃</div>
+        </div>
+        <div class="cat-card-body">
+          <div class="cat-threshold">判断标准：租售比 ≥ 3% 为优质</div>
+          <div class="cat-detail-row"><div class="cat-detail-label">年租售比</div><div class="cat-detail-value highlight">2.85%</div></div>
+          <div class="cat-detail-row"><div class="cat-detail-label">在租套数</div><div class="cat-detail-value">12 套</div></div>
+          <div class="cat-detail-row"><div class="cat-detail-label">判断标准</div><div class="cat-detail-value highlight">△ 接近门槛</div></div>
+        </div>
+      </div>
+
+      <div class="category-card">
+        <div class="cat-card-header">
+          <div class="cat-indicator" style="background:#23c343"></div>
+          <div class="cat-name">销售指数</div>
+          <div class="cat-desc-small">成交活跃 · 差价大</div>
+          <div class="cat-right">
+            <div class="cat-score" style="color:#23c343">12分</div>
+            <div class="cat-pct">20.3%</div>
+          </div>
+          <div class="cat-arrow">⌄</div>
+        </div>
+      </div>
+
+      <div class="category-card">
+        <div class="cat-card-header">
+          <div class="cat-indicator" style="background:#ff9a6c"></div>
+          <div class="cat-name">融资指数</div>
+          <div class="cat-desc-small">评估价高 · 流通性低</div>
+          <div class="cat-right">
+            <div class="cat-score" style="color:#ff9a6c">8分</div>
+            <div class="cat-pct">13.6%</div>
+          </div>
+          <div class="cat-arrow">⌄</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 维度二：自住 -->
+  <div class="dimension-card">
+    <div class="dimension-header">
+      <div class="dimension-title">自住</div>
+      <div class="dimension-level high">高度推荐</div>
+      <div class="dimension-total">70</div>
+      <div class="dimension-total-label">分</div>
+    </div>
+
+    <div class="pie-section">
+      <div class="pie-wrap">
+        <div class="pie-donut" style="background: conic-gradient(#a78bfa 0deg 266.4deg, #fb923c 266.4deg 304.8deg, #38bdf8 304.8deg 360deg);">
+          <div class="pie-hole">
+            <div class="pie-center-score">70</div>
+            <div class="pie-center-label">综合评分</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pie-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#a78bfa"></div>
+          <div class="legend-info">
+            <div class="legend-name">刚需型</div>
+            <div class="legend-desc">地段配套 · 户型不大 · 学区</div>
+          </div>
+          <div class="legend-right">
+            <div class="legend-score" style="color:#a78bfa">74分</div>
+            <div class="legend-pct">47.7%</div>
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#fb923c"></div>
+          <div class="legend-info">
+            <div class="legend-name">改善型</div>
+            <div class="legend-desc">大面积 · 景观资源 · 四房+</div>
+          </div>
+          <div class="legend-right">
+            <div class="legend-score" style="color:#fb923c">38分</div>
+            <div class="legend-pct">24.5%</div>
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#38bdf8"></div>
+          <div class="legend-info">
+            <div class="legend-name">度假型</div>
+            <div class="legend-desc">景观资源 · 靠海/公园/景区</div>
+          </div>
+          <div class="legend-right">
+            <div class="legend-score" style="color:#38bdf8">43分</div>
+            <div class="legend-pct">27.7%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="category-cards">
+      <div class="category-card">
+        <div class="cat-card-header">
+          <div class="cat-indicator" style="background:#a78bfa"></div>
+          <div class="cat-name">刚需型</div>
+          <div class="cat-desc-small">地段配套 · 户型不大 · 学区</div>
+          <div class="cat-right">
+            <div class="cat-score" style="color:#a78bfa">74分</div>
+            <div class="cat-pct">47.7%</div>
+          </div>
+          <div class="cat-arrow">⌄</div>
+        </div>
+      </div>
+
+      <div class="category-card">
+        <div class="cat-card-header">
+          <div class="cat-indicator" style="background:#fb923c"></div>
+          <div class="cat-name">改善型</div>
+          <div class="cat-desc-small">大面积 · 景观资源 · 四房+</div>
+          <div class="cat-right">
+            <div class="cat-score" style="color:#fb923c">38分</div>
+            <div class="cat-pct">24.5%</div>
+          </div>
+          <div class="cat-arrow">⌄</div>
+        </div>
+      </div>
+
+      <div class="category-card">
+        <div class="cat-card-header">
+          <div class="cat-indicator" style="background:#38bdf8"></div>
+          <div class="cat-name">度假型</div>
+          <div class="cat-desc-small">景观资源 · 靠海/公园/景区</div>
+          <div class="cat-right">
+            <div class="cat-score" style="color:#38bdf8">43分</div>
+            <div class="cat-pct">27.7%</div>
+          </div>
+          <div class="cat-arrow">⌄</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notice">建议由后台数据自动生成，仅作为筛选参考；成交、产权、学区和贷款条件仍需线下核实。</div>
+</div>
+
+<script>
+document.querySelectorAll('.category-card').forEach(c => {
+  c.addEventListener('click', () => {
+    c.classList.toggle('expanded');
+    const arrow = c.querySelector('.cat-arrow');
+    if (arrow) arrow.textContent = c.classList.contains('expanded') ? '⌃' : '⌄';
+  });
+});
+</script>
+</body>
+</html>

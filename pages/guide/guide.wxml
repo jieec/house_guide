@@ -93,29 +93,139 @@
 
       <view wx:if="{{activeTab === 2}}">
         <view class="section-title">自动购置建议</view>
-        <view class="advice-card {{expandedAdvice === index ? 'expanded' : ''}}" wx:for="{{report.advice}}" wx:key="title">
-          <view class="advice-summary" data-index="{{index}}" bindtap="toggleAdvice">
-            <view class="advice-score-ring"><text class="advice-score">{{item.score}}</text><text class="advice-percent">%</text></view>
-            <view class="advice-summary-body">
-              <view class="advice-title">{{item.title}}</view>
-              <view class="advice-level">{{item.level}}</view>
+
+        <!-- 维度一：投资 -->
+        <view class="dimension-card">
+          <view class="dimension-header">
+            <view class="dimension-title">投资</view>
+            <view class="dimension-level {{report.advice.investment.totalScore >= 55 ? 'high' : (report.advice.investment.totalScore >= 35 ? 'mid' : 'low')}}">
+              {{report.advice.investment.level}}
             </view>
-            <view class="advice-arrow">{{expandedAdvice === index ? '⌃' : '⌄'}}</view>
+            <view class="dimension-total">{{report.advice.investment.totalScore}}</view>
+            <view class="dimension-total-label">分</view>
           </view>
-          <view class="score-track"><view class="score-fill" style="width:{{item.score}}%"></view></view>
-          <view class="advice-detail" wx:if="{{expandedAdvice === index}}">
-            <view class="advice-conclusion-title">判断结论</view>
-            <view class="advice-text">{{item.summary}}</view>
-            <view class="advice-conclusion-title metrics-title">指标明细</view>
-            <view class="metric-row" wx:for="{{item.metrics}}" wx:for-item="metric" wx:key="name">
-              <view class="metric-main">
-                <view class="metric-name">{{metric.name}}</view>
-                <view class="metric-value">{{metric.value}}</view>
+
+          <!-- 饼图：三个子项占比（面积大小代表推荐分数） -->
+          <view class="pie-section">
+            <view class="pie-wrap">
+              <view class="pie-donut" style="background: {{report.advice.investment.pieBg}};">
+                <view class="pie-hole">
+                  <view class="pie-center-score">{{report.advice.investment.totalScore}}</view>
+                  <view class="pie-center-label">综合评分</view>
+                </view>
               </view>
-              <view class="metric-result {{metric.good ? 'good' : ''}}">{{metric.result}}</view>
+            </view>
+
+            <!-- 图例 -->
+            <view class="pie-legend">
+              <view class="legend-item" wx:for="{{report.advice.investment.categories}}" wx:key="name">
+                <view class="legend-dot" style="background:{{item.color}}"></view>
+                <view class="legend-info">
+                  <view class="legend-name">{{item.name}}</view>
+                  <view class="legend-desc">{{item.desc}}</view>
+                </view>
+                <view class="legend-right">
+                  <view class="legend-score" style="color:{{item.color}}">{{item.score}}分</view>
+                  <view class="legend-pct">{{item.pct}}%</view>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 三张分类卡片 -->
+          <view class="category-cards">
+            <view class="category-card {{expandedAdvice === 'inv-' + index ? 'expanded' : ''}}"
+              wx:for="{{report.advice.investment.categories}}"
+              wx:key="name"
+              data-key="{{'inv-' + index}}"
+              bindtap="toggleAdviceKey">
+              <view class="cat-card-header">
+                <view class="cat-indicator" style="background:{{item.color}}"></view>
+                <view class="cat-name">{{item.name}}</view>
+                <view class="cat-desc-small">{{item.desc}}</view>
+                <view class="cat-right">
+                  <view class="cat-score" style="color:{{item.color}}">{{item.score}}分</view>
+                  <view class="cat-pct">{{item.pct}}%</view>
+                </view>
+                <view class="cat-arrow">{{expandedAdvice === 'inv-' + index ? '⌃' : '⌄'}}</view>
+              </view>
+              <view class="cat-card-body" wx:if="{{expandedAdvice === 'inv-' + index}}">
+                <view class="cat-threshold">判断标准：{{item.threshold}}</view>
+                <view class="cat-detail-row" wx:for="{{item.details}}" wx:for-item="det" wx:key="label">
+                  <view class="cat-detail-label {{det.highlight ? 'highlight' : ''}}">{{det.label}}</view>
+                  <view class="cat-detail-value {{det.highlight ? 'highlight' : ''}}">{{det.value}}</view>
+                </view>
+              </view>
             </view>
           </view>
         </view>
+
+        <!-- 维度二：自住 -->
+        <view class="dimension-card">
+          <view class="dimension-header">
+            <view class="dimension-title">自住</view>
+            <view class="dimension-level {{report.advice.selfuse.totalScore >= 55 ? 'high' : (report.advice.selfuse.totalScore >= 35 ? 'mid' : 'low')}}">
+              {{report.advice.selfuse.level}}
+            </view>
+            <view class="dimension-total">{{report.advice.selfuse.totalScore}}</view>
+            <view class="dimension-total-label">分</view>
+          </view>
+
+          <!-- 饼图 -->
+          <view class="pie-section">
+            <view class="pie-wrap">
+              <view class="pie-donut" style="background: {{report.advice.selfuse.pieBg}};">
+                <view class="pie-hole">
+                  <view class="pie-center-score">{{report.advice.selfuse.totalScore}}</view>
+                  <view class="pie-center-label">综合评分</view>
+                </view>
+              </view>
+            </view>
+
+            <!-- 图例 -->
+            <view class="pie-legend">
+              <view class="legend-item" wx:for="{{report.advice.selfuse.categories}}" wx:key="name">
+                <view class="legend-dot" style="background:{{item.color}}"></view>
+                <view class="legend-info">
+                  <view class="legend-name">{{item.name}}</view>
+                  <view class="legend-desc">{{item.desc}}</view>
+                </view>
+                <view class="legend-right">
+                  <view class="legend-score" style="color:{{item.color}}">{{item.score}}分</view>
+                  <view class="legend-pct">{{item.pct}}%</view>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 三张分类卡片 -->
+          <view class="category-cards">
+            <view class="category-card {{expandedAdvice === 'live-' + index ? 'expanded' : ''}}"
+              wx:for="{{report.advice.selfuse.categories}}"
+              wx:key="name"
+              data-key="{{'live-' + index}}"
+              bindtap="toggleAdviceKey">
+              <view class="cat-card-header">
+                <view class="cat-indicator" style="background:{{item.color}}"></view>
+                <view class="cat-name">{{item.name}}</view>
+                <view class="cat-desc-small">{{item.desc}}</view>
+                <view class="cat-right">
+                  <view class="cat-score" style="color:{{item.color}}">{{item.score}}分</view>
+                  <view class="cat-pct">{{item.pct}}%</view>
+                </view>
+                <view class="cat-arrow">{{expandedAdvice === 'live-' + index ? '⌃' : '⌄'}}</view>
+              </view>
+              <view class="cat-card-body" wx:if="{{expandedAdvice === 'live-' + index}}">
+                <view class="cat-threshold">判断标准：{{item.threshold}}</view>
+                <view class="cat-detail-row" wx:for="{{item.details}}" wx:for-item="det" wx:key="label">
+                  <view class="cat-detail-label {{det.highlight ? 'highlight' : ''}}">{{det.label}}</view>
+                  <view class="cat-detail-value {{det.highlight ? 'highlight' : ''}}">{{det.value}}</view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+
         <view class="notice">建议由后台数据自动生成，仅作为筛选参考；成交、产权、学区和贷款条件仍需线下核实。</view>
       </view>
 
