@@ -2,6 +2,10 @@
   <image class="hero-bg" src="/images/bg-city.png" mode="aspectFill"></image>
   <view class="hero-overlay"></view>
   <view class="hero-content">
+    <view class="hero-title-row">
+      <view class="hero-title">一秒搞定房产价值多维度评估</view>
+      <view class="hero-sub">迅速测评 · 一秒搞定 · 有的放矢 · 轻松抉择</view>
+    </view>
     <view class="hero-top">
       <view class="hero-text">
         <view class="hero-slogan">用数据<br/>看见更好的家</view>
@@ -10,16 +14,12 @@
         <image class="hero-bear" src="/images/bear.png" mode="aspectFit"></image>
         <view class="bear-speech">
           <view class="bear-hi">Hi!</view>
-          <view class="bear-desc">我是Alpha熊<br/>您的房产智能助手</view>
+          <view class="bear-desc"><text>我是Alpha熊\n你的智能房产助手</text></view>
         </view>
       </view>
     </view>
     
-    <view class="hero-title-row">
-      <view class="hero-title">一秒搞定房产价值多维度评估</view>
-      <view class="hero-sub">专业 · 全面 · 让房产决策更简单</view>
-    </view>
-    
+    <view class="hero-report">
     <view class="hero-card">
       <view class="hero-card-left">
         <image class="hero-house" src="/images/house.png" mode="aspectFit"></image>
@@ -39,6 +39,7 @@
     <view class="hero-btn" bindtap="goGuide">
       <text>立即查看评估报告</text>
       <view class="hero-btn-icon">›</view>
+    </view>
     </view>
   </view>
 </view>
@@ -65,7 +66,7 @@
 </view>
 <view class="quick-grid">
   <view class="quick-item" wx:for="{{quickModules}}" wx:key="key" data-key="{{item.key}}" bindtap="goModule">
-    <view class="quick-icon-wrap" style="background: {{item.bg}}">
+    <view class="quick-icon-wrap">
       <view class="quick-icon">{{item.icon}}</view>
     </view>
     <view class="quick-name">{{item.name}}</view>
@@ -83,7 +84,7 @@
       <view class="ad-desc">专业 · 准确 · 全面</view>
     </view>
     <view class="ad-right">
-      <view class="ad-slogan">好房子<br/>让生活更美好</view>
+      <view class="ad-slogan"><text>好房子\n让生活更美好</text></view>
     </view>
   </view>
 </view>
