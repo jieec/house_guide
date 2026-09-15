@@ -40,7 +40,7 @@ Page({
     tabs: ['基本信息', '价格分析', '购置建议', '工具使用'],
     activeTab: 0,
     expandedTool: -1,
-    expandedAdvice: -1,
+    expandedAdvice: '',
     location: null,
     city: '',
     keyword: '',
@@ -66,6 +66,10 @@ Page({
   toggleAdvice(e) {
     const index = Number(e.currentTarget.dataset.index)
     this.setData({ expandedAdvice: this.data.expandedAdvice === index ? -1 : index })
+  },
+  toggleAdviceKey(e) {
+    const key = e.currentTarget.dataset.key
+    this.setData({ expandedAdvice: this.data.expandedAdvice === key ? '' : key })
   },
   goLocation() { wx.navigateTo({ url: '/pages/location/location' }) },
 
@@ -97,17 +101,37 @@ Page({
   },
   reloadReport() { if (this.data.selectedCommunity) this.loadReport(this.data.selectedCommunity) },
 
+  queryRentCount(db, city, community) {
+    return db.collection('houses')
+      .where({ city, community, category: '租房' })
+      .count().then(r => r.total).catch(() => 0)
+  },
+
+  queryListingCount(db, city, community) {
+    return db.collection('houses')
+      .where({ city, community, category: '二手房' })
+      .count().then(r => r.total).catch(() => 0)
+  },
+
+  queryAuctionDeals(db, city, community) {
+    return db.collection('houses')
+      .where({ city, community, category: db.command.or([db.command.or([{ category: '法拍' }, { category: '拍卖' }]), db.command.and([{ category: '二手房' }, { status: '成交' }])]) })
+      .limit(10).get().then(r => r.data || []).catch(() => [])
+  },
+
   loadReport(doc) {
     const city = String(doc.city || this.data.city || '').replace(/市$/, '')
     const db = wx.cloud.database()
     this.setData({ loading: true, dataStatus: '正在读取后台数据…' })
     Promise.all([
-      db.collection('houses').where({ city, community: doc.community }).limit(100).get().then(r => r.data || []).catch(() => []),
+      db.collection('houses').where({ city, community: doc.community, category: '二手房' }).limit(200).get().then(r => r.data || []).catch(() => []),
+      db.collection('houses').where({ city, community: doc.community, category: '租房' }).limit(100).get().then(r => r.data || []).catch(() => []),
       this.queryCityAverage(db, city),
       db.collection('policies').where(db.command.or([{ city }, { city: '全国' }])).limit(5).get().then(r => r.data || []).catch(() => []),
-      this.queryCompetitors(db, city, doc.district, doc.community)
-    ]).then(([houses, cityAverage, policies, competitorStats]) => {
-      const report = this.buildReport(doc, houses, cityAverage, policies, competitorStats)
+      this.queryCompetitors(db, city, doc.district, doc.community),
+      this.queryAuctionDeals(db, city, doc.community)
+    ]).then(([sales, rents, cityResult, policies, competitorStats, auctionDeals]) => {
+      const report = this.buildReport(doc, { sales, rents, auctionDeals }, cityResult, policies, competitorStats)
       const updated = first(doc.updatedAt, doc.updated_at, doc.crawledAt, doc.crawled_at, doc.created_at)
       this.setData({
         report,
@@ -145,15 +169,15 @@ Page({
       }))).catch(() => [])
   },
 
-  buildReport(doc, houses, cityResult, policies, competitorStats) {
+  buildReport(doc, { sales, rents, auctionDeals }, cityResult, policies, competitorStats) {
+    const houses = [...sales, ...rents]
+    const dbQuery = null
     const base = doc.base || {}, price = doc.price || {}, props = doc.ajk_props || {}
     const pois = doc.pois || {}, cats = doc.categories || {}
-    const sales = houses.filter(it => it.category === '二手房')
-    const rents = houses.filter(it => it.category === '租房')
-    const auctions = houses.filter(it => /法拍|拍卖|阿里|京东/.test([it.category, it.source, it.platform, it.title].join('')))
-    const deals = houses.filter(it => /成交|已售/.test([it.status, it.trade_status, it.category].join('')))
+    const deals = auctionDeals.filter(it => /成交|已售|法拍|拍卖/.test([it.category, it.status, it.trade_status].join('')))
     const salePrices = sales.map(it => num(it.unit_price)).filter(Boolean)
     const dealPrices = deals.map(it => num(first(it.deal_unit_price, it.unit_price))).filter(Boolean)
+    const listingPrices = sales.map(it => num(it.unit_price)).filter(Boolean)
     const saleAreas = sales.map(it => num(it.area_sqm)).filter(Boolean)
     
     // 面积段分布
@@ -191,7 +215,7 @@ Page({
     const recentAvg = num(first(price.recentDealPrice, price.dealPrice, avg(dealPrices)))
     const listingAvg = num(first(price.listingPrice, avg(salePrices)))
     const rentAvg = num(first(price.rentPerSqm, price.rent, avg(rentsSqm)))
-    const auctionAvg = num(first(price.auctionPrice, doc.auction_avg_price, avg(auctions.map(it => num(it.unit_price)))))
+    const auctionAvg = num(first(price.auctionPrice, doc.auction_avg_price, avg(auctionDeals.map(it => num(it.unit_price)))))
     const areaAvg = num(first(base.averageArea, doc.average_area, avg(saleAreas)))
     const totalAvg = num(first(price.averageTotalPrice, avg(saleTotals), communityAvg && areaAvg ? communityAvg * areaAvg / 10000 : 0))
     const cityAvg = num(first(doc.city_avg_price, cityResult.price))
@@ -255,7 +279,7 @@ Page({
         propertyType: propertyForRule, rentRatio, investmentLine, areaAvg, priceDiff,
         traffic, schools, hospitals, age, policyText, areaRank,
         volume: sales.length, trendText, auctionAvg, recentAvg, communityAvg, cityAvg,
-        evaluation, houseTypeText
+        evaluation, houseTypeText, listingAvg, rentCount: rents.length
       }),
       tools: [
         {
@@ -346,93 +370,258 @@ Page({
   },
 
   buildAdvice(d) {
-    const pct = value => Math.max(0, Math.min(100, Math.round(value)))
-    const level = score => score >= 75 ? '高度适配' : (score >= 55 ? '较为适配' : (score >= 35 ? '谨慎考虑' : '适配度较低'))
-    const rankNumber = num(d.areaRank)
-    const rankTopHalf = /前\s*50%|前半|优秀|较高/.test(String(d.areaRank || '')) || (rankNumber > 0 && rankNumber <= 50)
-    const hasPriceBenchmark = d.communityAvg && d.cityAvg
-    const priceWithin10 = hasPriceBenchmark && Math.abs(d.priceDiff) <= 10
-    const propertyIsImprovement = /复式|别墅|大平层|叠墅|联排/.test(d.houseTypeText || '')
+    // ─── 工具函数 ───────────────────────────────────────────────
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v))
+    const pct = v => Math.round(clamp(v, 0, 100))
 
-    let finance = 0
-    const financeMetrics = []
-    if (d.rentRatio) {
-      const points = d.rentRatio >= d.investmentLine ? 35 : (d.rentRatio >= d.investmentLine * 0.75 ? 22 : 8)
-      finance += points
-      financeMetrics.push({ name: '租售比（35分）', value: d.rentRatio.toFixed(2) + '% / 参考线' + d.investmentLine + '%', result: '+' + points + '分', good: points >= 22 })
-    } else financeMetrics.push({ name: '租售比（35分）', value: '缺少租金或房价', result: '+0分', good: false })
-    if (hasPriceBenchmark) {
-      const points = d.priceDiff <= -5 ? 20 : (d.priceDiff <= 5 ? 14 : (d.priceDiff <= 10 ? 8 : 2))
-      finance += points
-      financeMetrics.push({ name: '价格安全垫（20分）', value: '较城市均价' + (d.priceDiff >= 0 ? '高' : '低') + Math.abs(d.priceDiff).toFixed(1) + '%', result: '+' + points + '分', good: points >= 14 })
-    } else financeMetrics.push({ name: '价格安全垫（20分）', value: '缺少城市或小区均价', result: '+0分', good: false })
-    const liquidityPoints = d.volume >= 20 ? 15 : (d.volume >= 8 ? 10 : (d.volume > 0 ? 5 : 0))
-    finance += liquidityPoints
-    financeMetrics.push({ name: '挂牌流动性（15分）', value: d.volume ? d.volume + '套样本' : '暂无样本', result: '+' + liquidityPoints + '分', good: liquidityPoints >= 10 })
-    const auctionDiscount = d.auctionAvg && d.evaluation ? (d.evaluation - d.auctionAvg) / d.evaluation * 100 : 0
-    const auctionPoints = auctionDiscount >= 15 ? 15 : (auctionDiscount >= 5 ? 10 : (d.auctionAvg ? 4 : 0))
-    finance += auctionPoints
-    financeMetrics.push({ name: '法拍折价空间（15分）', value: d.auctionAvg ? (auctionDiscount ? '较评估价低' + auctionDiscount.toFixed(1) + '%' : '已有法拍价格') : '缺少法拍成交价', result: '+' + auctionPoints + '分', good: auctionPoints >= 10 })
-    const trendPoints = /上涨/.test(d.trendText) ? 10 : (/低于|下跌/.test(d.trendText) ? 4 : (d.trendText !== '暂无数据' ? 7 : 0))
-    finance += trendPoints
-    financeMetrics.push({ name: '价格趋势（10分）', value: d.trendText, result: '+' + trendPoints + '分', good: trendPoints >= 7 })
-    const agePoints = d.age ? (d.age < 20 ? 5 : (d.age < 30 ? 3 : 0)) : 0
-    finance += agePoints
-    financeMetrics.push({ name: '楼龄融资性（5分）', value: d.age ? d.age + '年' : '缺少建成年代', result: '+' + agePoints + '分', good: agePoints >= 3 })
+    // ─── 辅助数据提取 ───────────────────────────────────────────
+    const rentRatio = d.rentRatio || 0                       // 年租售比 %
+    const areaAvg = d.areaAvg || 0                           // 平均面积 ㎡
+    const communityAvg = d.communityAvg || 0
+    const evaluation = d.evaluation || 0                     // 评估价
+    const auctionAvg = d.auctionAvg || 0                    // 法拍成交价
+    const recentAvg = d.recentAvg || 0                      // 近期成交均价
+    const listingAvg = d.listingAvg || communityAvg
+    const saleCount = d.volume || 0                          // 在售套数
+    const rentCount = d.rentCount || 0                       // 在租套数
+    const trendUp = /上涨/.test(d.trendText || '')
+    const trendDown = /下跌/.test(d.trendText || '')
 
-    let rigid = 0
-    const rigidMetrics = []
-    const areaPoints = d.areaAvg >= 85 && d.areaAvg <= 144 ? 25 : (d.areaAvg >= 70 && d.areaAvg < 160 ? 12 : 3)
-    rigid += d.areaAvg ? areaPoints : 0
-    rigidMetrics.push({ name: '面积适配（25分）', value: d.areaAvg ? Math.round(d.areaAvg) + '㎡，Excel刚需区间85–144㎡' : '缺少面积', result: '+' + (d.areaAvg ? areaPoints : 0) + '分', good: areaPoints === 25 })
-    const rigidPricePoints = priceWithin10 ? 25 : (hasPriceBenchmark && Math.abs(d.priceDiff) <= 20 ? 12 : 2)
-    rigid += hasPriceBenchmark ? rigidPricePoints : 0
-    rigidMetrics.push({ name: '价格合理性（25分）', value: hasPriceBenchmark ? '较城市均价偏差' + (d.priceDiff >= 0 ? '+' : '') + d.priceDiff.toFixed(1) + '%' : '缺少城市或小区均价', result: '+' + (hasPriceBenchmark ? rigidPricePoints : 0) + '分', good: rigidPricePoints === 25 && hasPriceBenchmark })
-    const schoolPoints = d.schools.length >= 3 ? 20 : (d.schools.length ? 12 : 0)
-    rigid += schoolPoints
-    rigidMetrics.push({ name: '教育配套（20分）', value: d.schools.length ? d.schools.length + '个学校样本' : '暂无学校数据', result: '+' + schoolPoints + '分', good: schoolPoints >= 12 })
-    const trafficPoints = d.traffic.length >= 3 ? 15 : (d.traffic.length ? 9 : 0)
-    rigid += trafficPoints
-    rigidMetrics.push({ name: '交通配套（15分）', value: d.traffic.length ? d.traffic.length + '个交通样本' : '暂无交通数据', result: '+' + trafficPoints + '分', good: trafficPoints >= 9 })
-    const medicalPoints = d.hospitals.length ? 10 : 0
-    rigid += medicalPoints
-    rigidMetrics.push({ name: '医疗配套（10分）', value: d.hospitals.length ? d.hospitals.length + '个医院样本' : '暂无医院数据', result: '+' + medicalPoints + '分', good: medicalPoints > 0 })
-    const rankPoints = rankTopHalf ? 5 : 0
-    rigid += rankPoints
-    rigidMetrics.push({ name: '区域/学校排名（5分）', value: d.areaRank || '缺少公开排名', result: '+' + rankPoints + '分', good: rankPoints > 0 })
+    // 可选字段，缺数据时为 0
+    const hasSchool = (d.schools || []).length > 0
+    const hasTraffic = (d.traffic || []).length > 0
+    const hasHospital = (d.hospitals || []).length > 0
+    const poiScore = ((d.schools || []).length > 0 ? 1 : 0) +
+      ((d.traffic || []).length > 0 ? 1 : 0) +
+      ((d.hospitals || []).length > 0 ? 1 : 0)
 
-    let improve = 0
-    const improveMetrics = []
-    const improveAreaPoints = d.areaAvg > 144 ? 35 : (d.areaAvg >= 120 ? 20 : (d.areaAvg ? 5 : 0))
-    improve += improveAreaPoints
-    improveMetrics.push({ name: '改善面积（35分）', value: d.areaAvg ? Math.round(d.areaAvg) + '㎡，Excel改善标准＞144㎡' : '缺少面积', result: '+' + improveAreaPoints + '分', good: improveAreaPoints >= 20 })
-    const improvePricePoints = hasPriceBenchmark && d.priceDiff >= 5 && d.priceDiff <= 15 ? 20 : (hasPriceBenchmark && Math.abs(d.priceDiff) <= 20 ? 10 : 0)
-    improve += improvePricePoints
-    improveMetrics.push({ name: '改善价格带（20分）', value: hasPriceBenchmark ? '较城市均价' + (d.priceDiff >= 0 ? '高' : '低') + Math.abs(d.priceDiff).toFixed(1) + '%，目标约高10%' : '缺少城市或小区均价', result: '+' + improvePricePoints + '分', good: improvePricePoints === 20 })
-    const typePoints = propertyIsImprovement ? 20 : (/住宅/.test(d.propertyType) ? 8 : 0)
-    improve += typePoints
-    improveMetrics.push({ name: '产品类型（20分）', value: propertyIsImprovement ? '发现复式/别墅/大平层等改善产品' : d.propertyType + '，未发现明确改善户型', result: '+' + typePoints + '分', good: typePoints === 20 })
-    const improveTraffic = d.traffic.length ? 10 : 0
-    const improveSchool = d.schools.length ? 5 : 0
-    const improveMedical = d.hospitals.length ? 10 : 0
-    improve += improveTraffic + improveSchool + improveMedical
-    improveMetrics.push({ name: '综合配套（25分）', value: '交通' + d.traffic.length + '项、教育' + d.schools.length + '项、医疗' + d.hospitals.length + '项', result: '+' + (improveTraffic + improveSchool + improveMedical) + '分', good: improveTraffic + improveSchool + improveMedical >= 15 })
+    // ─── 投资维度 ───────────────────────────────────────────────
 
-    finance = pct(finance); rigid = pct(rigid); improve = pct(improve)
-    return [
+    // ① 租赁指数：租售比 + 租赁活跃度
+    // 租售比基准 3%（用户要求），满分 35 分；活跃度满分 15 分
+    const rentalRatioScore = rentRatio >= 3 ? 35
+      : rentRatio >= 2.5 ? 30
+      : rentRatio >= 2.0 ? 24
+      : rentRatio >= 1.5 ? 17
+      : rentRatio >= 1.0 ? 10
+      : rentRatio > 0 ? 5 : 0
+    const activeRent = rentCount >= 10 ? 15
+      : rentCount >= 5 ? 11
+      : rentCount >= 2 ? 7
+      : rentCount >= 1 ? 4 : 0
+    const rentalScore = pct(rentalRatioScore + activeRent)
+
+    // ② 销售指数：差价率 = (评估价 - 最低成交价) / 评估价
+    // 差价 > 15% 为目标；满分 50 分
+    const lowestDeal = auctionAvg > 0 ? auctionAvg : (recentAvg > 0 ? recentAvg * 0.85 : 0)
+    const discountRate = (evaluation > 0 && lowestDeal > 0)
+      ? (evaluation - lowestDeal) / evaluation * 100 : 0
+    const discountScore = discountRate >= 20 ? 35
+      : discountRate >= 18 ? 30
+      : discountRate >= 15 ? 26
+      : discountRate >= 12 ? 20
+      : discountRate >= 8 ? 14
+      : discountRate >= 5 ? 8
+      : discountRate > 0 ? 4 : 0
+    // 流动性：成交活跃，满分 15 分
+    const activeSale = saleCount >= 20 ? 15
+      : saleCount >= 10 ? 12
+      : saleCount >= 5 ? 8
+      : saleCount >= 2 ? 5 : 2
+    const salesScore = pct(discountScore + activeSale)
+
+    // ③ 融资指数：差价 > 20% 且挂牌 < 5 套
+    const financeDiscount = discountRate >= 25 ? 40
+      : discountRate >= 20 ? 35
+      : discountRate >= 15 ? 24
+      : discountRate >= 10 ? 14
+      : discountRate > 0 ? 6 : 0
+    const scarceListing = saleCount < 5 ? 20
+      : saleCount < 10 ? 14
+      : saleCount < 20 ? 8 : 0
+    const financeScore = pct(financeDiscount + scarceListing)
+
+    // 投资维度综合分（三个子项各占权重）
+    const investTotal = pct(rentalScore * 0.45 + salesScore * 0.30 + financeScore * 0.25)
+
+    // ─── 自住维度 ───────────────────────────────────────────────
+
+    // ① 刚需型：地段配套 + 户型不大 + 学区
+    // 学区：3 分制
+    const schoolScore = hasSchool ? 30 : 0
+    // 户型：面积 50-90㎡ 最佳，90-110㎡ 次之
+    const areaRigidScore = areaAvg >= 50 && areaAvg <= 90 ? 28
+      : areaAvg >= 90 && areaAvg <= 110 ? 22
+      : areaAvg > 110 && areaAvg <= 144 ? 14
+      : areaAvg > 0 ? 8 : 0
+    // 地段配套（交通+医疗）
+    const areaInfraScore = poiScore >= 2 ? 22 : (poiScore === 1 ? 14 : 6)
+    const rigidScore = pct(schoolScore + areaRigidScore + areaInfraScore)
+
+    // ② 改善型：平均面积大（>125㎡）+ 四房及以上 + 景观资源
+    // 面积：125㎡+ 满分
+    const areaImproveScore = areaAvg >= 160 ? 32
+      : areaAvg >= 140 ? 28
+      : areaAvg >= 125 ? 24
+      : areaAvg >= 110 ? 16
+      : areaAvg >= 100 ? 10 : 0
+    // 景观资源：公园/海边（数据来自 POI 或 keywords）
+    const landscapeKeywords = ['公园', '海', '景区', '高尔夫', '温泉', '游乐场', '景观', '江景', '湖景']
+    const houseTypeText = d.houseTypeText || ''
+    const hasLandscape = landscapeKeywords.some(k => houseTypeText.includes(k)) ? 20
+      : ((d.traffic || []).length > 0 ? 10 : 0)
+    // 户型：四房及以上
+    const roomsImprove = /4室|5室|6室|复式|别墅/.test(houseTypeText) ? 18 : 8
+    const improveScore = pct(areaImproveScore + hasLandscape + roomsImprove)
+
+    // ③ 度假型：景观资源 + 景区/海边/公园附近
+    // 靠海边/公园/景区/高尔夫/温泉/综合游乐场
+    const vacationKeywords = ['海', '公园', '景区', '高尔夫', '温泉', '游乐场', '江景', '湖景', '度假']
+    const vacationCount = vacationKeywords.filter(k => houseTypeText.includes(k)).length
+    const vacationScenic = vacationCount >= 3 ? 45
+      : vacationCount === 2 ? 36
+      : vacationCount === 1 ? 28
+      : 12  // 无明确关键词但有配套基础分
+    // 地段配套支撑
+    const vacationInfra = poiScore >= 1 ? 15 : 5
+    const vacationScore = pct(vacationScenic + vacationInfra)
+
+    // 自住维度综合分（刚需 + 改善 + 度假）
+    const liveTotal = pct(rigidScore * 0.40 + improveScore * 0.35 + vacationScore * 0.25)
+
+    // ─── 组装返回 ───────────────────────────────────────────────
+
+    const levelText = score => score >= 75 ? '高度推荐'
+      : score >= 55 ? '较为推荐'
+      : score >= 35 ? '谨慎考虑'
+      : '适配度较低'
+
+    // 按分数占比画饼图，确保饼图角度总和恒为 360°，与图例百分比一致
+    const buildPie = (cats) => {
+      const total = cats.reduce((s, c) => s + (c.score || 0), 0)
+      let pos = 0
+      let stops = []
+      cats.forEach((c) => {
+        const deg = total > 0 ? ((c.score || 0) / total) * 360 : 0
+        const next = pos + deg
+        stops.push(c.color + ' ' + pos + 'deg ' + next + 'deg')
+        pos = next
+      })
+      return 'conic-gradient(' + stops.join(', ') + ')'
+    }
+
+    // 计算百分比：在该维度总分中占比
+    const ratio = (cats, score) => {
+      const total = cats.reduce((s, c) => s + (c.score || 0), 0)
+      return total > 0 ? Math.round((score || 0) / total * 1000) / 10 : 0
+    }
+
+    const investmentCats = [
       {
-        title: '金融投资', score: finance, level: level(finance), metrics: financeMetrics,
-        summary: '金融投资适配度' + finance + '%。判断重点是租售比是否超过' + d.investmentLine + '%、相对城市均价是否有安全垫、市场流动性、法拍折价、价格趋势和楼龄融资性。' + (finance >= 55 ? '当前回报与退出指标具备一定支撑，可继续核验真实成交和法拍尽调。' : '当前收益或数据支撑不足，不建议仅凭价格表象作投资决策。')
+        name: '租赁指数',
+        desc: '长期持有 · 租售比',
+        score: rentalScore,
+        pct: 0,
+        threshold: '租售比 ≥ 3% 为优质',
+        color: '#00d4ff',
+        details: [
+          { label: '年租售比', value: rentRatio > 0 ? rentRatio.toFixed(2) + '%' : '暂无数据' },
+          { label: '在租套数', value: rentCount > 0 ? rentCount + ' 套' : '暂无数据' },
+          { label: '判断标准', value: rentRatio >= 3 ? '✓ 达到优质门槛' : rentRatio >= 2 ? '△ 接近门槛' : '✗ 低于门槛' }
+        ]
       },
       {
-        title: '刚需自住', score: rigid, level: level(rigid), metrics: rigidMetrics,
-        summary: '刚需自住适配度' + rigid + '%。依据Excel规则，重点检查85–144㎡面积区间、价格与城市均价偏差是否在±10%、学校与交通是否齐全、是否有医院，以及区域或学校排名是否进入前50%。' + (rigid >= 55 ? '目前面积、价格或生活配套对日常自住形成支撑。' : '目前面积、价格或配套至少有一项明显不足，需要结合通勤和学位资格进一步核验。')
+        name: '销售指数',
+        desc: '成交活跃 · 差价大',
+        score: salesScore,
+        pct: 0,
+        threshold: '差价率 > 15%',
+        color: '#23c343',
+        details: [
+          { label: '评估价', value: evaluation > 0 ? Math.round(evaluation) + ' 元/㎡' : '暂无数据' },
+          { label: '最低成交/法拍', value: lowestDeal > 0 ? Math.round(lowestDeal) + ' 元/㎡' : '暂无数据' },
+          { label: '差价率', value: discountRate > 0 ? discountRate.toFixed(1) + '%' : '暂无数据', highlight: discountRate >= 15 },
+          { label: '在售套数', value: saleCount > 0 ? saleCount + ' 套' : '暂无数据' }
+        ]
       },
       {
-        title: '改善居住', score: improve, level: level(improve), metrics: improveMetrics,
-        summary: '改善居住适配度' + improve + '%。依据Excel规则，核心是面积是否超过144㎡、价格是否处于区域均价上方约10%的改善带、是否存在复式/别墅/大平层等产品，以及交通、教育、医疗配套是否能够提升居住品质。' + (improve >= 55 ? '当前产品尺度与配套较符合改善需求。' : '当前小区平均面积或产品类型不足以证明其属于典型改善选择。')
+        name: '融资指数',
+        desc: '评估价高 · 流通性低',
+        score: financeScore,
+        pct: 0,
+        threshold: '差价率 > 20% 且挂牌 < 5 套',
+        color: '#ff9a6c',
+        details: [
+          { label: '评估价', value: evaluation > 0 ? Math.round(evaluation) + ' 元/㎡' : '暂无数据' },
+          { label: '差价率', value: discountRate > 0 ? discountRate.toFixed(1) + '%' : '暂无数据', highlight: discountRate >= 20 },
+          { label: '挂牌套数', value: saleCount > 0 ? saleCount + ' 套' : '暂无数据', highlight: saleCount < 5 },
+          { label: '融资判断', value: discountRate >= 20 && saleCount < 5 ? '✓ 符合融资标准' : '✗ 不符合融资标准' }
+        ]
       }
     ]
+
+    const selfuseCats = [
+      {
+        name: '刚需型',
+        desc: '地段配套 · 户型不大 · 学区',
+        score: rigidScore,
+        pct: 0,
+        threshold: '50-110㎡ + 学区 + 交通',
+        color: '#a78bfa',
+        details: [
+          { label: '平均面积', value: areaAvg > 0 ? Math.round(areaAvg) + ' ㎡' : '暂无数据', highlight: areaAvg >= 50 && areaAvg <= 110 },
+          { label: '学区配套', value: hasSchool ? '✓ 有学校' : '✗ 未找到学校' },
+          { label: '交通配套', value: hasTraffic ? '✓ 有交通' : '△ 无交通数据' },
+          { label: '医疗配套', value: hasHospital ? '✓ 有医院' : '△ 无医院数据' }
+        ]
+      },
+      {
+        name: '改善型',
+        desc: '大面积 · 景观资源 · 四房+',
+        score: improveScore,
+        pct: 0,
+        threshold: '≥ 125㎡ + 四房 + 景观',
+        color: '#fb923c',
+        details: [
+          { label: '平均面积', value: areaAvg > 0 ? Math.round(areaAvg) + ' ㎡' : '暂无数据', highlight: areaAvg >= 125 },
+          { label: '户型文本', value: houseTypeText || '暂无数据' },
+          { label: '景观资源', value: /公园|海|景区|高尔夫|温泉|江景|湖景/.test(houseTypeText) ? '✓ 有景观标签' : '△ 无明确景观' },
+          { label: '判断标准', value: areaAvg >= 125 && /4室|5室/.test(houseTypeText) ? '✓ 符合改善型' : '△ 需进一步核实' }
+        ]
+      },
+      {
+        name: '度假型',
+        desc: '景观资源 · 靠海/公园/景区',
+        score: vacationScore,
+        pct: 0,
+        threshold: '海边/公园/景区/温泉等',
+        color: '#38bdf8',
+        details: [
+          { label: '景观关键词命中', value: vacationCount > 0 ? vacationCount + ' 个匹配' : '暂无匹配' },
+          { label: '附近配套', value: poiScore > 0 ? poiScore + ' 项' : '暂无数据' },
+          { label: '度假潜力', value: vacationCount >= 2 ? '✓ 具备度假条件' : vacationCount === 1 ? '△ 有单一度假元素' : '✗ 缺乏度假元素' }
+        ]
+      }
+    ]
+
+    // 回填百分比
+    investmentCats.forEach(c => c.pct = ratio(investmentCats, c.score))
+    selfuseCats.forEach(c => c.pct = ratio(selfuseCats, c.score))
+
+    return {
+      investment: {
+        totalScore: investTotal,
+        level: levelText(investTotal),
+        pieBg: buildPie(investmentCats),
+        categories: investmentCats
+      },
+      selfuse: {
+        totalScore: liveTotal,
+        level: levelText(liveTotal),
+        pieBg: buildPie(selfuseCats),
+        categories: selfuseCats
+      }
+    }
   },
   monthlyPayment(principal, annualRate, years) {
     if (!principal) return 0
