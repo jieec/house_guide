@@ -45,7 +45,7 @@
 
     <block wx:if="{{!loading}}">
       <view wx:if="{{activeTab === 0}}">
-        <view class="section-title">小区档案</view>
+        <view class="section-title">楼盘信息</view>
         <view class="data-card">
           <view class="data-row" wx:for="{{report.basic}}" wx:key="label">
             <view class="data-label">{{item.label}}</view>
@@ -81,7 +81,7 @@
       </view>
 
       <view wx:if="{{activeTab === 1}}">
-        <view class="section-title">价格全景</view>
+        <view class="section-title">价值分析</view>
         <view class="price-grid">
           <view class="price-card" wx:for="{{report.prices}}" wx:key="label">
             <view class="price-label">{{item.label}}</view>
@@ -231,7 +231,8 @@
 
       <view wx:if="{{activeTab === 3}}">
         <view class="section-title">自动测算</view>
-        <view class="tool-card {{expandedTool === index ? 'expanded' : ''}}" wx:for="{{report.tools}}" wx:key="label">
+        <block wx:for="{{report.tools}}" wx:key="label">
+          <view class="tool-card {{expandedTool === index ? 'expanded' : ''}}" wx:if="{{item.enabled !== false}}">
           <view class="tool-summary" data-index="{{index}}" bindtap="toggleTool">
             <view class="tool-summary-body">
               <view class="tool-label">{{item.label}}</view>
@@ -243,18 +244,70 @@
             </view>
           </view>
           <view class="tool-detail" wx:if="{{expandedTool === index}}">
-            <view class="formula-box">
-              <view class="formula-title">计算公式</view>
-              <view class="formula-text">{{item.formula}}</view>
-            </view>
-            <view class="part-title">计算过程</view>
-            <view class="part-row" wx:for="{{item.parts}}" wx:for-item="part" wx:key="name">
-              <view class="part-name">{{part.name}}</view>
-              <view class="part-value">{{part.value}}</view>
-            </view>
-            <view class="tool-warning">{{item.warning}}</view>
+            <block wx:if="{{item.loanCalculator}}">
+              <view class="loan-panel">
+                <view class="loan-panel-head">
+                  <view>
+                    <view class="loan-panel-title">房贷计算器</view>
+                    <view class="loan-panel-subtitle">根据房屋总价、首付和利率估算月供</view>
+                  </view>
+                  <view class="loan-panel-badge">仅供参考</view>
+                </view>
+                <view class="loan-type-tabs">
+                  <view class="loan-type-tab {{loanForm.loanType === item ? 'active' : ''}}" wx:for="{{loanTypeOptions}}" wx:key="*this" data-index="{{index}}" bindtap="onLoanTypeTap">{{item}}</view>
+                </view>
+                <view class="loan-form">
+                  <view class="loan-section-title">基础信息</view>
+                  <view class="form-row prominent-row">
+                    <view class="form-label"><view>房屋总价</view><view class="form-hint">单位：万元</view></view>
+                    <view class="field-control"><input class="form-input" type="digit" value="{{loanForm.totalPrice}}" data-field="totalPrice" bindinput="onLoanInput" placeholder="请输入总价" /><text class="field-unit">万元</text></view>
+                  </view>
+                  <view class="form-row">
+                    <view class="form-label"><view>首付比例</view><view class="form-hint">首付越高，贷款越少</view></view>
+                    <view class="field-control"><input class="form-input" type="digit" value="{{loanForm.downPayment}}" data-field="downPayment" bindinput="onLoanInput" placeholder="30" /><text class="field-unit">%</text></view>
+                  </view>
+                  <view class="form-row">
+                    <view class="form-label">贷款期限</view>
+                    <picker class="field-picker-wrap" mode="selector" range="{{loanTermOptions}}" value="{{loanForm.termIndex}}" bindchange="onLoanTermChange"><view class="form-picker"><text>{{loanForm.termYears}}年</text><text class="picker-arrow">⌄</text></view></picker>
+                  </view>
+                  <view class="form-row">
+                    <view class="form-label">还款方式</view>
+                    <picker class="field-picker-wrap" mode="selector" range="{{repaymentOptions}}" value="{{loanForm.repaymentIndex}}" bindchange="onRepaymentChange"><view class="form-picker"><text>{{loanForm.repayment}}</text><text class="picker-arrow">⌄</text></view></picker>
+                  </view>
+                  <view class="loan-section-title rate-title">利率设置</view>
+                  <view class="form-row" wx:if="{{loanForm.loanType !== '公积金贷款'}}">
+                    <view class="form-label"><view>商业贷款利率</view><view class="form-hint">年利率</view></view>
+                    <view class="field-control"><input class="form-input" type="digit" value="{{loanForm.commercialRate}}" data-field="commercialRate" bindinput="onLoanInput" /><text class="field-unit">%</text></view>
+                  </view>
+                  <view class="form-row" wx:if="{{loanForm.loanType !== '商业贷款'}}">
+                    <view class="form-label"><view>公积金贷款利率</view><view class="form-hint">年利率</view></view>
+                    <view class="field-control"><input class="form-input" type="digit" value="{{loanForm.providentRate}}" data-field="providentRate" bindinput="onLoanInput" /><text class="field-unit">%</text></view>
+                  </view>
+                  <view class="form-row" wx:if="{{loanForm.loanType === '组合贷款'}}">
+                    <view class="form-label"><view>商贷占比</view><view class="form-hint">剩余为公积金贷款</view></view>
+                    <view class="field-control"><input class="form-input" type="digit" value="{{loanForm.commercialShare}}" data-field="commercialShare" bindinput="onLoanInput" /><text class="field-unit">%</text></view>
+                  </view>
+                  <button class="calculate-button" bindtap="calculateLoan">开始计算</button>
+                </view>
+                <view class="loan-result">
+                  <view class="loan-result-head"><view class="loan-result-title">预计月供</view><view class="loan-monthly">{{loanResult.summary}}</view></view>
+                  <view class="loan-result-message" wx:if="{{loanResult.message}}">{{loanResult.message}}</view>
+                  <view class="loan-result-grid" wx:if="{{loanResult.valid}}">
+                    <view class="loan-result-item" wx:for="{{loanResult.parts}}" wx:for-item="part" wx:key="name"><view class="part-name">{{part.name}}</view><view class="part-value">{{part.value}}</view></view>
+                  </view>
+                </view>
+                <view class="tool-warning">{{item.warning}}</view>
+              </view>
+            </block>
+            <block wx:else>
+              <view class="formula-box"><view class="formula-title">计算公式</view><view class="formula-text">{{item.formula}}</view></view>
+              <view class="part-title">计算过程</view>
+              <view class="part-row" wx:for="{{item.parts}}" wx:for-item="part" wx:key="name"><view class="part-name">{{part.name}}</view><view class="part-value">{{part.value}}</view></view>
+              <view class="tool-warning">{{item.warning}}</view>
+            </block>
           </view>
         </view>
+        </block>
         <view class="section-title">后台数据完整性</view>
         <view class="audit-card {{report.missing.length ? 'warn' : 'ok'}}">
           <view class="audit-title">{{report.missing.length ? '发现缺失字段' : '本报告字段完整'}}</view>

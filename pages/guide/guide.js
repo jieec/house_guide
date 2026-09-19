@@ -37,9 +37,17 @@ function poiNames(items, limit) {
 
 Page({
   data: {
-    tabs: ['基本信息', '价格分析', '购置建议', '工具使用'],
+    tabs: ['基本信息', '价值分析', '购置建议', '工具使用'],
     activeTab: 0,
-    expandedTool: -1,
+    loanTypeOptions: ['商业贷款', '公积金贷款', '组合贷款'],
+    loanTermOptions: ['5年', '10年', '15年', '20年', '25年', '30年'],
+    repaymentOptions: ['等额本息', '等额本金'],
+    loanForm: {
+      loanType: '商业贷款', typeIndex: 0, totalPrice: '', downPayment: '30',
+      termYears: '30', termIndex: 5, repayment: '等额本息', repaymentIndex: 0,
+      commercialRate: '3.6', providentRate: '2.85', commercialShare: '50'
+    },
+    loanResult: { valid: false, summary: '待输入', message: '请输入房屋总价后测算', parts: [] },
     expandedAdvice: '',
     location: null,
     city: '',
@@ -62,6 +70,79 @@ Page({
   toggleTool(e) {
     const index = Number(e.currentTarget.dataset.index)
     this.setData({ expandedTool: this.data.expandedTool === index ? -1 : index })
+  },
+  onLoanInput(e) {
+    const field = e.currentTarget.dataset.field
+    this.setData({ ['loanForm.' + field]: e.detail.value })
+  },
+  onLoanTypeTap(e) {
+    const index = Number(e.currentTarget.dataset.index)
+    this.setData({ 'loanForm.typeIndex': index, 'loanForm.loanType': this.data.loanTypeOptions[index] })
+  },
+  onLoanTypeChange(e) {
+    const index = Number(e.detail.value)
+    this.setData({ 'loanForm.typeIndex': index, 'loanForm.loanType': this.data.loanTypeOptions[index] })
+  },
+  onLoanTermChange(e) {
+    const index = Number(e.detail.value)
+    const termYears = this.data.loanTermOptions[index].replace('年', '')
+    this.setData({ 'loanForm.termIndex': index, 'loanForm.termYears': termYears })
+  },
+  onRepaymentChange(e) {
+    const index = Number(e.detail.value)
+    this.setData({ 'loanForm.repaymentIndex': index, 'loanForm.repayment': this.data.repaymentOptions[index] })
+  },
+  calculateLoan() {
+    const result = this.calculateLoanResult(this.data.loanForm)
+    this.setData({ loanResult: result })
+  },
+  calculateLoanResult(form) {
+    const totalPrice = num(form.totalPrice)
+    const downRate = Math.max(0, Math.min(100, num(form.downPayment)))
+    const years = Math.max(1, num(form.termYears))
+    const commercialRate = num(form.commercialRate)
+    const providentRate = num(form.providentRate)
+    if (!totalPrice) return { valid: false, summary: '待输入', message: '请输入房屋总价后测算', parts: [] }
+    const totalLoan = totalPrice * 10000 * (1 - downRate / 100)
+    let commercialLoan = totalLoan
+    let providentLoan = 0
+    if (form.loanType === '公积金贷款') {
+      commercialLoan = 0
+      providentLoan = totalLoan
+    } else if (form.loanType === '组合贷款') {
+      const share = Math.max(0, Math.min(100, num(form.commercialShare)))
+      commercialLoan = totalLoan * share / 100
+      providentLoan = totalLoan - commercialLoan
+    }
+    const calc = (principal, rate) => {
+      if (!principal) return { first: 0, last: 0, total: 0, interest: 0 }
+      const n = years * 12
+      const r = rate / 12 / 100
+      if (form.repayment === '等额本金') {
+        const first = principal / n + principal * r
+        const last = principal / n + principal / n * r
+        const total = principal + principal * r * (n + 1) / 2
+        return { first, last, total, interest: total - principal }
+      }
+      const monthly = r ? principal * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1) : principal / n
+      const total = monthly * n
+      return { first: monthly, last: monthly, total, interest: total - principal }
+    }
+    const commercial = calc(commercialLoan, commercialRate)
+    const provident = calc(providentLoan, providentRate)
+    const monthly = commercial.first + provident.first
+    const last = commercial.last + provident.last
+    const total = commercial.total + provident.total
+    return {
+      valid: true, summary: Math.round(monthly) + '元/月', message: '',
+      parts: [
+        { name: '贷款总额', value: Math.round(totalLoan / 10000) + '万元' },
+        { name: '首月月供', value: Math.round(monthly) + '元' },
+        { name: '末月月供', value: Math.round(last) + '元' },
+        { name: '累计还款', value: Math.round(total) + '元' },
+        { name: '支付利息', value: Math.round(total - totalLoan) + '元' }
+      ]
+    }
   },
   toggleAdvice(e) {
     const index = Number(e.currentTarget.dataset.index)
@@ -133,8 +214,14 @@ Page({
     ]).then(([sales, rents, cityResult, policies, competitorStats, auctionDeals]) => {
       const report = this.buildReport(doc, { sales, rents, auctionDeals }, cityResult, policies, competitorStats)
       const updated = first(doc.updatedAt, doc.updated_at, doc.crawledAt, doc.crawled_at, doc.created_at)
+      const taxTool = report.tools.find(tool => tool.label === '交易税费参考')
+      const taxTotal = (taxTool && taxTool.parts || []).find(part => part.name === '计税总价')
+      const loanTotalPrice = taxTotal ? num(taxTotal.value) / 10000 : 0
+      const loanForm = loanTotalPrice && !this.data.loanForm.totalPrice ? { ...this.data.loanForm, totalPrice: String(loanTotalPrice) } : this.data.loanForm
       this.setData({
         report,
+        loanForm,
+        loanResult: loanTotalPrice ? this.calculateLoanResult(loanForm) : this.data.loanResult,
         loading: false,
         dataStatus: report.missing.length ? '已生成，后台有 ' + report.missing.length + ' 项数据缺失' : '后台数据完整',
         updatedAt: updated ? String(updated).slice(0, 10) : '未记录'
@@ -223,8 +310,7 @@ Page({
     const propertyForRule = propertyType || '住宅'
     const completion = first(base.completionTime, props['竣工时间'], props['建筑年代'], props['建成年代'])
     const age = completion ? new Date().getFullYear() - num(completion) : 0
-    const evaluation = num(first(price.evaluationPrice, doc.evaluation_price,
-      dealPrices.length ? (Math.min.apply(null, dealPrices) * 1.1 + Math.max.apply(null, dealPrices) * 0.9) / 2 : 0))
+    const evaluation = communityAvg && auctionAvg ? communityAvg * 0.4 + auctionAvg * 0.6 : 0
     const history = first(price.history, doc.priceHistory, doc.history_prices, [])
     const traffic = poiNames([].concat(pois.subway || [], pois.bus || [], cats.station || []), 8)
     const schools = poiNames([].concat(pois.school || [], cats.school || []), 8)
@@ -245,22 +331,18 @@ Page({
       ['房屋性质', propertyType], ['区域排名', areaRank], ['城市均价', cityAvg], ['小区均价', communityAvg],
       ['近期成交价', recentAvg], ['法拍成交价', auctionAvg], ['租金', rentAvg], ['历史价格趋势', history]]
       .forEach(row => { if (!row[1] || (Array.isArray(row[1]) && !row[1].length)) missing.push(row[0]) })
-    const loan = totalAvg ? totalAvg * 10000 * 0.7 : 0
-    const monthly = this.monthlyPayment(loan, 3.6, 30)
     const totalYuan = totalAvg ? totalAvg * 10000 : 0
     const deedRate = areaAvg && areaAvg <= 140 ? 0.01 : 0.015
     const deedTax = totalYuan ? totalYuan * deedRate : 0
-    const totalRepay = monthly ? monthly * 30 * 12 : 0
-    const interest = totalRepay ? totalRepay - loan : 0
     const policyText = policies.map(it => first(it.summary, it.purchase_limit, it.tax)).filter(Boolean).join('；')
 
     return {
       basic: [
         { label: '位置', value: show(location) }, { label: '小区名称', value: show(doc.community) },
         { label: '面积段分布', value: areaRangeText || '暂无数据' }, { label: '户型分布', value: layoutText || '暂无数据' },
-        { label: '平均面积', value: show(areaAvg ? Math.round(areaAvg) : '', '㎡') }, { label: '房屋性质', value: show(propertyType) },
+        { label: '房屋性质', value: show(propertyType) },
         { label: '建成年代', value: show(completion) }, { label: '区域排名', value: show(areaRank) },
-        { label: '成交/在售样本', value: show(first(price.saleCount, sales.length), '套') },
+        { label: '成交套数', value: show(sales.length, '套') },
         { label: '开发商', value: show(first(base.developer, props['开发商'])) },
         { label: '物业公司', value: show(first(base.propertyCompany, props['物业公司'])) },
         { label: '容积率 / 绿化率', value: [first(base.plotRatio, props['容积率']), first(base.greenRate, props['绿化率'])].filter(Boolean).join(' / ') || '暂无数据' }
@@ -268,28 +350,24 @@ Page({
       prices: [
         { label: '城市均价', value: show(cityAvg ? Math.round(cityAvg) : '', '元/㎡'), note: cityResult.count ? cityResult.count + '条城市样本' : '' },
         { label: '小区均价', value: show(communityAvg ? Math.round(communityAvg) : '', '元/㎡') },
-        { label: '近期平均成交价', value: show(recentAvg ? Math.round(recentAvg) : '', '元/㎡') },
-        { label: '法拍成交价', value: show(auctionAvg ? Math.round(auctionAvg) : '', '元/㎡') },
-        { label: '平均挂牌价', value: show(listingAvg ? Math.round(listingAvg) : '', '元/㎡') },
-        { label: '平均租金', value: show(rentAvg ? rentAvg.toFixed(1) : '', '元/㎡/月') },
-        { label: '评估价格', value: show(evaluation ? Math.round(evaluation) : '', '元/㎡'), note: price.evaluationPrice || doc.evaluation_price ? '后台评估数据' : (evaluation ? '按Excel价格区间规则估算' : '') },
+        { label: '楼盘近期平均成交价', value: show(recentAvg ? Math.round(recentAvg) : '', '元/㎡') },
+        { label: '楼盘近期法拍成交价', value: show(auctionAvg ? Math.round(auctionAvg) : '', '元/㎡') },
+        { label: '楼盘平均挂牌价', value: show(listingAvg ? Math.round(listingAvg) : '', '元/㎡') },
+        { label: '楼盘平均租金', value: show(rentAvg ? rentAvg.toFixed(1) : '', '元/㎡/月') },
+        { label: '评估价格', value: show(evaluation ? Math.round(evaluation) : '', '元/㎡') },
         { label: '历史走势', value: trendText }
       ],
       advice: this.buildAdvice({
         propertyType: propertyForRule, rentRatio, investmentLine, areaAvg, priceDiff,
         traffic, schools, hospitals, age, policyText, areaRank,
         volume: sales.length, trendText, auctionAvg, recentAvg, communityAvg, cityAvg,
-        evaluation, houseTypeText, listingAvg, rentCount: rents.length
+        evaluation, houseTypeText, listingAvg, rentCount: rents.length,
+        rentAvg, remainingYears: num(first(price.remainingYears, base.remainingYears, doc.remainingYears, doc.landRemainingYears))
       }),
       tools: [
         {
-          label: '估算总价', value: show(totalAvg ? totalAvg.toFixed(0) : '', '万元'), note: '后台均价 × 后台平均面积',
-          formula: '估算总价 = 小区均价 × 平均面积',
-          parts: [
-            { name: '小区均价', value: show(communityAvg ? Math.round(communityAvg) : '', '元/㎡') },
-            { name: '平均面积', value: show(areaAvg ? Math.round(areaAvg) : '', '㎡') },
-            { name: '计算', value: communityAvg && areaAvg ? Math.round(communityAvg) + ' × ' + Math.round(areaAvg) + ' ÷ 10000' : '数据不足' }
-          ], warning: '这是小区平均口径，不代表某一套房屋的实际成交总价。'
+          label: '贷款测算', value: '可调整', note: '商业 / 公积金 / 组合贷款，支持两种还款方式',
+          loanCalculator: true, formula: '', parts: [], warning: '结果仅作预算参考，实际额度、利率和贷款年限以银行审批为准。'
         },
         {
           label: '交易税费参考', value: show(deedTax ? Math.round(deedTax) : '', '元起'), note: '点击查看契税、增值税、个人所得税',
@@ -301,26 +379,6 @@ Page({
             { name: '个人所得税', value: '需知道是否满五唯一及原值；符合免征条件时可为0' },
             { name: '登记/服务等费用', value: '以当地不动产登记及实际服务收费为准' }
           ], warning: '当前按家庭唯一住房示例估算：面积≤140㎡按1%，面积＞140㎡按1.5%。实际税率还取决于家庭住房套数、房屋性质及交易时政策。'
-        },
-        {
-          label: '贷款金额示例', value: show(loan ? Math.round(loan) : '', '元'), note: '按估算总价的70%测算',
-          formula: '贷款金额 = 估算总价 × 70%',
-          parts: [
-            { name: '估算总价', value: show(totalYuan ? Math.round(totalYuan) : '', '元') },
-            { name: '示例贷款比例', value: '70%' },
-            { name: '计算', value: totalYuan ? Math.round(totalYuan) + ' × 70% = ' + Math.round(loan) + '元' : '数据不足' }
-          ], warning: '实际可贷比例取决于首套/二套、评估价、征信、收入及银行政策。'
-        },
-        {
-          label: '30年月供示例', value: show(monthly ? monthly.toFixed(0) : '', '元/月'), note: '等额本息，年利率3.6%',
-          formula: '月供 = 本金 × 月利率 × (1+月利率)^期数 ÷ [(1+月利率)^期数-1]',
-          parts: [
-            { name: '贷款本金', value: show(loan ? Math.round(loan) : '', '元') },
-            { name: '贷款期限', value: '30年，共360期' },
-            { name: '示例年利率', value: '3.6%，月利率0.3%' },
-            { name: '累计还款', value: show(totalRepay ? Math.round(totalRepay) : '', '元') },
-            { name: '其中利息', value: show(interest ? Math.round(interest) : '', '元') }
-          ], warning: '利率为演示值，实际月供应以银行审批利率和放款日为准。'
         },
         {
           label: '租售比', value: show(rentRatio ? rentRatio.toFixed(2) : '', '%'), note: '年租金收入 ÷ 购房价格',
@@ -344,13 +402,15 @@ Page({
           ], warning: '小区均值无法替代具体拍卖公告、执行裁定和现场尽调。'
         },
         {
-          label: '楼龄风险', value: age >= 30 ? '需重点关注' : (age ? '暂未触发' : '暂无数据'), note: age ? '估算楼龄约' + age + '年' : '后台缺少建成年代',
-          formula: '估算楼龄 = 当前年份 - 建成年份',
+          label: '风险提示', value: age >= 30 ? '需重点关注' : '请核实', note: '楼龄、清楼/腾退、唯一住房收楼风险',
+          formula: '法拍房成交前应核实房屋现状、占用和交付条件',
           parts: [
-            { name: '建成年份', value: show(completion) },
-            { name: '估算楼龄', value: show(age || '', '年') },
-            { name: '风险参考', value: '楼龄达到30年重点关注；楼龄与贷款年限还需满足银行要求' }
-          ], warning: '建成年代不等同于产权起算时间，贷款要求也会因银行和房屋性质不同而变化。'
+            { name: '楼龄风险', value: age ? '约' + age + '年' + (age >= 30 ? '，需重点关注贷款年限' : '') : '建成年代缺失，需核实' },
+            { name: '是否清楼', value: first(doc.vacateStatus, doc.clearHouse, doc.clearance, doc.auction_clearance) || '拍卖公告未明确，需现场核实' },
+            { name: '占用/腾退', value: first(doc.occupancy, doc.occupancyStatus, doc.deliveryStatus) || '需核实是否有人居住、出租或存在腾退障碍' },
+            { name: '唯一住房收楼', value: first(doc.onlyHomeRisk, doc.uniqueHome, doc.only_house_risk) || '需核实是否为被执行人唯一住房，收楼可能受阻' },
+            { name: '来源提示', value: first(doc.auctionSource, doc.source) || '法拍信息以阿里拍卖及法院公告为准' }
+          ], warning: '阿里拍卖页面中的清场、占用、租赁、唯一住房等提示，应与拍卖公告、执行裁定和现场尽调交叉核实。'
         }
       ],
       competitors, traffic, schools, missing,
@@ -386,6 +446,21 @@ Page({
     const rentCount = d.rentCount || 0                       // 在租套数
     const trendUp = /上涨/.test(d.trendText || '')
     const trendDown = /下跌/.test(d.trendText || '')
+
+    // 购置判断采用“收益法 + 市场比较法”，并把空置、运营和年限风险单独列出
+    const rentAvg = d.rentAvg || 0
+    const targetNetYield = /住宅/.test(d.propertyType || '') ? 3 : 4.5
+    const netRentRatio = rentRatio > 0 ? rentRatio * 0.75 : 0 // 预留约25%空置、税费、维修及管理损耗
+    const safePrice = rentAvg > 0 ? rentAvg * 12 * 0.75 / (targetNetYield / 100) : 0
+    const marketValues = [communityAvg, recentAvg, auctionAvg, evaluation].filter(v => v > 0)
+    const marketReference = marketValues.length ? marketValues.reduce((s, v) => s + v, 0) / marketValues.length : 0
+    const valuationSpread = marketReference && safePrice ? (safePrice - marketReference) / marketReference * 100 : 0
+    const remainingYears = d.remainingYears || 0
+    const termRisk = remainingYears > 0 && remainingYears < 25
+    const valueConclusion = !safePrice ? '租金或价格数据不足，暂不能给出安全入手价' :
+      safePrice >= marketReference * 1.05 ? '按净回报率测算，价格仍有安全垫' :
+      safePrice >= marketReference * 0.95 ? '收益法与市场比较法基本接近，建议按成交条件议价' :
+      '按净回报率测算，当前价格偏高，建议压价或放弃'
 
     // 可选字段，缺数据时为 0
     const hasSchool = (d.schools || []).length > 0
@@ -623,9 +698,4 @@ Page({
       }
     }
   },
-  monthlyPayment(principal, annualRate, years) {
-    if (!principal) return 0
-    const r = annualRate / 12 / 100, n = years * 12
-    return principal * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1)
-  }
 })
