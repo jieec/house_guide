@@ -1,4 +1,5 @@
 const allBanks = require('../../utils/banks.js')
+const reportExport = require('../../utils/report-export.js')
 
 Page({
   data: {
@@ -53,6 +54,9 @@ Page({
   callBank(e) {
     const phone = e.currentTarget.dataset.phone
     wx.makePhoneCall({ phoneNumber: phone })
+  },
+  exportPdf() {
+    reportExport.exportReport(this)
   },
   save() {
     const d = this.data

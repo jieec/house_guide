@@ -1,4 +1,5 @@
 const calc = require('../../utils/calc.js')
+const reportExport = require('../../utils/report-export.js')
 const app = getApp()
 const cf = require('../../utils/commfetch.js')
 
@@ -88,6 +89,9 @@ Page({
       rentRatioResult: (ratio * 100).toFixed(2) + '%',
       annualReturnResult: (annual * 100).toFixed(2) + '%'
     })
+  },
+  exportPdf() {
+    reportExport.exportReport(this)
   },
   save() {
     const d = this.data

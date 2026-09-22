@@ -1,4 +1,5 @@
 const app = getApp()
+const reportExport = require('../../utils/report-export.js')
 const cf = require('../../utils/commfetch.js')
 
 Page({
@@ -147,6 +148,9 @@ Page({
       })
       .catch(() => ({ minPrice: '', avgArea: 0 }))
     return Promise.all([countP, listP]).then(([count, st]) => ({ count, ...st }))
+  },
+  exportPdf() {
+    reportExport.exportReport(this)
   },
   save() {
     wx.setStorageSync('basic', this.data.form)

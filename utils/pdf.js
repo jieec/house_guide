@@ -30,6 +30,37 @@ function u8cat(...arrs) {
 
 function pad(n, w) { return String(n).padStart(w, '0') }
 
+function base64Bytes(s) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+  const clean = String(s).replace(/\s/g, '')
+  const out = []
+  let buffer = 0
+  let bits = 0
+  for (let i = 0; i < clean.length; i++) {
+    if (clean[i] === '=') break
+    const value = chars.indexOf(clean[i])
+    if (value < 0) continue
+    buffer = (buffer << 6) | value
+    bits += 6
+    if (bits >= 8) {
+      bits -= 8
+      out.push((buffer >> bits) & 0xff)
+    }
+  }
+  return new Uint8Array(out)
+}
+
+function toBytes(data) {
+  if (typeof data === 'string') return base64Bytes(data)
+  if (data instanceof ArrayBuffer) return new Uint8Array(data)
+  if (data instanceof Uint8Array) return data
+  if (data && data.buffer instanceof ArrayBuffer) {
+    return new Uint8Array(data.buffer, data.byteOffset || 0, data.byteLength)
+  }
+  if (data && typeof data.byteLength === 'number') return new Uint8Array(data)
+  throw new Error('无法读取报告图片二进制数据')
+}
+
 module.exports = {
   generate(imagePath) {
     return new Promise((resolve, reject) => {
@@ -39,10 +70,11 @@ module.exports = {
           const fs = wx.getFileSystemManager()
           fs.readFile({
             filePath: imagePath,
-            encoding: 'binary',
+            encoding: 'base64',
             success: (res) => {
               try {
-                const imgData = new Uint8Array(res.data)
+                const imgData = toBytes(res.data)
+                if (!imgData.length) throw new Error('报告图片为空')
                 const imgW = info.width
                 const imgH = info.height
 
@@ -130,7 +162,6 @@ module.exports = {
                 fs.writeFile({
                   filePath: pdfPath,
                   data: body.buffer,
-                  encoding: 'binary',
                   success: () => resolve({ ok: true, path: pdfPath }),
                   fail: (e) => reject(e)
                 })

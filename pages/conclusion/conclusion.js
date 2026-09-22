@@ -1,4 +1,5 @@
 const calc = require('../../utils/calc.js')
+const reportExport = require('../../utils/report-export.js')
 
 Page({
   data: {
@@ -60,6 +61,9 @@ Page({
       grade: g.grade,
       gradeDesc: g.desc
     })
+  },
+  exportPdf() {
+    reportExport.exportReport(this)
   },
   removeRecord(e) {
     const id = e.currentTarget.dataset.id

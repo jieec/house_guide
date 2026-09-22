@@ -111,3 +111,9 @@
 </view>
 
 <view class="btn-primary" bindtap="save">保存分析结果</view>
+<view class="report-export-area">
+  <view class="report-export-title">汇总当前购房分析</view>
+  <view class="report-export-subtitle">将四个部分整理为一份 PDF 报告</view>
+  <button class="report-export-button" bindtap="exportPdf">生成 PDF 报告</button>
+</view>
+<canvas id="pdfCanvas" type="2d" class="pdf-canvas"></canvas>

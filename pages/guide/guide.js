@@ -1,4 +1,5 @@
 const app = getApp()
+const reportExport = require('../../utils/report-export.js')
 
 function num(v) {
   const n = parseFloat(String(v == null ? '' : v).replace(/[^\d.-]/g, ''))
@@ -256,6 +257,10 @@ Page({
       }))).catch(() => [])
   },
 
+  exportPdf() {
+    reportExport.exportReport(this)
+  },
+
   buildReport(doc, { sales, rents, auctionDeals }, cityResult, policies, competitorStats) {
     const houses = [...sales, ...rents]
     const dbQuery = null
@@ -414,6 +419,7 @@ Page({
         }
       ],
       competitors, traffic, schools, missing,
+      policies,
       areaRangeText, layoutText
     }
   },

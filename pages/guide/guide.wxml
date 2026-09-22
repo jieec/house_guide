@@ -317,4 +317,11 @@
       </view>
     </block>
   </block>
+
+  <view class="report-export-area" wx:if="{{selectedCommunity && !loading}}">
+    <view class="report-export-title">已汇总四个分析部分</view>
+    <view class="report-export-subtitle">基本信息 · 价值分析 · 购置建议 · 工具使用</view>
+    <button class="report-export-button" bindtap="exportPdf">生成 PDF 报告</button>
+  </view>
+  <canvas id="pdfCanvas" type="2d" class="pdf-canvas"></canvas>
 </view>

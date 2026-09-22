@@ -25,26 +25,24 @@
   </view>
   <view class="btn-ghost" bindtap="calcBest">测算性价比</view>
   <view class="result" wx:if="{{gap}}">
-    <view class="result-line">
-      <view class="result-label">测算差额</view>
-      <view class="result-num">{{gap}} 元</view>
-    </view>
-    <view class="result-line">
-      <view class="result-label">性价比等级</view>
-      <view class="result-num">{{grade}}档 · {{gradeDesc}}</view>
-    </view>
+    <view class="result-line"><view class="result-label">测算差额</view><view class="result-num">{{gap}} 元</view></view>
+    <view class="result-line"><view class="result-label">性价比等级</view><view class="result-num">{{grade}}档 · {{gradeDesc}}</view></view>
   </view>
-  </view>
+</view>
 
 <view class="card" wx:if="{{records.length}}">
   <view class="card-title">登记记录</view>
   <view class="record" wx:for="{{records}}" wx:key="id">
-    <view class="record-head">
-      <view class="record-place">{{item.place}} {{item.estate}} {{item.community}}</view>
-      <view class="record-del" data-id="{{item.id}}" catchtap="removeRecord">删除</view>
-    </view>
+    <view class="record-head"><view class="record-place">{{item.place}} {{item.estate}} {{item.community}}</view><view class="record-del" data-id="{{item.id}}" catchtap="removeRecord">删除</view></view>
     <view class="record-line">{{item.purpose}} | 销售价{{item.salePrice}} 评估价{{item.evalPrice}} 面积{{item.area}}平</view>
     <view class="record-line">差额{{item.gap}}元 · {{item.grade}}档({{item.gradeDesc}})</view>
     <view class="record-time">{{item.time}}</view>
   </view>
 </view>
+
+<view class="report-export-area">
+  <view class="report-export-title">汇总当前购房分析</view>
+  <view class="report-export-subtitle">将四个部分整理为一份 PDF 报告</view>
+  <button class="report-export-button" bindtap="exportPdf">生成 PDF 报告</button>
+</view>
+<canvas id="pdfCanvas" type="2d" class="pdf-canvas"></canvas>
