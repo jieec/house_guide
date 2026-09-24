@@ -27,6 +27,7 @@ Page({
       .then(res => this.setData({ total: res.total }))
       .catch(() => {})
   },
+  goHome() {},
   goLocation() {
     wx.navigateTo({ url: '/pages/location/location' })
   },
@@ -39,5 +40,8 @@ Page({
   },
   goGuide() {
     wx.switchTab({ url: '/pages/guide/guide' })
+  },
+  goMine() {
+    wx.switchTab({ url: '/pages/mine/mine' })
   }
 })

@@ -340,6 +340,22 @@ Page({
     const deedRate = areaAvg && areaAvg <= 140 ? 0.01 : 0.015
     const deedTax = totalYuan ? totalYuan * deedRate : 0
     const policyText = policies.map(it => first(it.summary, it.purchase_limit, it.tax)).filter(Boolean).join('；')
+    const priceItems = [
+      { label: '城市均价', amount: cityAvg, color: '#4d96ff', note: cityResult.count ? cityResult.count + '条城市样本' : '' },
+      { label: '小区均价', amount: communityAvg, color: '#00d4ff' },
+      { label: '楼盘近期平均成交价', labelLines: ['楼盘近期', '平均成交价'], amount: recentAvg, color: '#5ddb7a' },
+      { label: '楼盘近期法拍成交价', labelLines: ['楼盘近期', '法拍成交价'], amount: auctionAvg, color: '#ff9a6c' },
+      { label: '楼盘平均挂牌价', labelLines: ['楼盘平均', '挂牌价'], amount: listingAvg, color: '#f5c451' },
+      { label: '评估价格', amount: evaluation, color: '#b394ff', note: '小区均价×40%＋法拍成交价×60%' }
+    ]
+    const priceChartMax = Math.ceil(Math.max(...priceItems.map(item => item.amount || 0), 0))
+    const chartItems = priceItems.map(item => ({
+      ...item,
+      labelLines: item.labelLines || [item.label],
+      hasData: item.amount > 0,
+      value: item.amount > 0 ? String(Math.round(item.amount)) : '—',
+      barWidth: item.amount > 0 && priceChartMax > 0 ? item.amount / priceChartMax * 100 : 0
+    }))
 
     return {
       basic: [
@@ -352,14 +368,10 @@ Page({
         { label: '物业公司', value: show(first(base.propertyCompany, props['物业公司'])) },
         { label: '容积率 / 绿化率', value: [first(base.plotRatio, props['容积率']), first(base.greenRate, props['绿化率'])].filter(Boolean).join(' / ') || '暂无数据' }
       ],
-      prices: [
-        { label: '城市均价', value: show(cityAvg ? Math.round(cityAvg) : '', '元/㎡'), note: cityResult.count ? cityResult.count + '条城市样本' : '' },
-        { label: '小区均价', value: show(communityAvg ? Math.round(communityAvg) : '', '元/㎡') },
-        { label: '楼盘近期平均成交价', value: show(recentAvg ? Math.round(recentAvg) : '', '元/㎡') },
-        { label: '楼盘近期法拍成交价', value: show(auctionAvg ? Math.round(auctionAvg) : '', '元/㎡') },
-        { label: '楼盘平均挂牌价', value: show(listingAvg ? Math.round(listingAvg) : '', '元/㎡') },
+      priceChartMax,
+      prices: chartItems,
+      priceDetails: [
         { label: '楼盘平均租金', value: show(rentAvg ? rentAvg.toFixed(1) : '', '元/㎡/月') },
-        { label: '评估价格', value: show(evaluation ? Math.round(evaluation) : '', '元/㎡') },
         { label: '历史走势', value: trendText }
       ],
       advice: this.buildAdvice({

@@ -1,43 +1,98 @@
-
-.report-export-area {
-  margin: 44rpx 24rpx 36rpx;
-  padding: 28rpx 24rpx 24rpx;
-  text-align: center;
-  background: linear-gradient(145deg, rgba(17, 48, 86, 0.96), rgba(12, 35, 66, 0.96));
-  border: 1rpx solid rgba(0, 212, 255, 0.24);
-  border-radius: 20rpx;
-  box-shadow: 0 8rpx 28rpx rgba(0, 40, 90, 0.22);
-}
-.report-export-title {
-  color: #ffffff;
-  font-size: 30rpx;
-  font-weight: 700;
-}
-.report-export-subtitle {
-  margin-top: 10rpx;
-  color: #8aa4cc;
-  font-size: 23rpx;
-}
-.report-export-button {
-  height: 82rpx;
-  margin: 24rpx 0 0;
-  padding: 0;
-  line-height: 82rpx;
-  color: #061326;
-  background: #20c5d2;
-  border: 0;
-  border-radius: 10rpx;
+/* Blue-violet technology theme: keep surfaces opaque enough for low-end devices. */
+page {
+  background: #080d24;
+  color: #eef2ff;
+  padding-bottom: 120rpx;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", sans-serif;
   font-size: 28rpx;
-  font-weight: 700;
-  box-shadow: 0 6rpx 16rpx rgba(0, 197, 210, 0.22);
 }
-.report-export-button::after { border: 0; }
-.report-export-button:active { opacity: 0.84; }
-.pdf-canvas {
-  position: fixed;
-  left: -9999px;
-  top: -9999px;
-  width: 750px;
-  height: 1px;
-  opacity: 0;
+
+.card, .d-card, .house-card, .query-card, .data-card, .tool-card, .audit-card, .dimension-card {
+  background: #111936;
+  border: 1rpx solid rgba(137, 132, 255, .18);
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 22rpx rgba(2, 5, 22, .24);
 }
+.card { margin: 20rpx 24rpx; padding: 28rpx; }
+.card-title, .section-title { font-size: 30rpx; font-weight: 700; color: #f5f7ff; display: flex; align-items: center; margin-bottom: 24rpx; }
+.card-title::before, .section-title::before { content: ''; width: 7rpx; height: 28rpx; background: linear-gradient(180deg, #8b7dff, #36d9ff); border-radius: 4rpx; margin-right: 14rpx; }
+.card-sub { font-size: 24rpx; color: #a8b2d6; margin: -14rpx 0 20rpx; line-height: 1.5; }
+.form-row { display: flex; align-items: center; margin-bottom: 22rpx; min-height: 76rpx; }
+.form-label { width: 200rpx; color: #b5bfdf; flex-shrink: 0; font-size: 28rpx; line-height: 1.35; }
+.form-input, .form-input-wrap { flex: 1; min-width: 0; min-height: 76rpx; border: 1rpx solid rgba(139, 125, 255, .24); border-radius: 12rpx; padding: 18rpx 20rpx; box-sizing: border-box; background: #0c1330; font-size: 28rpx; line-height: 1.45; color: #f2f4ff; }
+input.form-input { height: 76rpx; padding-top: 0; padding-bottom: 0; line-height: 76rpx; }
+textarea.form-input { min-height: 104rpx; line-height: 1.5; }
+.form-input::placeholder { color: #7f8bb5; opacity: 1; }
+.form-input-wrap { display: flex; align-items: center; }
+
+.btn-primary { background: linear-gradient(135deg, #6254e8, #3279ed); color: #fff; border-radius: 12rpx; padding: 24rpx 0; text-align: center; font-size: 30rpx; font-weight: 600; margin: 24rpx; box-shadow: 0 8rpx 18rpx rgba(72, 76, 220, .24); }
+.btn-ghost { background: transparent; color: #70ddff; border: 1rpx solid rgba(112, 221, 255, .4); border-radius: 12rpx; padding: 18rpx 0; text-align: center; font-size: 28rpx; margin: 20rpx 24rpx; }
+.result { margin-top: 20rpx; background: #151f48; border: 1rpx solid rgba(98, 84, 232, .25); border-radius: 16rpx; padding: 24rpx; }
+.result-line { display: flex; justify-content: space-between; align-items: center; padding: 8rpx 0; }
+.result-label { color: #a8b2d6; font-size: 26rpx; }
+.result-num { font-size: 40rpx; font-weight: 700; color: #65dcff; }
+.cell { display: flex; justify-content: space-between; align-items: center; background: #111936; border: 1rpx solid rgba(137, 132, 255, .18); border-radius: 20rpx; margin: 16rpx 24rpx; padding: 28rpx; box-shadow: 0 8rpx 22rpx rgba(2, 5, 22, .2); }
+.cell-left { display: flex; align-items: center; flex: 1; }
+.cell-icon { width: 76rpx; height: 76rpx; border-radius: 18rpx; display: flex; align-items: center; justify-content: center; font-size: 34rpx; margin-right: 20rpx; background: #1c2550; }
+.cell-name { font-size: 30rpx; font-weight: 600; color: #f5f7ff; }
+.cell-arrow { color: #8f9bd0; font-size: 28rpx; margin-left: 16rpx; }
+
+/* Shared status colors */
+.muted, .no-data { color: #7f8bb5 !important; }
+button::after { border: 0; }
+.report-export-area { margin: 44rpx 24rpx 36rpx; padding: 28rpx 24rpx 24rpx; text-align: center; background: #111936; border: 1rpx solid rgba(112, 221, 255, .2); border-radius: 16rpx; }
+.report-export-title { color: #f5f7ff; font-size: 30rpx; font-weight: 700; }
+.report-export-subtitle { margin-top: 10rpx; color: #9da8ce; font-size: 23rpx; }
+.report-export-button { height: 82rpx; margin: 24rpx 0 0; padding: 0; line-height: 82rpx; color: #08102b; background: #62dfff; border-radius: 10rpx; font-size: 28rpx; font-weight: 700; }
+.pdf-canvas { position: fixed; left: -9999rpx; top: -9999rpx; width: 750px; height: 1px; opacity: 0; }
+
+/* Unified soft blue-violet workspace theme */
+page { background: #f5f6ff !important; color: #3d477f !important; }
+.card, .d-card, .house-card, .query-card, .data-card, .tool-card, .audit-card, .dimension-card, .result, .cell, .report-export-area { background: #ffffff !important; border-color: #e1e4f7 !important; box-shadow: 0 9rpx 22rpx rgba(119,127,185,.08) !important; }
+.card-title, .section-title, .query-title, .report-name, .section-title, .cell-name, .card-title, .report-export-title { color: #424c82 !important; }
+.card-title::before, .section-title::before { background: linear-gradient(180deg, #8994ed, #b29bef) !important; }
+.card-sub, .muted, .no-data, .form-hint, .result-label, .cell-arrow, .report-meta, .report-export-subtitle { color: #929ac0 !important; }
+.form-label, .data-label, .location-label, .price-label, .price-chart-unit, .price-note, .competitor-meta, .sub-title { color: #7f88ad !important; }
+.form-input, .form-input-wrap, .field-control, .form-picker, .search-box, .city-search-box, .price-chart, .price-card, .formula-box, .loan-result { background: #f7f8ff !important; border-color: #dde1f4 !important; color: #4a5589 !important; }
+.form-input::placeholder, .search-input::placeholder { color: #adb3cc !important; }
+.btn-primary, .calculate-button, .report-export-button { background: linear-gradient(135deg, #8994ed, #6976d2) !important; color: #fff !important; box-shadow: 0 8rpx 18rpx rgba(105,118,210,.2) !important; }
+.btn-ghost { color: #6875cf !important; border-color: #c4c9f0 !important; }
+.result-num, .price-value, .loan-monthly, .tool-value, .dimension-total { color: #6976d2 !important; }
+
+/* Common page headers and data surfaces */
+.city-card, .locate-bar, .mine-hero { background: linear-gradient(135deg, #dce1ff, #c8d1fa) !important; border-color: #d2d8fb !important; color: #4b568d !important; box-shadow: 0 14rpx 28rpx rgba(105,116,200,.12) !important; }
+.city-name, .mine-name, .loc-line, .preview { color: #4b568d !important; }
+.city-arrow, .count-bar, .house-loc, .load-tip, .loc-line2, .mine-sub, .record-line, .locate-hint, .preview-sub { color: #818aaf !important; }
+.type-chip { background: #fff !important; border-color: #e0e3f5 !important; color: #8189ad !important; }
+.type-active { background: #737fd7 !important; color: #fff !important; }
+.house-title, .house-card .house-title, .record-place, .search-name, .empty-title, .data-value, .competitor-name, .price-chart-title, .advice-title, .metric-name, .loan-panel-title, .loan-section-title, .tool-label, .dimension-title, .legend-name, .cat-name { color: #4a5589 !important; }
+.house-meta, .house-unit, .search-address, .empty-text, .data-value, .legend-desc, .cat-desc-small, .cat-pct, .legend-pct, .part-name, .part-value, .advice-text { color: #8c94b5 !important; }
+.house-price, .competitor-price { color: #7a75d1 !important; }
+.analyze-chip, .locate-btn, .change, .reload, .searching, .loading { color: #6976d2 !important; background: #eef0ff !important; border-color: #d5daf8 !important; }
+.city-panel { background: #fff !important; }
+.city-item { color: #566092 !important; border-color: #edf0fa !important; }
+.city-item-active, .city-check { color: #6976d2 !important; }
+
+/* Chart and analysis modules */
+.price-bar-track { background-image: linear-gradient(90deg, rgba(141,151,202,.22) 1rpx, transparent 1rpx) !important; border-color: #c6cce5 !important; }
+.price-bar-value, .price-bar-label, .price-chart-axis { color: #68729f !important; }
+.price-bar-fill { box-shadow: inset 0 2rpx 0 rgba(255,255,255,.5), 3rpx 5rpx 8rpx rgba(105,116,200,.16) !important; }
+.tabs { background: #eef0ff !important; border-color: #e0e3f5 !important; }
+.tab { color: #929ac0 !important; }.tab.active { color: #6976d2 !important; }.tab.active::after { background: #7783dc !important; }
+.pie-section, .category-card { background: #f7f8ff !important; border-color: #e4e7f5 !important; }.pie-hole { background: #fff !important; }.pie-center-score, .legend-score, .cat-score { color: #6976d2 !important; }.pie-center-label { color: #929ac0 !important; }
+
+/* Contrast pass for light surfaces */
+page { color: #34406f !important; }
+.card-title, .section-title, .query-title, .report-name, .cell-name, .report-export-title { color: #35416f !important; }
+.card-sub, .muted, .no-data, .form-label, .result-label, .data-label, .location-label, .price-label, .report-meta, .search-address, .empty-text, .competitor-meta, .part-name, .loan-panel-subtitle, .tool-note, .form-hint { color: #68739a !important; }
+.form-input, .form-input-wrap, .field-control, .form-picker, .search-input, .data-value, .part-value, .house-meta, .house-unit { color: #3f4b78 !important; }
+.form-input::placeholder, .search-input::placeholder { color: #8a94b5 !important; }
+
+
+/* Final light-theme contrast tokens for page-level legacy styles. */
+page { background: #f5f6ff !important; color: #34406f !important; }
+page .muted, page .no-data, page .form-hint, page .report-meta, page .search-address, page .empty-text, page .price-note, page .competitor-meta, page .part-name, page .tool-note, page .legend-desc, page .cat-desc-small, page .cat-pct, page .legend-pct, page .loan-panel-subtitle { color: #626e91 !important; }
+page .data-label, page .location-label, page .price-label, page .result-label, page .form-label, page .cell-arrow { color: #586587 !important; }
+page .data-value, page .part-value, page .house-meta, page .house-unit, page .search-input, page .city-search-input, page .d-v, page .d-cell-v { color: #354269 !important; }
+page .house-title, page .d-title, page .d-card-title, page .query-title, page .section-title, page .card-title { color: #303b66 !important; }
+page .tag, page .change, page .reload, page .analyze-chip, page .searching, page .loading { color: #5361bd !important; }

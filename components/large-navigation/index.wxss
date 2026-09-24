@@ -1,0 +1,6 @@
+:host { display: block; }
+.nav-spacer { visibility: hidden; }
+.nav-spacer > view:first-child { display: block; }
+.nav-spacer .nav-title { display: none; }
+.nav-shell { position: fixed; top: 0; left: 0; right: 0; z-index: 90; background: rgba(245,246,255,.96); border-bottom: 1rpx solid #e1e4f7; box-shadow: 0 5rpx 16rpx rgba(119,127,185,.08); }
+.nav-title { position: absolute; right: 0; bottom: 7px; left: 0; box-sizing: border-box; width: 100%; height: 32px; padding: 0 18px; color: #4a5589; font-size: 17px; font-weight: 600; line-height: 32px; text-align: center; white-space: normal; word-break: break-all; }

@@ -1,3 +1,11 @@
+page { background: #f5f6ff !important; color: #34406f !important; padding-bottom: calc(140rpx + env(safe-area-inset-bottom)) !important; }
+.risk-check.checked { background: linear-gradient(135deg, #8994ed, #6976d2) !important; }
+.warn { background: #fff1e9 !important; color: #a65a36 !important; border-color: #f4d9c9 !important; }
+.ok { background: #eef9f3 !important; color: #3c8b61 !important; border-color: #d3eedf !important; }
+.risk-item { border-color: #edf0fa !important; }
+.risk-check { border-color: #d5daf8 !important; color: #5866c8 !important; }
+
+
 .risk-item {
   display: flex;
   align-items: flex-start;

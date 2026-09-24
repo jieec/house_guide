@@ -1,0 +1,8 @@
+<view class="nav-spacer" aria-hidden="true">
+  <view style="height: {{toolbarHeight}}px;"></view>
+  <view class="nav-title">{{title}}</view>
+</view>
+<view class="nav-shell">
+  <view style="height: {{toolbarHeight}}px;"></view>
+  <view class="nav-title">{{title}}</view>
+</view>

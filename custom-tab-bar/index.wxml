@@ -1,0 +1,8 @@
+<view class="bottom-nav">
+  <view class="bottom-nav-items">
+    <view class="bottom-nav-item {{selected == index ? 'selected' : ''}}" wx:for="{{tabs}}" wx:key="pagePath" data-index="{{index}}" bindtap="switchTab" role="button" aria-label="{{item.text}}">
+      <text class="bottom-nav-icon">{{item.icon}}</text>
+      <text class="bottom-nav-label">{{item.text}}</text>
+    </view>
+  </view>
+</view>

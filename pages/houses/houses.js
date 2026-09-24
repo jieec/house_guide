@@ -11,6 +11,8 @@ for (const p of regionData) {
 }
 const DEFAULT_CITY = '珠海'
 const DEFAULT_INDEX = Math.max(0, CITIES.indexOf(DEFAULT_CITY))
+const LIST_CACHE = {}
+const CACHE_TTL = 30000
 
 Page({
   data: {
@@ -158,6 +160,13 @@ Page({
       this.setData({ cloudOk: false, loading: false })
       return
     }
+    const cacheKey = city + '|' + type
+    const cached = LIST_CACHE[cacheKey]
+    if (cached && Date.now() - cached.time < CACHE_TTL) {
+      this.setData({ ...cached.data, loading: false })
+      return
+    }
+    if (this.data.loading) return
     const db = wx.cloud.database()
     const $ = db.command.aggregate
     const match = { city, community: db.command.neq('') }
@@ -185,13 +194,14 @@ Page({
         return { fallback: false, list }
       })
       .then(r => {
-        this.setData({
+        const nextData = {
           communitiesAll: r.list,
           communities: r.list,
-          loading: false,
           cloudOk: true,
           fromCommDb: !!r.fallback
-        })
+        }
+        LIST_CACHE[cacheKey] = { time: Date.now(), data: nextData }
+        this.setData({ ...nextData, loading: false })
       })
       .catch(() => {
         this.setData({ loading: false, cloudOk: false })

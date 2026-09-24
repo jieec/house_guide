@@ -1,46 +1,22 @@
 {
-  "pages": [
-    "pages/index/index",
-    "pages/houses/houses",
-    "pages/houses/community/community",
-    "pages/houses/detail/detail",
-    "pages/houses/analyze/analyze",
-    "pages/guide/guide",
-    "pages/mine/mine",
-    "pages/location/location",
-    "pages/basic/basic",
-    "pages/analysis/analysis",
-    "pages/conclusion/conclusion",
-    "pages/finance/finance",
-    "pages/risk/risk",
-    "pages/tax/tax",
-    "pages/mortgage/mortgage"
-  ],
+  "pages": ["pages/index/index", "pages/houses/houses", "pages/houses/community/community", "pages/houses/detail/detail", "pages/houses/analyze/analyze", "pages/guide/guide", "pages/mine/mine", "pages/location/location", "pages/basic/basic", "pages/analysis/analysis", "pages/conclusion/conclusion", "pages/finance/finance", "pages/risk/risk", "pages/tax/tax", "pages/mortgage/mortgage"],
   "window": {
-    "navigationBarBackgroundColor": "#0a1628",
+    "navigationBarBackgroundColor": "#f5f6ff",
     "navigationBarTitleText": "购房指南",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#0a1628",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f5f6ff",
     "backgroundTextStyle": "light"
   },
   "tabBar": {
-    "color": "#5b7aa8",
-    "selectedColor": "#00d4ff",
-    "backgroundColor": "#0d1d35",
-    "borderStyle": "black",
-    "list": [
-      { "pagePath": "pages/index/index", "text": "首页" },
-      { "pagePath": "pages/houses/houses", "text": "房源" },
-      { "pagePath": "pages/guide/guide", "text": "指南" },
-      { "pagePath": "pages/mine/mine", "text": "我的" }
-    ]
+    "color": "#9aa2c2",
+    "selectedColor": "#6976d2",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "custom": true,
+    "list": [{"pagePath":"pages/index/index","text":"首页"},{"pagePath":"pages/houses/houses","text":"房源"},{"pagePath":"pages/guide/guide","text":"指南"},{"pagePath":"pages/mine/mine","text":"我的"}]
   },
   "style": "v2",
-  "permission": {
-    "scope.userLocation": {
-      "desc": "用于定位您所在城市，展示当地房源和小区"
-    }
-  },
+  "permission": {"scope.userLocation": {"desc": "用于定位您所在城市，展示当地房源和小区"}},
   "requiredPrivateInfos": ["getLocation"],
   "sitemapLocation": "sitemap.json"
 }

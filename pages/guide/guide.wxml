@@ -81,11 +81,32 @@
       </view>
 
       <view wx:if="{{activeTab === 1}}">
-        <view class="section-title">价值分析</view>
+        <view class="section-title">价格全景</view>
+        <view class="price-chart">
+          <view class="price-chart-heading">
+            <text class="price-chart-title">价格对比</text>
+            <text class="price-chart-unit">单位：元/㎡</text>
+          </view>
+          <view class="price-bar-row" wx:for="{{report.prices}}" wx:key="label">
+            <view class="price-bar-label"><text wx:for="{{item.labelLines}}" wx:for-item="labelLine" wx:key="*this">{{labelLine}}</text></view>
+            <view class="price-bar-body">
+              <text class="price-bar-value {{!item.hasData ? 'muted' : ''}}">{{item.value}}</text>
+              <view class="price-bar-plot">
+                <view class="price-bar-track">
+                  <view wx:if="{{item.hasData}}" class="price-bar-fill" style="width: {{item.barWidth}}%; background-color: {{item.color}};"></view>
+                </view>
+              </view>
+              <view class="price-note" wx:if="{{item.note}}">{{item.note}}</view>
+            </view>
+          </view>
+          <view class="price-chart-axis" wx:if="{{report.priceChartMax > 0}}"><text>0</text><text>{{report.priceChartMax}}</text></view>
+          <view class="price-note">“—”表示暂无数据</view>
+        </view>
+        <view class="section-title">价格明细</view>
         <view class="price-grid">
-          <view class="price-card" wx:for="{{report.prices}}" wx:key="label">
+          <view class="price-card" wx:for="{{report.priceDetails}}" wx:key="label">
             <view class="price-label">{{item.label}}</view>
-            <view class="price-value {{item.value === '暂无数据' ? 'muted' : ''}}">{{item.value}}</view>
+            <view class="price-value">{{item.value}}</view>
             <view class="price-note" wx:if="{{item.note}}">{{item.note}}</view>
           </view>
         </view>

@@ -1,3 +1,7 @@
 {
-  "navigationBarTitleText": "房产价值·购房指南"
+  "navigationBarTitleText": "房产价值评估",
+  "navigationBarBackgroundColor": "#f5f6ff",
+  "backgroundColor": "#f5f6ff",
+  "navigationBarTextStyle": "black",
+  "backgroundTextStyle": "light"
 }

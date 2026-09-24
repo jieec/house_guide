@@ -1,0 +1,7 @@
+.bottom-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 999; padding: 10rpx 18rpx calc(10rpx + env(safe-area-inset-bottom)); background: rgba(255,255,255,.98); border-top: 1rpx solid #e1e4f7; box-shadow: 0 -8rpx 24rpx rgba(119,127,185,.12); }
+.bottom-nav-items { display: flex; height: 88rpx; align-items: stretch; gap: 8rpx; }
+.bottom-nav-item { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 8rpx 4rpx; border-radius: 18rpx; color: #8b94b8; font-size: 21rpx; line-height: 1.2; white-space: nowrap; box-sizing: border-box; }
+.bottom-nav-item.selected { color: #5866c8; font-weight: 700; background: #eef0ff; }
+.bottom-nav-item.selected::before { content: ''; position: absolute; top: 0; left: 35%; right: 35%; height: 4rpx; border-radius: 4rpx; background: #7b86dc; }
+.bottom-nav-icon { height: 34rpx; font-size: 34rpx; line-height: 34rpx; font-weight: 600; }
+.bottom-nav-label { margin-top: 5rpx; }
