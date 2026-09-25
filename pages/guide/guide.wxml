@@ -93,7 +93,7 @@
               <text class="price-bar-value {{!item.hasData ? 'muted' : ''}}">{{item.value}}</text>
               <view class="price-bar-plot">
                 <view class="price-bar-track">
-                  <view wx:if="{{item.hasData}}" class="price-bar-fill" style="width: {{item.barWidth}}%; background-color: {{item.color}};"></view>
+                  <view wx:if="{{item.hasData}}" class="price-bar-fill" style="--bar-color: {{item.color}}; width: {{item.barWidth}}%;"></view>
                 </view>
               </view>
               <view class="price-note" wx:if="{{item.note}}">{{item.note}}</view>

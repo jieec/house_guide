@@ -1,5 +1,5 @@
 <view class="city-card" bindtap="openCityPanel">
-  <view class="city-icon">📍</view>
+  <view class="city-icon">⌖</view>
   <view class="city-body">
     <view class="city-name">{{cities[cityIndex]}}</view>
     <view class="city-arrow">▾ 点击搜索/切换城市</view>
@@ -10,7 +10,7 @@
 <view class="city-mask" wx:if="{{showCityPanel}}" bindtap="closeCityPanel"></view>
 <view class="city-panel" wx:if="{{showCityPanel}}">
   <view class="city-search-box">
-    <view class="search-icon">🔍</view>
+    <view class="search-icon">⌕</view>
     <input class="city-search-input" placeholder="输入城市名搜索，如: 太原" value="{{citySearch}}" bindinput="onCitySearch" focus="{{true}}" />
     <view class="search-clear" wx:if="{{citySearch}}" catchtap="clearCitySearch">✕</view>
   </view>
@@ -32,7 +32,7 @@
 <block wx:if="{{types[typeIndex].key !== '新房'}}">
   <view class="search-bar">
     <view class="search-box">
-      <view class="search-icon">🔍</view>
+      <view class="search-icon">⌕</view>
       <input class="search-input" placeholder="搜索{{cities[cityIndex]}}的小区名" value="{{keyword}}" bindinput="onKeyword" />
     </view>
   </view>
@@ -41,7 +41,7 @@
 
   <view class="cell" wx:for="{{communities}}" wx:key="_id" data-name="{{item._id}}" bindtap="goCommunity">
     <view class="cell-left">
-      <view class="cell-icon" style="background:#eef4ff">🏘️</view>
+      <view class="cell-icon" style="background:rgba(123,91,255,.22)">⌂</view>
       <view>
         <view class="cell-name">{{item._id}}</view>
         <view class="cell-desc" wx:if="{{item.count > 0}}">{{item.count}} 套房源</view>
@@ -54,7 +54,7 @@
   </view>
 
   <view wx:if="{{!communities.length && !loading}}" class="empty-tip">
-    <text class="empty-emoji">🏚️</text>
+    <view class="empty-symbol">⌂</view>
     该城市暂无小区数据
   </view>
 </block>
@@ -67,18 +67,18 @@
       <view class="house-tag">新房</view>
     </view>
     <view class="house-meta">
-      <text class="meta-item" wx:if="{{item.house_types}}">🏠 {{item.house_types}}</text>
+      <text class="meta-item" wx:if="{{item.house_types}}">户型 {{item.house_types}}</text>
       <text class="meta-item" wx:if="{{item.status}}">{{item.status}}</text>
     </view>
-    <view class="house-loc" wx:if="{{item.district || item.address}}">📍 {{item.district}} {{item.address}}</view>
+    <view class="house-loc" wx:if="{{item.district || item.address}}">⌖ {{item.district}} {{item.address}}</view>
     <view class="house-foot">
       <view class="house-price" wx:if="{{item.unit_price}}">{{item.unit_price}}</view>
       <view class="house-unit" wx:if="{{item.total_price}}">{{item.total_price}}</view>
-      <view class="analyze-chip" data-id="{{item._id}}" catchtap="goAnalyze">📊 分析</view>
+      <view class="analyze-chip" data-id="{{item._id}}" catchtap="goAnalyze">分析</view>
     </view>
   </view>
   <view wx:if="{{!newHouses.length && !loading}}" class="empty-tip">
-    <text class="empty-emoji">🏚️</text>
+    <view class="empty-symbol">⌂</view>
     该城市暂无新房数据
   </view>
 </block>

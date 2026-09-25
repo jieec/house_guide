@@ -6,10 +6,10 @@ Page({
     total: 0,
     records: [],
     quickModules: [
-      { key: 'basic', name: '基本信息', icon: '🏠', desc: '房屋概况' },
-      { key: 'analysis', name: '房源分析', icon: '📊', desc: '市场对比' },
-      { key: 'conclusion', name: '评估结论', icon: '✅', desc: '价值判断' },
-      { key: 'mortgage', name: '按揭测算', icon: '🧮', desc: '月供/利率' }
+      { key: 'basic', name: '基本信息', icon: '⌂', desc: '房屋概况' },
+      { key: 'analysis', name: '房源分析', icon: '◒', desc: '市场对比' },
+      { key: 'conclusion', name: '评估结论', icon: '✓', desc: '价值判断' },
+      { key: 'mortgage', name: '按揭测算', icon: '＋', desc: '月供/利率' }
     ]
   },
   onShow() {

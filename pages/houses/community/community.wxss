@@ -375,5 +375,17 @@
   text-align: center;
   padding: 24rpx;
   font-size: 24rpx;
-  color: #5b7aa8;
+  color: #aaa4cb !important;
 }
+
+/* Deep-space glass overrides */
+page { background:transparent !important; color:#f6f3ff !important; }
+.c-head { background:linear-gradient(112deg,rgba(89,50,167,.88),rgba(42,99,178,.72)),url('../../images/bg-city.png') center/cover !important; border-radius:0 0 34rpx 34rpx !important; box-shadow:0 24rpx 54rpx rgba(4,2,22,.32) !important; }
+.c-city,.c-count,.grade-name,.grade-tips,.info-k,.poi-count,.poi-info,.near-meta,.intro,.house-meta,.house-loc,.house-tags { color:#aaa4cb !important; }
+.c-name,.d-card-title,.info-v,.poi-name,.near-name,.house-title { color:#f7f4ff !important; }
+.d-card,.house-card { background:rgba(255,255,255,.065) !important; border-color:rgba(255,255,255,.14) !important; box-shadow:0 24rpx 58rpx rgba(4,2,22,.28),inset 0 1rpx 0 rgba(255,255,255,.10) !important; border-radius:26rpx !important; }
+.type-chip { background:rgba(255,255,255,.065) !important; border-color:rgba(255,255,255,.14) !important; color:#aaa4cb !important; border-radius:999rpx !important; }
+.type-active { background:linear-gradient(112deg,#a75bff,#4b9cff) !important; color:#fff !important; border-color:transparent !important; }
+.house-tag,.analyze-chip { background:rgba(143,97,255,.15) !important; border-color:rgba(187,159,255,.32) !important; color:#d3c3ff !important; }
+.house-price,.grade-score,.grade-val,.poi-title,.poi-toggle { color:#79ddff !important; }
+.near-price { color:#ffb07d !important; }

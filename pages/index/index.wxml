@@ -10,6 +10,10 @@
     </view>
 
     <view class="welcome-panel">
+      <image class="welcome-city-art" src="../../images/bg-city.png" mode="aspectFill"></image>
+      <view class="welcome-glow glow-purple"></view>
+      <view class="welcome-glow glow-cyan"></view>
+      <view class="welcome-grid-lines"></view>
       <view class="welcome-copy">
         <view class="welcome-kicker">PROPERTY INSIGHT</view>
         <view class="welcome-title">看清房产价值，<text>从这里开始</text></view>
@@ -23,6 +27,8 @@
         <view class="visual-building building-two"></view>
         <view class="visual-building building-three"></view>
         <image class="bear-mascot" src="../../images/bear.png" mode="aspectFit"></image>
+        <view class="visual-spark spark-one"></view>
+        <view class="visual-spark spark-two"></view>
         <view class="visual-ground"></view>
         <view class="visual-label">价值分析</view>
       </view>

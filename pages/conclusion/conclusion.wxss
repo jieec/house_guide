@@ -44,5 +44,13 @@
 .record-time {
   margin-top: 6rpx;
   font-size: 22rpx;
-  color: #5b7aa8;
+  color: #aaa4cb !important;
 }
+
+/* Deep-space glass overrides */
+page { background:transparent !important; color:#f6f3ff !important; }
+.tips { background:rgba(91,127,255,.12) !important; border-color:rgba(137,164,255,.24) !important; color:#c9c4f0 !important; border-radius:18rpx !important; }
+.record { border-color:rgba(255,255,255,.10) !important; }
+.record-place { color:#f7f4ff !important; }
+.record-line { color:#aaa4cb !important; }
+.record-del { color:#ffb07d !important; }

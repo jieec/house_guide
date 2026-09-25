@@ -33,5 +33,14 @@
 .preview-sub {
   margin-top: 10rpx;
   font-size: 26rpx;
-  color: #7b8fb0;
+  color: #aaa4cb !important;
 }
+
+/* Deep-space glass overrides */
+page { background:transparent !important; color:#f6f3ff !important; }
+.locate-bar { background:linear-gradient(112deg,rgba(89,50,167,.82),rgba(42,99,178,.68)),url('../../images/bg-city.png') center/cover !important; border-color:rgba(255,255,255,.16) !important; box-shadow:0 24rpx 54rpx rgba(4,2,22,.32) !important; border-radius:26rpx !important; }
+.locate-btn { color:#fff !important; }
+.locate-hint { color:#d2cdec !important; }
+.preview { color:#79ddff !important; }
+.card-title,.form-label { color:#f7f4ff !important; }
+.form-input,.form-input-wrap { background:rgba(9,7,33,.34) !important; color:#f6f3ff !important; border-color:rgba(178,151,255,.24) !important; }

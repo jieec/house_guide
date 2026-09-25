@@ -23,9 +23,16 @@
 }
 
 .bank-call {
-  color: #00d4ff;
+  color: #d7c8ff !important;
   font-size: 28rpx;
   padding: 10rpx 28rpx;
-  border: 1rpx solid rgba(0, 212, 255, 0.4);
-  border-radius: 40rpx;
+  border: 1rpx solid rgba(186,162,255,.48) !important;
+  border-radius: 999rpx;
+  background:rgba(255,255,255,.065);
 }
+
+/* Deep-space glass overrides */
+page { background:transparent !important; color:#f6f3ff !important; }
+.bank { border-color:rgba(255,255,255,.10) !important; }
+.bank-name { color:#f7f4ff !important; }
+.bank-type { color:#aaa4cb !important; }

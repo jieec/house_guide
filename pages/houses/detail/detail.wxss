@@ -1,5 +1,5 @@
 /* Detail page: light cards with readable contrast and soft lavender accents. */
-page { background: #f5f6ff; color: #34406f; padding-bottom: calc(43px + env(safe-area-inset-bottom)); }
+page { background:transparent; color:#eef2ff; padding-bottom:calc(140rpx + env(safe-area-inset-bottom)); }
 .detail { padding-bottom: 40rpx; }
 .d-hero { background: linear-gradient(135deg, #dce1ff 0%, #c8d1fa 100%); color: #303b66; border-radius: 0 0 30rpx 30rpx; padding: 36rpx 28rpx; box-shadow: 0 12rpx 26rpx rgba(105,116,200,.12); }
 .d-title { color: #303b66; font-size: 36rpx; font-weight: 700; line-height: 1.4; }
@@ -21,3 +21,14 @@ page { background: #f5f6ff; color: #34406f; padding-bottom: calc(43px + env(safe
 .d-card .tag { background: #f0f1ff; color: #5966c5; border: 1rpx solid #dfe2f7; border-radius: 10rpx; padding: 9rpx 14rpx; font-size: 22rpx; }
 .d-actions { margin-top: 28rpx; }
 .d-actions .btn-primary { margin: 18rpx 24rpx; }
+
+/* Deep-space glass overrides */
+page { background:transparent !important; color:#f6f3ff !important; }
+.d-hero { background:linear-gradient(112deg,rgba(89,50,167,.88),rgba(42,99,178,.72)),url('../../images/bg-city.png') center/cover !important; color:#f7f4ff !important; border-radius:0 0 34rpx 34rpx !important; box-shadow:0 24rpx 54rpx rgba(4,2,22,.32) !important; }
+.d-title { color:#f7f4ff !important; }
+.d-tag { background:rgba(255,255,255,.10) !important; border-color:rgba(255,255,255,.22) !important; color:#e4d9ff !important; }
+.d-unit2,.d-unit,.d-cell-k,.d-k,.ld-title { color:#aaa4cb !important; }
+.d-card { background:rgba(255,255,255,.065) !important; border-color:rgba(255,255,255,.14) !important; box-shadow:0 24rpx 58rpx rgba(4,2,22,.28),inset 0 1rpx 0 rgba(255,255,255,.10) !important; border-radius:26rpx !important; }
+.d-card-title,.d-cell-v,.d-v,.ld-text { color:#f7f4ff !important; }
+.ld-row,.d-row { border-color:rgba(255,255,255,.10) !important; }
+.d-card .tag { background:rgba(143,97,255,.15) !important; color:#d3c3ff !important; border-color:rgba(187,159,255,.32) !important; }
