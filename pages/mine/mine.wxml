@@ -1,4 +1,17 @@
-<view class="mine-hero">
+<view class="mine-layout">
+  <view class="mine-main">
+    <view class="page-heading {{showContent ? 'animated' : ''}}">
+      <view>
+        <view class="eyebrow">MINE / PROFILE</view>
+        <view class="page-title">我的评估</view>
+        <view class="page-subtitle">记录你的选房与测算进度</view>
+      </view>
+    </view>
+
+    <view class="bg-orb orb-1"></view>
+    <view class="bg-orb orb-2"></view>
+
+    <view class="mine-hero {{showContent ? 'animated' : ''}}">
   <view class="avatar">🏠</view>
   <view class="mine-info">
     <view class="mine-name">我的购房评估</view>
@@ -7,7 +20,7 @@
   </view>
 </view>
 
-<view class="card">
+<view class="card {{showContent ? 'animated' : ''}}">
   <view class="card-title">当前定位</view>
   <block wx:if="{{location && location.city}}">
     <view class="loc-line">{{location.province}} {{location.city}} {{location.district}}</view>
@@ -17,7 +30,7 @@
   <view class="btn-ghost" bindtap="goLocation">选择/修改定位</view>
 </view>
 
-<view class="card">
+<view class="card {{showContent ? 'animated' : ''}}">
   <view class="card-title">登记记录</view>
   <view class="record" wx:for="{{records}}" wx:key="id">
     <view class="record-head">
@@ -30,7 +43,7 @@
   <view wx:if="{{!records.length}}" class="rec-empty">暂无登记记录，去「评估结论」页测算登记</view>
 </view>
 
-<view class="cell" bindtap="clearAll">
+<view class="cell {{showContent ? 'animated' : ''}}" bindtap="clearAll">
   <view class="cell-left">
     <view class="cell-icon" style="background:#ffecec">🗑️</view>
     <view class="cell-name">清除本地数据</view>
@@ -38,10 +51,12 @@
   <view class="cell-arrow">›</view>
 </view>
 
-<view class="cell" bindtap="about">
+<view class="cell {{showContent ? 'animated' : ''}}" bindtap="about">
   <view class="cell-left">
     <view class="cell-icon" style="background:#eef4ff">ℹ️</view>
     <view class="cell-name">关于</view>
   </view>
   <view class="cell-arrow">›</view>
+</view>
+</view>
 </view>

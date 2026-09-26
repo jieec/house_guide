@@ -2,6 +2,7 @@ const calc = require('../../utils/calc.js')
 
 Page({
   data: {
+    showContent: false,
     loanAmount: '',
     rateTypes: ['LPR利率', '基础利率'],
     rateTypeIndex: 0,
@@ -10,16 +11,36 @@ Page({
     yearsIndex: 5,
     payMethods: ['等额本息', '等额本金'],
     payMethodIndex: 0,
-    monthly: '',
-    firstMonth: '',
-    totalRepay: '',
-    totalInterest: ''
+    
+    // 等额本息结果
+    monthlyEqualPrincipal: '',
+    totalRepayEqualPrincipal: '',
+    totalInterestEqualPrincipal: '',
+    
+    // 等额本金结果
+    firstMonthEqualInstallment: '',
+    lastMonthEqualInstallment: '',
+    totalRepayEqualInstallment: '',
+    totalInterestEqualInstallment: '',
+    
+    // 组合贷款结果
+    monthlyCombined: '',
+    totalRepayCombined: '',
+    totalInterestCombined: '',
+    commercialAmount: '',
+    fundAmount: ''
   },
   onShow() {
     const saved = wx.getStorageSync('mortgage')
-    if (saved) {
-      this.setData(saved)
-    }
+    
+    // 触发入场动画
+    this.setData({ 
+      showContent: false,
+      ...(saved || {})
+    })
+    setTimeout(() => {
+      this.setData({ showContent: true })
+    }, 100)
   },
   onInput(e) {
     this.setData({ [e.currentTarget.dataset.field]: e.detail.value })
@@ -41,22 +62,52 @@ Page({
       wx.showToast({ title: '请填写贷款金额和利率', icon: 'none' })
       return
     }
-    let monthly = ''
-    let firstMonth = ''
-    let totalRepay = ''
-    let totalInterest = ''
-    if (this.data.payMethodIndex === 0) {
-      const m = calc.monthlyPaymentEqualPrincipal(amount, rate, years)
-      monthly = m.toFixed(2)
-      totalRepay = (m * years * 12).toFixed(0)
-      totalInterest = calc.totalInterestEqualPrincipal(amount, rate, years).toFixed(0)
-    } else {
-      const first = calc.firstPaymentEqualInstallment(amount, rate, years)
-      firstMonth = first.toFixed(2)
-      totalInterest = calc.totalInterestEqualInstallment(amount, rate, years).toFixed(0)
-      totalRepay = (amount + Number(totalInterest)).toFixed(0)
-    }
-    this.setData({ monthly, firstMonth, totalRepay, totalInterest })
+    
+    // 等额本息
+    const monthlyEqualPrincipal = calc.monthlyPaymentEqualPrincipal(amount, rate, years)
+    const totalRepayEqualPrincipal = (monthlyEqualPrincipal * years * 12).toFixed(0)
+    const totalInterestEqualPrincipal = calc.totalInterestEqualPrincipal(amount, rate, years).toFixed(0)
+    
+    // 等额本金
+    const firstMonthEqualInstallment = calc.firstPaymentEqualInstallment(amount, rate, years)
+    const totalInterestEqualInstallment = calc.totalInterestEqualInstallment(amount, rate, years).toFixed(0)
+    const totalRepayEqualInstallment = (amount + Number(totalInterestEqualInstallment)).toFixed(0)
+    const lastMonthEqualInstallment = calc.lastPaymentEqualInstallment(amount, rate, years)
+    
+    // 组合贷款 (假设商贷70%、公积金30%)
+    const commercialAmount = amount * 0.7
+    const fundAmount = amount * 0.3
+    const commercialRate = rate
+    const fundRate = rate * 0.7 // 公积金利率通常更低
+    
+    const monthlyCommercial = calc.monthlyPaymentEqualPrincipal(commercialAmount, commercialRate, years)
+    const monthlyFund = calc.monthlyPaymentEqualPrincipal(fundAmount, fundRate, years)
+    const monthlyCombined = monthlyCommercial + monthlyFund
+    const totalRepayCombined = (monthlyCombined * years * 12).toFixed(0)
+    const totalInterestCombined = (
+      calc.totalInterestEqualPrincipal(commercialAmount, commercialRate, years) +
+      calc.totalInterestEqualPrincipal(fundAmount, fundRate, years)
+    ).toFixed(0)
+    
+    this.setData({
+      // 等额本息
+      monthlyEqualPrincipal: monthlyEqualPrincipal.toFixed(2),
+      totalRepayEqualPrincipal,
+      totalInterestEqualPrincipal,
+      
+      // 等额本金
+      firstMonthEqualInstallment: firstMonthEqualInstallment.toFixed(2),
+      lastMonthEqualInstallment: lastMonthEqualInstallment.toFixed(2),
+      totalRepayEqualInstallment,
+      totalInterestEqualInstallment,
+      
+      // 组合贷款
+      monthlyCombined: monthlyCombined.toFixed(2),
+      totalRepayCombined,
+      totalInterestCombined,
+      commercialAmount: commercialAmount.toFixed(0),
+      fundAmount: fundAmount.toFixed(0)
+    })
   },
   save() {
     const d = this.data
@@ -66,10 +117,18 @@ Page({
       rate: d.rate,
       yearsIndex: d.yearsIndex,
       payMethodIndex: d.payMethodIndex,
-      monthly: d.monthly,
-      firstMonth: d.firstMonth,
-      totalRepay: d.totalRepay,
-      totalInterest: d.totalInterest
+      monthlyEqualPrincipal: d.monthlyEqualPrincipal,
+      totalRepayEqualPrincipal: d.totalRepayEqualPrincipal,
+      totalInterestEqualPrincipal: d.totalInterestEqualPrincipal,
+      firstMonthEqualInstallment: d.firstMonthEqualInstallment,
+      lastMonthEqualInstallment: d.lastMonthEqualInstallment,
+      totalRepayEqualInstallment: d.totalRepayEqualInstallment,
+      totalInterestEqualInstallment: d.totalInterestEqualInstallment,
+      monthlyCombined: d.monthlyCombined,
+      totalRepayCombined: d.totalRepayCombined,
+      totalInterestCombined: d.totalInterestCombined,
+      commercialAmount: d.commercialAmount,
+      fundAmount: d.fundAmount
     })
     wx.showToast({ title: '已保存', icon: 'success' })
   }

@@ -1,6 +1,6 @@
 <view class="home-layout">
   <view class="home-main">
-    <view class="page-heading">
+    <view class="page-heading {{showContent ? 'animated' : ''}}">
       <view>
         <view class="eyebrow">HOME / OVERVIEW</view>
         <view class="page-title">房产价值评估</view>
@@ -9,7 +9,7 @@
       <view class="heading-badge"><text class="status-dot"></text> 房产助手在线</view>
     </view>
 
-    <view class="welcome-panel">
+    <view class="welcome-panel {{showContent ? 'animated' : ''}}">
       <image class="welcome-city-art" src="../../images/bg-city.png" mode="aspectFill"></image>
       <view class="welcome-glow glow-purple"></view>
       <view class="welcome-glow glow-cyan"></view>
@@ -26,7 +26,7 @@
         <view class="visual-building building-one"></view>
         <view class="visual-building building-two"></view>
         <view class="visual-building building-three"></view>
-        <image class="bear-mascot" src="../../images/bear.png" mode="aspectFit"></image>
+        <!-- Removed mascot for cleaner design -->
         <view class="visual-spark spark-one"></view>
         <view class="visual-spark spark-two"></view>
         <view class="visual-ground"></view>
@@ -34,7 +34,7 @@
       </view>
     </view>
 
-    <view class="location-row">
+    <view class="location-row {{showContent ? 'animated' : ''}}">
       <view class="location-symbol">⌖</view>
       <view class="location-copy" wx:if="{{location && location.city}}" bindtap="goLocation">
         <view class="location-title">{{location.province}} {{location.city}} {{location.district}}</view>
@@ -47,19 +47,19 @@
       <view class="location-edit" bindtap="goLocation">修改区域 <text>›</text></view>
     </view>
 
-    <view class="section-heading">
+    <view class="section-heading {{showContent ? 'animated' : ''}}">
       <view><view class="section-title">快捷工具</view><view class="section-caption">房产评估所需工具，一站完成</view></view>
       <view class="section-count">04 <text>TOOLS</text></view>
     </view>
     <view class="tool-grid">
-      <view class="tool-item" wx:for="{{quickModules}}" wx:key="key" data-key="{{item.key}}" bindtap="goModule">
+      <view class="tool-item {{showContent ? 'animated' : ''}}" wx:for="{{quickModules}}" wx:key="key" data-key="{{item.key}}" bindtap="goModule">
         <view class="tool-topline"><view class="tool-icon tool-icon-{{index}}">{{item.icon}}</view><view class="tool-arrow">↗</view></view>
         <view class="tool-name">{{item.name}}</view>
         <view class="tool-desc">{{item.desc}}</view>
       </view>
     </view>
 
-    <view class="summary-strip">
+    <view class="summary-strip {{showContent ? 'animated' : ''}}">
       <view class="summary-copy"><view class="summary-title">从基础信息到专业结论</view><view class="summary-desc">让每一项房产数据，都成为决策依据。</view></view>
       <view class="summary-mark">01 <text>/ 04</text></view>
     </view>

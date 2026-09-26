@@ -1,38 +1,104 @@
+/* 金融页面 - 柔和紫色风格 + 超级惊艳动效 */
+
+page {
+  background: linear-gradient(180deg, #F5F3FF 0%, #F0EAFE 50%, #E8E3FD 100%);
+  color: #2D2D3A;
+  padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
+  position: relative;
+  overflow: hidden;
+}
+
+/* 背景装饰 - 波浪图案 */
+page::before {
+  content: '';
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 400rpx;
+  background: 
+    radial-gradient(ellipse 800rpx 150rpx at 50% 100%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 600rpx 120rpx at 30% 120%, rgba(124, 92, 252, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse 500rpx 100rpx at 70% 110%, rgba(109, 78, 237, 0.04) 0%, transparent 50%);
+  z-index: 0;
+}
+
+page::after {
+  content: '';
+  position: fixed;
+  top: 100rpx;
+  left: -100rpx;
+  width: 400rpx;
+  height: 400rpx;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+/* 确保内容在装饰层之上 */
+.card, .btn-primary, .btn-ghost {
+  position: relative;
+  z-index: 1;
+}
+
+/* 入场动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(60rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 结果卡片动画 */
+.result {
+  animation: scaleIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+/* 表单行动画 */
+.form-row {
+  animation: fadeInUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+.form-row:nth-child(1) { animation-delay: 0.1s; }
+.form-row:nth-child(2) { animation-delay: 0.2s; }
+.form-row:nth-child(3) { animation-delay: 0.3s; }
+.form-row:nth-child(4) { animation-delay: 0.4s; }
+.form-row:nth-child(5) { animation-delay: 0.5s; }
+.form-row:nth-child(n+6) { animation-delay: 0.6s; }
+
+/* ==================== 点击效果 ==================== */
+
 .bank {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20rpx 0;
-  border-bottom: 1rpx solid rgba(0, 180, 255, 0.08);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.bank:last-child {
-  border-bottom: none;
-}
-
-.bank-name {
-  font-size: 28rpx;
-  font-weight: 500;
-  color: #e8f0fe;
-}
-
-.bank-type {
-  margin-top: 4rpx;
-  font-size: 22rpx;
-  color: #7b8fb0;
+.bank:active {
+  background: #F5F3FF;
+  transform: translateX(8rpx) scale(0.98);
+  box-shadow: 0rpx 8rpx 20rpx rgba(124, 92, 252, 0.15);
 }
 
 .bank-call {
-  color: #d7c8ff !important;
-  font-size: 28rpx;
-  padding: 10rpx 28rpx;
-  border: 1rpx solid rgba(186,162,255,.48) !important;
-  border-radius: 999rpx;
-  background:rgba(255,255,255,.065);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Deep-space glass overrides */
-page { background:transparent !important; color:#f6f3ff !important; }
-.bank { border-color:rgba(255,255,255,.10) !important; }
-.bank-name { color:#f7f4ff !important; }
-.bank-type { color:#aaa4cb !important; }
+.bank-call:active {
+  transform: scale(0.9);
+  color: #6D4EED;
+  background: rgba(139, 92, 246, 0.15);
+}

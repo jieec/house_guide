@@ -1,5 +1,17 @@
-<view class="page">
-  <view class="query-card">
+<view class="guide-layout">
+  <view class="guide-main">
+    <view class="page-heading {{showContent ? 'animated' : ''}}">
+      <view>
+        <view class="eyebrow">GUIDE / REPORT</view>
+        <view class="page-title">小区报告</view>
+        <view class="page-subtitle">自动生成基本信息、价值分析与购置建议</view>
+      </view>
+    </view>
+
+    <view class="bg-orb orb-1"></view>
+    <view class="bg-orb orb-2"></view>
+
+    <view class="query-card animate-item {{showContent ? 'animated' : ''}}" style="animation-delay: 0.1s;">
     <view class="query-title">选择位置和小区</view>
     <view class="location-row" bindtap="goLocation">
       <view>
@@ -23,6 +35,7 @@
   </view>
 
   <view class="empty-state" wx:if="{{!selectedCommunity && !loading}}">
+    <image class="empty-house" src="../../images/house.png" mode="aspectFit"></image>
     <view class="empty-icon">⌂</view>
     <view class="empty-title">选择小区后自动生成分析</view>
     <view class="empty-text">页面只读取后台爬取的数据，不需要用户逐项填写。</view>
@@ -36,7 +49,7 @@
       </view>
       <view class="reload" bindtap="reloadReport">刷新</view>
     </view>
-    <scroll-view class="tabs" scroll-x enhanced show-scrollbar="{{false}}">
+    <scroll-view class="tabs animate-item {{showContent ? 'animated' : ''}}" style="animation-delay: 0.2s;" scroll-x enhanced show-scrollbar="{{false}}">
       <view class="tabs-inner">
         <view class="tab {{activeTab === index ? 'active' : ''}}" wx:for="{{tabs}}" wx:key="*this" data-index="{{index}}" bindtap="switchTab">{{item}}</view>
       </view>
@@ -45,8 +58,8 @@
 
     <block wx:if="{{!loading}}">
       <view wx:if="{{activeTab === 0}}">
-        <view class="section-title">楼盘信息</view>
-        <view class="data-card">
+        <view class="section-title animate-item {{showContent ? 'animated' : ''}}" style="animation-delay: 0.3s;">楼盘信息</view>
+        <view class="data-card animate-item {{showContent ? 'animated' : ''}}" style="animation-delay: 0.35s;">
           <view class="data-row" wx:for="{{report.basic}}" wx:key="label">
             <view class="data-label">{{item.label}}</view>
             <view class="data-value {{item.value === '暂无数据' ? 'muted' : ''}}">{{item.value}}</view>
@@ -345,4 +358,5 @@
     <button class="report-export-button" bindtap="exportPdf">生成 PDF 报告</button>
   </view>
   <canvas id="pdfCanvas" type="2d" class="pdf-canvas"></canvas>
+</view>
 </view>

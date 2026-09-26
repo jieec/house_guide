@@ -28,22 +28,107 @@
     </picker>
   </view>
   <view class="btn-ghost" bindtap="calc">开始测算</view>
-  <view class="result" wx:if="{{monthly || firstMonth}}">
-    <view class="result-line" wx:if="{{monthly}}">
-      <view class="result-label">月供(等额本息)</view>
-      <view class="result-num">{{monthly}} 元</view>
+  
+  <view class="results-container" wx:if="{{monthlyEqualPrincipal}}">
+    <!-- 输入摘要 -->
+    <view class="input-summary">
+      <view class="summary-title">测算条件</view>
+      <view class="summary-grid">
+        <view class="summary-item">
+          <view class="summary-label">贷款金额</view>
+          <view class="summary-value">{{loanAmount}} 元</view>
+        </view>
+        <view class="summary-item">
+          <view class="summary-label">贷款年限</view>
+          <view class="summary-value">{{years[yearsIndex]}}</view>
+        </view>
+        <view class="summary-item">
+          <view class="summary-label">贷款利率</view>
+          <view class="summary-value">{{rate}}%</view>
+        </view>
+        <view class="summary-item">
+          <view class="summary-label">利率类型</view>
+          <view class="summary-value">{{rateTypes[rateTypeIndex]}}</view>
+        </view>
+      </view>
     </view>
-    <view class="result-line" wx:if="{{firstMonth}}">
-      <view class="result-label">首月(等额本金)</view>
-      <view class="result-num">{{firstMonth}} 元</view>
+
+    <!-- 等额本息 -->
+    <view class="result-section">
+      <view class="result-section-title">
+        <view class="result-title-icon">💰</view>
+        <view class="result-title-text">等额本息</view>
+        <view class="result-title-badge">月供固定</view>
+      </view>
+      <view class="result-highlight">
+        <view class="result-highlight-label">月供金额</view>
+        <view class="result-highlight-value">{{monthlyEqualPrincipal}} 元</view>
+      </view>
+      <view class="result-line">
+        <view class="result-label">总还款额</view>
+        <view class="result-num">{{totalRepayEqualPrincipal}} 元</view>
+      </view>
+      <view class="result-line">
+        <view class="result-label">总利息</view>
+        <view class="result-num">{{totalInterestEqualPrincipal}} 元</view>
+      </view>
+      <view class="result-desc">每月还款金额固定，适合收入稳定的购房者</view>
     </view>
-    <view class="result-line">
-      <view class="result-label">总利息</view>
-      <view class="result-num">{{totalInterest}} 元</view>
+
+    <!-- 等额本金 -->
+    <view class="result-section">
+      <view class="result-section-title">
+        <view class="result-title-icon">📊</view>
+        <view class="result-title-text">等额本金</view>
+        <view class="result-title-badge">逐月递减</view>
+      </view>
+      <view class="result-highlight">
+        <view class="result-highlight-label">首月月供</view>
+        <view class="result-highlight-value">{{firstMonthEqualInstallment}} 元</view>
+      </view>
+      <view class="result-line">
+        <view class="result-label">末月月供</view>
+        <view class="result-num">{{lastMonthEqualInstallment}} 元</view>
+      </view>
+      <view class="result-line">
+        <view class="result-label">总还款额</view>
+        <view class="result-num">{{totalRepayEqualInstallment}} 元</view>
+      </view>
+      <view class="result-line">
+        <view class="result-label">总利息</view>
+        <view class="result-num">{{totalInterestEqualInstallment}} 元</view>
+      </view>
+      <view class="result-desc">本金固定，利息递减，总利息更少</view>
     </view>
-    <view class="result-line">
-      <view class="result-label">总还款额</view>
-      <view class="result-num">{{totalRepay}} 元</view>
+
+    <!-- 组合贷款 -->
+    <view class="result-section">
+      <view class="result-section-title">
+        <view class="result-title-icon">🏦</view>
+        <view class="result-title-text">组合贷款</view>
+        <view class="result-title-badge">商贷+公积金</view>
+      </view>
+      <view class="result-detail-row">
+        <view class="result-detail-label">商业贷款 (70%)</view>
+        <view class="result-detail-value">{{commercialAmount}} 元</view>
+      </view>
+      <view class="result-detail-row">
+        <view class="result-detail-label">公积金贷款 (30%)</view>
+        <view class="result-detail-value">{{fundAmount}} 元</view>
+      </view>
+      <view class="result-highlight">
+        <view class="result-highlight-label">月供合计</view>
+        <view class="result-highlight-value">{{monthlyCombined}} 元</view>
+      </view>
+      <view class="result-line">
+        <view class="result-label">总还款额</view>
+        <view class="result-num">{{totalRepayCombined}} 元</view>
+      </view>
+      <view class="result-line">
+        <view class="result-label">总利息</view>
+        <view class="result-num">{{totalInterestCombined}} 元</view>
+      </view>
+      <view class="result-desc">利用公积金低利率，综合成本更优</view>
     </view>
   </view>
 </view>

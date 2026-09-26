@@ -1,11 +1,24 @@
-<view class="city-card" bindtap="openCityPanel">
-  <view class="city-icon">⌖</view>
-  <view class="city-body">
-    <view class="city-name">{{cities[cityIndex]}}</view>
-    <view class="city-arrow">▾ 点击搜索/切换城市</view>
-  </view>
-  <view class="locate-btn" catchtap="locateMe">{{locating ? '定位中...' : 'GPS定位'}}</view>
-</view>
+<view class="houses-layout">
+  <view class="houses-main">
+    <view class="page-heading {{showContent ? 'animated' : ''}}">
+      <view>
+        <view class="eyebrow">HOUSES / EXPLORE</view>
+        <view class="page-title">浏览房源</view>
+        <view class="page-subtitle">搜索小区，查看二手房和新房详情</view>
+      </view>
+    </view>
+
+    <view class="bg-orb orb-1"></view>
+    <view class="bg-orb orb-2"></view>
+
+    <view class="city-card {{showContent ? 'animated' : ''}}" bindtap="openCityPanel">
+      <view class="city-icon">⌖</view>
+      <view class="city-body">
+        <view class="city-name">{{cities[cityIndex]}}</view>
+        <view class="city-arrow">▾ 点击搜索/切换城市</view>
+      </view>
+      <view class="locate-btn" catchtap="locateMe">{{locating ? '定位中...' : 'GPS定位'}}</view>
+    </view>
 
 <view class="city-mask" wx:if="{{showCityPanel}}" bindtap="closeCityPanel"></view>
 <view class="city-panel" wx:if="{{showCityPanel}}">
@@ -24,22 +37,22 @@
   </scroll-view>
 </view>
 
-<view class="type-bar">
+<view class="type-bar {{showContent ? 'animated' : ''}}">
   <view wx:for="{{types}}" wx:key="key" class="type-chip {{typeIndex === index ? 'type-active' : ''}}"
     data-index="{{index}}" bindtap="onTypeChange">{{item.name}}</view>
 </view>
 
 <block wx:if="{{types[typeIndex].key !== '新房'}}">
-  <view class="search-bar">
+  <view class="search-bar {{showContent ? 'animated' : ''}}">
     <view class="search-box">
       <view class="search-icon">⌕</view>
       <input class="search-input" placeholder="搜索{{cities[cityIndex]}}的小区名" value="{{keyword}}" bindinput="onKeyword" />
     </view>
   </view>
 
-  <view class="count-bar" wx:if="{{communities.length}}">{{cities[cityIndex]}} · 共 {{communities.length}} 个小区{{fromCommDb ? '（小区库数据，暂无房源）' : ''}}</view>
+  <view class="count-bar {{showContent ? 'animated' : ''}}" wx:if="{{communities.length}}">{{cities[cityIndex]}} · 共 {{communities.length}} 个小区{{fromCommDb ? '（小区库数据，暂无房源）' : ''}}</view>
 
-  <view class="cell" wx:for="{{communities}}" wx:key="_id" data-name="{{item._id}}" bindtap="goCommunity">
+  <view class="cell {{showContent ? 'animated' : ''}}" wx:for="{{communities}}" wx:key="_id" data-name="{{item._id}}" bindtap="goCommunity">
     <view class="cell-left">
       <view class="cell-icon" style="background:rgba(123,91,255,.22)">⌂</view>
       <view>
@@ -60,8 +73,8 @@
 </block>
 
 <block wx:else>
-  <view class="count-bar" wx:if="{{newHouses.length}}">{{cities[cityIndex]}} · 新房楼盘</view>
-  <view class="house-card" wx:for="{{newHouses}}" wx:key="_id" data-id="{{item._id}}" bindtap="goDetail">
+  <view class="count-bar {{showContent ? 'animated' : ''}}" wx:if="{{newHouses.length}}">{{cities[cityIndex]}} · 新房楼盘</view>
+  <view class="house-card {{showContent ? 'animated' : ''}}" wx:for="{{newHouses}}" wx:key="_id" data-id="{{item._id}}" bindtap="goDetail">
     <view class="house-head">
       <view class="house-title">{{item.title}}</view>
       <view class="house-tag">新房</view>
@@ -85,3 +98,5 @@
 
 <view wx:if="{{loading}}" class="load-tip">加载中...</view>
 <view wx:if="{{!cloudOk}}" class="load-tip">云数据库未连接，请检查权限设置</view>
+</view>
+</view>

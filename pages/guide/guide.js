@@ -59,13 +59,23 @@ Page({
     selectedCommunity: null,
     report: { basic: [], prices: [], advice: [], tools: [], competitors: [], traffic: [], schools: [], missing: [] },
     dataStatus: '',
-    updatedAt: ''
+    updatedAt: '',
+    showContent: false
   },
 
   onShow() {
     const location = app.globalData.location || null
     const city = location && location.city ? String(location.city).replace(/市$/, '') : ''
-    this.setData({ location, city })
+    
+    // 触发入场动画
+    this.setData({ 
+      showContent: false,
+      location,
+      city
+    })
+    setTimeout(() => {
+      this.setData({ showContent: true })
+    }, 100)
   },
   switchTab(e) { this.setData({ activeTab: Number(e.currentTarget.dataset.index) }) },
   toggleTool(e) {
@@ -95,7 +105,17 @@ Page({
   },
   calculateLoan() {
     const result = this.calculateLoanResult(this.data.loanForm)
-    this.setData({ loanResult: result })
+    // 更新 tools 中贷款测算的显示值
+    const tools = this.data.report.tools || []
+    const loanToolIndex = tools.findIndex(t => t.loanCalculator)
+    if (loanToolIndex >= 0 && result.valid) {
+      tools[loanToolIndex].value = result.summary
+      tools[loanToolIndex].note = `${this.data.loanForm.totalPrice}万 · ${this.data.loanForm.loanType} · ${this.data.loanForm.termYears}年`
+    }
+    this.setData({ 
+      loanResult: result,
+      'report.tools': tools
+    })
   },
   calculateLoanResult(form) {
     const totalPrice = num(form.totalPrice)
@@ -382,10 +402,16 @@ Page({
         rentAvg, remainingYears: num(first(price.remainingYears, base.remainingYears, doc.remainingYears, doc.landRemainingYears))
       }),
       tools: [
-        {
-          label: '贷款测算', value: '可调整', note: '商业 / 公积金 / 组合贷款，支持两种还款方式',
-          loanCalculator: true, formula: '', parts: [], warning: '结果仅作预算参考，实际额度、利率和贷款年限以银行审批为准。'
-        },
+        (() => {
+          // 自动计算贷款测算结果
+          const loanResult = this.calculateLoanResult(this.data.loanForm)
+          return {
+            label: '贷款测算', 
+            value: loanResult.valid ? loanResult.summary : '待输入', 
+            note: loanResult.valid ? `${this.data.loanForm.totalPrice}万 · ${this.data.loanForm.loanType} · ${this.data.loanForm.termYears}年` : '商业 / 公积金 / 组合贷款，支持两种还款方式',
+            loanCalculator: true, formula: '', parts: [], warning: '结果仅作预算参考，实际额度、利率和贷款年限以银行审批为准。'
+          }
+        })(),
         {
           label: '交易税费参考', value: show(deedTax ? Math.round(deedTax) : '', '元起'), note: '点击查看契税、增值税、个人所得税',
           formula: '交易税费 = 契税 + 增值税及附加 + 个人所得税 + 其他费用',

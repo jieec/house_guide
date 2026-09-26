@@ -1,1 +1,847 @@
-page { background:#171033; color:#f4f1ff; padding-bottom:calc(148rpx + env(safe-area-inset-bottom)); }.house-card,.cell { background:rgba(255,255,255,.09); border:1rpx solid rgba(255,255,255,.16); border-radius:24rpx; box-shadow:0 18rpx 40rpx rgba(0,0,0,.2),inset 0 1rpx 0 rgba(255,255,255,.08); backdrop-filter:blur(20rpx); }.city-card { position:relative; overflow:hidden; background-image:linear-gradient(100deg,rgba(20,28,79,.78),rgba(28,76,126,.45)),url('../../images/bg-city.png'); background-position:center,center 46%; background-size:cover,cover; }.city-card::after { content:'CITY DATA  /  LIVE'; position:absolute; right:20rpx; bottom:12rpx; color:rgba(181,228,255,.42); font-size:14rpx; letter-spacing:2rpx; }.house-card { position:relative; overflow:hidden; }.house-card::before { content:''; position:absolute; right:-30rpx; top:-30rpx; width:180rpx; height:180rpx; background:radial-gradient(circle,rgba(94,211,255,.15),transparent 68%); pointer-events:none; }.type-chip { position:relative; overflow:hidden; }.type-active::after { content:''; position:absolute; left:20%; right:20%; bottom:5rpx; height:3rpx; border-radius:4rpx; background:rgba(255,255,255,.75); }.city-body { flex:1; min-width:0; }.city-icon { margin-right:18rpx; color:#8fe6ff; font-size:40rpx; }.city-name { color:#fff; font-size:34rpx; font-weight:700; }.city-arrow,.count-bar,.load-tip { margin-top:4rpx; color:#aaa8c7; font-size:21rpx; }.locate-btn,.analyze-chip { border:1rpx solid rgba(142,120,255,.5); border-radius:999rpx; background:rgba(124,87,246,.22); color:#d4c5ff; }.locate-btn { padding:11rpx 20rpx; font-size:23rpx; flex-shrink:0; }.type-bar { display:flex; gap:14rpx; padding:0 24rpx; margin-bottom:8rpx; }.type-chip { flex:1; padding:15rpx 0; border:1rpx solid rgba(255,255,255,.14); border-radius:999rpx; background:rgba(255,255,255,.07); color:#aaa8c7; font-size:24rpx; text-align:center; }.type-active { border-color:transparent; background:linear-gradient(110deg,#8b4dff,#4e91ff); color:#fff; box-shadow:0 8rpx 18rpx rgba(91,75,232,.25); }.search-bar { padding:12rpx 24rpx 4rpx; }.search-box { display:flex; align-items:center; padding:15rpx 24rpx; border:1rpx solid rgba(255,255,255,.14); border-radius:18rpx; background:rgba(255,255,255,.08); }.search-input,.city-search-input { flex:1; min-width:0; color:#fff; background:transparent; }.search-icon { margin-right:12rpx; color:#9d8be1; font-size:30rpx; }.house-card { margin:18rpx 24rpx; padding:25rpx; }.house-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12rpx; }.house-title { flex:1; color:#fff; font-size:29rpx; font-weight:650; line-height:1.4; }.house-tag { padding:4rpx 11rpx; border:1rpx solid rgba(255,174,116,.35); border-radius:8rpx; color:#ffc18f; background:rgba(220,120,72,.15); font-size:21rpx; }.house-meta,.house-loc { margin-top:13rpx; color:#aaa8c7; font-size:23rpx; }.house-loc { margin-top:9rpx; font-size:22rpx; }.house-foot { display:flex; align-items:baseline; margin-top:15rpx; }.house-price { color:#7ee5ff; font-size:34rpx; font-weight:700; }.house-unit { margin-left:14rpx; color:#aaa8c7; font-size:22rpx; }.analyze-chip { margin-left:auto; padding:7rpx 18rpx; font-size:22rpx; }.count-bar { padding:12rpx 30rpx 4rpx; }.empty-tip { padding:90rpx 30rpx; color:#aaa8c7; font-size:24rpx; text-align:center; }.empty-symbol { display:block; margin-bottom:16rpx; color:#8f7bea; font-size:62rpx; }.city-mask { position:fixed; inset:0; z-index:99; background:rgba(3,4,19,.68); }.city-panel { position:fixed; left:0; right:0; bottom:0; z-index:100; display:flex; flex-direction:column; height:70vh; box-sizing:border-box; padding:24rpx; border:1rpx solid rgba(255,255,255,.16); border-bottom:0; border-radius:28rpx 28rpx 0 0; background:rgba(19,14,55,.94); backdrop-filter:blur(28rpx); }.city-search-box { display:flex; align-items:center; padding:13rpx 22rpx; }.city-list { flex:1; margin-top:15rpx; }.city-item { display:flex; justify-content:space-between; padding:21rpx 18rpx; border-bottom:1rpx solid rgba(255,255,255,.1); color:#d8d5ee; font-size:28rpx; }.city-item-active,.city-check { color:#8fe6ff; }.city-empty { padding:75rpx 0; color:#aaa8c7; text-align:center; }
+/* 房源列表页 - 柔和紫色风格 + 超级惊艳动效 */
+
+page {
+  background: linear-gradient(180deg, #FAFAFF 0%, #F5F3FF 100%);
+  color: #2D2D3A;
+  padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
+  position: relative;
+}
+
+.houses-layout {
+  min-height: 100vh;
+}
+
+.houses-main {
+  min-width: 0;
+  padding: 40rpx 24rpx 200rpx;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+/* ==================== 动画定义 ==================== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(60rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes floatBubble {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(50rpx, -50rpx) scale(1.1);
+  }
+}
+
+/* ==================== 页面标题区 ==================== */
+.page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-bottom: 40rpx;
+  opacity: 0;
+}
+
+.page-heading.animated {
+  animation: fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.eyebrow {
+  color: #8B5CF6;
+  font-size: 24rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  opacity: 0;
+}
+
+.page-heading.animated .eyebrow {
+  animation: slideInLeft 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;
+}
+
+.page-title {
+  margin-top: 12rpx;
+  background: linear-gradient(135deg, #2D2D3A 0%, #8B5CF6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 56rpx;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -1rpx;
+  opacity: 0;
+}
+
+.page-heading.animated .page-title {
+  animation: fadeInScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+}
+
+.page-subtitle {
+  margin-top: 16rpx;
+  color: #8B8B9A;
+  font-size: 30rpx;
+  font-weight: 500;
+  line-height: 1.5;
+  opacity: 0;
+}
+
+.page-heading.animated .page-subtitle {
+  animation: fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards;
+}
+
+/* ==================== 背景装饰 ==================== */
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.orb-1 {
+  top: -200rpx;
+  right: -200rpx;
+  width: 600rpx;
+  height: 600rpx;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0) 70%);
+  animation: floatBubble 20s ease-in-out infinite;
+}
+
+.orb-2 {
+  bottom: -300rpx;
+  left: -200rpx;
+  width: 800rpx;
+  height: 800rpx;
+  background: radial-gradient(circle, rgba(124, 92, 252, 0.12) 0%, rgba(124, 92, 252, 0) 70%);
+  animation: floatBubble 25s ease-in-out infinite reverse;
+}
+
+/* 确保内容在装饰层之上 */
+.city-card, .search-bar, .cell, .house-card {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==================== 入场动画 ==================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(60rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.city-card {
+  opacity: 0;
+}
+
+.search-bar {
+  opacity: 0;
+}
+
+.cell {
+  opacity: 0;
+}
+
+.house-card {
+  opacity: 0;
+}
+
+/* ==================== 城市选择卡片 ==================== */
+
+.city-card {
+  display: flex;
+  align-items: center;
+  margin: 24rpx;
+  padding: 32rpx 40rpx;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F5F3FF 100%);
+  border-radius: 32rpx;
+  box-shadow: 0rpx 12rpx 40rpx rgba(124, 92, 252, 0.15),
+              0rpx 4rpx 16rpx rgba(124, 92, 252, 0.1);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  opacity: 0;
+}
+
+.city-card.animated {
+  animation: fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
+}
+
+.city-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(139, 92, 246, 0.1) 50%, transparent 100%);
+  transition: left 0.6s ease;
+}
+
+.city-card:active::after {
+  left: 100%;
+}
+
+.city-icon {
+  width: 64rpx;
+  height: 64rpx;
+  margin-right: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 100%);
+  color: #FFFFFF;
+  font-size: 36rpx;
+  box-shadow: 0rpx 8rpx 20rpx rgba(124, 92, 252, 0.3);
+}
+
+.city-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.city-name {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #2D2D3A;
+  letter-spacing: -0.5rpx;
+  margin-bottom: 8rpx;
+}
+
+.city-arrow {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #8B8B9A;
+}
+
+.locate-btn {
+  flex-shrink: 0;
+  margin-left: 20rpx;
+  padding: 16rpx 28rpx;
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 100%);
+  color: #FFFFFF;
+  font-size: 26rpx;
+  font-weight: 600;
+  border-radius: 999rpx;
+  box-shadow: 0rpx 8rpx 20rpx rgba(124, 92, 252, 0.4);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ==================== 城市搜索面板 ==================== */
+
+.city-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.city-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background: linear-gradient(180deg, #F5F3FF 0%, #F0EAFE 100%);
+  display: flex;
+  flex-direction: column;
+  animation: slideInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.city-search-box {
+  margin: 24rpx;
+  padding: 24rpx 32rpx;
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 999rpx;
+  border: 2rpx solid #E8E5F6;
+  box-shadow: 0rpx 8rpx 24rpx rgba(124, 92, 252, 0.12);
+  transition: all 0.3s ease;
+}
+
+.city-search-box:focus-within {
+  border-color: #8B5CF6;
+  box-shadow: 0rpx 0rpx 0rpx 6rpx rgba(139, 92, 246, 0.15),
+              0rpx 12rpx 32rpx rgba(124, 92, 252, 0.25);
+}
+
+.search-icon {
+  margin-right: 16rpx;
+  color: #8B5CF6;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.city-search-input {
+  flex: 1;
+  min-width: 0;
+  font-size: 30rpx;
+  color: #2D2D3A;
+}
+
+.search-clear {
+  margin-left: 16rpx;
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #F5F3FF;
+  color: #8B8B9A;
+  font-size: 24rpx;
+  font-weight: 700;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.city-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 24rpx 24rpx;
+}
+
+.city-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 32rpx;
+  margin-bottom: 12rpx;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #2D2D3A;
+  box-shadow: 0rpx 4rpx 16rpx rgba(124, 92, 252, 0.06);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.city-item-active {
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 100%);
+  color: #FFFFFF;
+  font-weight: 700;
+  box-shadow: 0rpx 8rpx 24rpx rgba(124, 92, 252, 0.35);
+}
+
+.city-check {
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.city-empty {
+  text-align: center;
+  padding: 120rpx 40rpx;
+  color: #8B8B9A;
+  font-size: 30rpx;
+}
+
+/* ==================== 类型选择栏 ==================== */
+
+.type-bar {
+  display: flex;
+  gap: 16rpx;
+  padding: 0 24rpx 20rpx;
+  overflow-x: auto;
+  opacity: 0;
+}
+
+.type-bar.animated {
+  animation: fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+}
+
+.type-chip {
+  flex-shrink: 0;
+  padding: 16rpx 32rpx;
+  background: #FFFFFF;
+  border: 2rpx solid #E8E5F6;
+  border-radius: 999rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #8B8B9A;
+  box-shadow: 0rpx 4rpx 16rpx rgba(124, 92, 252, 0.06);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.type-active {
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 100%);
+  border-color: transparent;
+  color: #FFFFFF;
+  font-weight: 700;
+  box-shadow: 0rpx 8rpx 24rpx rgba(124, 92, 252, 0.35);
+}
+
+/* ==================== 搜索栏 ==================== */
+
+.search-bar {
+  padding: 0 24rpx 20rpx;
+  z-index: 1;
+  opacity: 0;
+}
+
+.search-bar.animated {
+  animation: fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  background: #FFFFFF;
+  border: 2rpx solid #E8E5F6;
+  border-radius: 999rpx;
+  box-shadow: 0rpx 8rpx 24rpx rgba(124, 92, 252, 0.12);
+  transition: all 0.3s ease;
+}
+
+.search-box:focus-within {
+  border-color: #8B5CF6;
+  box-shadow: 0rpx 0rpx 0rpx 6rpx rgba(139, 92, 246, 0.15),
+              0rpx 12rpx 32rpx rgba(124, 92, 252, 0.25);
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  font-size: 30rpx;
+  color: #2D2D3A;
+}
+
+/* ==================== 统计栏 ==================== */
+
+.count-bar {
+  margin: 0 24rpx 20rpx;
+  padding: 20rpx 28rpx;
+  background: linear-gradient(135deg, #F5F3FF 0%, #E8E5F6 100%);
+  border-radius: 16rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #8B5CF6;
+  box-shadow: 0rpx 4rpx 12rpx rgba(124, 92, 252, 0.08);
+  opacity: 0;
+}
+
+.count-bar.animated {
+  animation: fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s forwards;
+}
+
+/* ==================== 小区列表 ==================== */
+
+.cell {
+  display: flex;
+  align-items: center;
+  margin: 0 24rpx 16rpx;
+  padding: 32rpx;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  box-shadow: 0rpx 8rpx 24rpx rgba(124, 92, 252, 0.08);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.cell.animated {
+  animation: fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.3s + var(--item-index, 0) * 0.05s) forwards;
+}
+
+.cell::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(139, 92, 246, 0.1) 50%, transparent 100%);
+  transition: left 0.6s ease;
+}
+
+.cell:active::after {
+  left: 100%;
+}
+
+.cell:active {
+  transform: scale(0.97) translateY(4rpx);
+  box-shadow: 0rpx 4rpx 16rpx rgba(124, 92, 252, 0.12);
+}
+
+.cell-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.cell-icon {
+  width: 64rpx;
+  height: 64rpx;
+  margin-right: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  color: #8B5CF6;
+  flex-shrink: 0;
+}
+
+.cell-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2D2D3A;
+  margin-bottom: 8rpx;
+}
+
+.cell-desc {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #8B8B9A;
+}
+
+.cell-score {
+  margin: 0 16rpx;
+  padding: 8rpx 20rpx;
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 100%);
+  color: #FFFFFF;
+  font-size: 26rpx;
+  font-weight: 700;
+  border-radius: 999rpx;
+  box-shadow: 0rpx 4rpx 12rpx rgba(124, 92, 252, 0.3);
+}
+
+.cell-arrow {
+  color: #B8B8C9;
+  font-size: 36rpx;
+  font-weight: 300;
+}
+
+/* ==================== 新房卡片 ==================== */
+
+.house-card {
+  margin: 0 24rpx 20rpx;
+  padding: 32rpx;
+  background: #FFFFFF;
+  border-radius: 32rpx;
+  box-shadow: 0rpx 8rpx 32rpx rgba(124, 92, 252, 0.08);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.house-card.animated {
+  animation: fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.3s + var(--item-index, 0) * 0.05s) forwards;
+}
+
+.house-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(139, 92, 246, 0.1) 50%, transparent 100%);
+  transition: left 0.6s ease;
+}
+
+.house-card:active::after {
+  left: 100%;
+}
+
+.house-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.house-title {
+  flex: 1;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #2D2D3A;
+  letter-spacing: -0.5rpx;
+}
+
+.house-tag {
+  margin-left: 16rpx;
+  padding: 8rpx 20rpx;
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 100%);
+  color: #FFFFFF;
+  font-size: 24rpx;
+  font-weight: 700;
+  border-radius: 999rpx;
+  box-shadow: 0rpx 4rpx 12rpx rgba(124, 92, 252, 0.3);
+}
+
+.house-meta {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.meta-item {
+  padding: 8rpx 16rpx;
+  background: #F5F3FF;
+  color: #8B5CF6;
+  font-size: 24rpx;
+  font-weight: 600;
+  border-radius: 12rpx;
+}
+
+.house-loc {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #8B8B9A;
+  margin-bottom: 20rpx;
+}
+
+.house-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.house-price {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #8B5CF6;
+  letter-spacing: -1rpx;
+}
+
+.house-unit {
+  margin-left: 12rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #8B8B9A;
+}
+
+.analyze-chip {
+  padding: 16rpx 32rpx;
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 100%);
+  color: #FFFFFF;
+  font-size: 26rpx;
+  font-weight: 700;
+  border-radius: 999rpx;
+  box-shadow: 0rpx 8rpx 20rpx rgba(124, 92, 252, 0.4);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ==================== 空状态 ==================== */
+
+.empty-tip {
+  text-align: center;
+  padding: 120rpx 40rpx;
+  color: #8B8B9A;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.empty-symbol {
+  font-size: 80rpx;
+  color: #E8E5F6;
+  margin-bottom: 20rpx;
+}
+
+.load-tip {
+  text-align: center;
+  padding: 60rpx 40rpx;
+  color: #8B8B9A;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+/* ==================== 点击效果 ==================== */
+
+.city-card:active {
+  transform: scale(0.97) translateY(4rpx);
+  box-shadow: 0rpx 8rpx 24rpx rgba(124, 92, 252, 0.15);
+}
+
+.locate-btn:active {
+  transform: scale(0.9);
+  background: #6D4EED;
+  box-shadow: 0rpx 4rpx 12rpx rgba(124, 92, 252, 0.4);
+}
+
+.search-clear:active {
+  transform: scale(0.85) rotate(90deg);
+  color: #8B5CF6;
+}
+
+.city-item:active {
+  background: #F5F3FF;
+  transform: translateX(8rpx);
+}
+
+.type-chip:active {
+  transform: scale(0.92) translateY(2rpx);
+}
+
+.type-chip.type-active:active {
+  transform: scale(0.95) translateY(2rpx);
+}
+
+.house-card:active {
+  transform: scale(0.97) translateY(4rpx);
+  box-shadow: 0rpx 8rpx 24rpx rgba(124, 92, 252, 0.15);
+}
+
+.analyze-chip:active {
+  transform: scale(0.9);
+  background: #6D4EED;
+  box-shadow: 0rpx 4rpx 16rpx rgba(124, 92, 252, 0.5);
+}
+
+/* ==================== 入场动画 ==================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(60rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 城市卡片入场 */
+.city-card {
+  animation: fadeInScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s backwards;
+}
+
+/* 类型栏入场 */
+.type-bar {
+  animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s backwards;
+}
+
+/* 搜索栏入场 */
+.search-bar {
+  animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s backwards;
+}
+
+/* 统计栏入场 */
+.count-bar {
+  animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s backwards;
+}
+
+/* 小区/房源卡片依次入场 */
+.cell {
+  animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+.cell:nth-child(1) { animation-delay: 0.3s; }
+.cell:nth-child(2) { animation-delay: 0.35s; }
+.cell:nth-child(3) { animation-delay: 0.4s; }
+.cell:nth-child(4) { animation-delay: 0.45s; }
+.cell:nth-child(5) { animation-delay: 0.5s; }
+.cell:nth-child(n+6) { animation-delay: 0.55s; }
+
+/* 房源卡片依次入场 */
+.house-card {
+  animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+.house-card:nth-child(1) { animation-delay: 0.3s; }
+.house-card:nth-child(2) { animation-delay: 0.35s; }
+.house-card:nth-child(3) { animation-delay: 0.4s; }
+.house-card:nth-child(4) { animation-delay: 0.45s; }
+.house-card:nth-child(5) { animation-delay: 0.5s; }
+.house-card:nth-child(n+6) { animation-delay: 0.55s; }
+
+/* ==================== 悬停效果 - 只保留模块级别 ==================== */
+
+.city-card:hover {
+  transform: translateY(-4rpx) scale(1.02);
+  box-shadow: 0rpx 20rpx 60rpx rgba(124, 92, 252, 0.25),
+              0rpx 8rpx 24rpx rgba(124, 92, 252, 0.15);
+}
+
+.cell:hover {
+  transform: translateY(-4rpx) translateX(8rpx);
+  box-shadow: 0rpx 16rpx 48rpx rgba(124, 92, 252, 0.2);
+}
+
+.house-card:hover {
+  transform: translateY(-8rpx) scale(1.02);
+  box-shadow: 0rpx 24rpx 60rpx rgba(124, 92, 252, 0.25);
+}
+
+/* ==================== 动画关键帧 ==================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(60rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

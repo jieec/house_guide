@@ -4,14 +4,20 @@ Page({
   data: {
     location: null,
     records: [],
-    user: null
+    user: null,
+    showContent: false
   },
   onShow() {
-    this.setData({
+    // 每次显示都触发入场动画
+    this.setData({ 
+      showContent: false,
       location: app.globalData.location,
       records: wx.getStorageSync('records') || [],
       user: app.globalData.user
     })
+    setTimeout(() => {
+      this.setData({ showContent: true })
+    }, 100)
   },
   goLocation() {
     wx.navigateTo({ url: '/pages/location/location' })

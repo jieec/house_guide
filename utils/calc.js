@@ -24,6 +24,14 @@ function totalInterestEqualInstallment(principal, annualRate, years) {
   return principal * r * (n + 1) / 2
 }
 
+function lastPaymentEqualInstallment(principal, annualRate, years) {
+  const r = annualRate / 12 / 100
+  const n = years * 12
+  const monthlyPrincipal = principal / n
+  const lastInterest = monthlyPrincipal * r
+  return monthlyPrincipal + lastInterest
+}
+
 function rentRatio(monthlyRentPerSqm, pricePerSqm) {
   if (!pricePerSqm || pricePerSqm <= 0) {
     return null
@@ -59,6 +67,7 @@ function suggestDealPrice(recentDealPrice, discountRate) {
 module.exports = {
   monthlyPaymentEqualPrincipal,
   firstPaymentEqualInstallment,
+  lastPaymentEqualInstallment,
   totalInterestEqualPrincipal,
   totalInterestEqualInstallment,
   rentRatio,

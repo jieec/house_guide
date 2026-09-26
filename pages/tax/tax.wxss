@@ -1,13 +1,143 @@
-.result-total {
-  border-top: 1rpx solid rgba(0, 180, 255, 0.08);
-  margin-top: 8rpx;
-  padding-top: 16rpx;
-}
-page::after { content:'TAX / CHECKPOINT'; position:fixed; z-index:-1; right:12rpx; top:220rpx; color:rgba(191,160,255,.32); font-size:15rpx; letter-spacing:3rpx; transform:rotate(90deg); }
+/* 税费页面 - 柔和紫色风格 */
 
-page { background:transparent !important; color:#f6f3ff !important; }
-.card-title,.card-sub,.form-label,.result-label { color:#f7f4ff !important; }
-.form-input,.form-input-wrap { background:rgba(9,7,33,.34) !important; border-color:rgba(178,151,255,.24) !important; color:#f6f3ff !important; }
-.result { background:rgba(76,57,164,.16) !important; border-color:rgba(255,255,255,.14) !important; }
-.result-num { color:#79ddff !important; }
-.result-total { border-color:rgba(255,255,255,.10) !important; }
+page {
+  background: linear-gradient(180deg, #F5F3FF 0%, #F0EAFE 50%, #E8E3FD 100%);
+  color: #2D2D3A;
+  padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
+  position: relative;
+  overflow: hidden;
+}
+
+/* 背景装饰 - 六边形图案 */
+page::before {
+  content: '';
+  position: fixed;
+  top: -50rpx;
+  left: -50rpx;
+  width: 500rpx;
+  height: 500rpx;
+  background: 
+    linear-gradient(60deg, transparent 30%, rgba(139, 92, 246, 0.04) 30%, rgba(139, 92, 246, 0.04) 70%, transparent 70%),
+    linear-gradient(120deg, transparent 30%, rgba(124, 92, 252, 0.04) 30%, rgba(124, 92, 252, 0.04) 70%, transparent 70%);
+  background-size: 60rpx 100rpx;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+page::after {
+  content: '';
+  position: fixed;
+  bottom: -100rpx;
+  right: -100rpx;
+  width: 500rpx;
+  height: 500rpx;
+  background: radial-gradient(circle, rgba(109, 78, 237, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+/* 确保内容在装饰层之上 */
+.card, .btn-primary, .btn-ghost, canvas {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==================== 入场动画 ==================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(60rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.type-tabs {
+  animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s backwards;
+}
+
+.form-section {
+  animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+.form-section:nth-child(1) { animation-delay: 0.2s; }
+.form-section:nth-child(2) { animation-delay: 0.3s; }
+.form-section:nth-child(3) { animation-delay: 0.4s; }
+
+.result-panel {
+  animation: fadeInScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s backwards;
+}
+
+.tax-breakdown {
+  animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s backwards;
+}
+
+/* ==================== 点击效果 ==================== */
+
+.type-tab {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.type-tab:active {
+  transform: scale(0.92) translateY(2rpx);
+  background: rgba(139, 92, 246, 0.1);
+  border-color: #8B5CF6;
+}
+
+.toggle {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.toggle:active {
+  transform: scale(0.95);
+  box-shadow: 0rpx 4rpx 16rpx rgba(124, 92, 252, 0.3);
+}
+
+.result-row {
+  transition: all 0.3s ease;
+}
+
+.result-row:active {
+  background: #F5F3FF;
+  transform: translateX(6rpx);
+  margin: 0 -12rpx;
+  padding-left: 16rpx;
+  padding-right: 16rpx;
+  border-radius: 12rpx;
+}
+
+.form-picker {
+  transition: all 0.3s ease;
+}
+
+.form-picker:active {
+  background: #F5F3FF;
+  border-color: #8B5CF6;
+  transform: scale(0.99);
+}
+
+.picker-arrow {
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.form-picker:active .picker-arrow {
+  transform: scale(1.3) rotate(180deg);
+  color: #8B5CF6;
+}
+
+/* 通用样式继承自全局 app.wxss */

@@ -1,84 +1,129 @@
-page::after { content:'RISK / CHECKPOINT'; position:fixed; z-index:-1; right:12rpx; top:220rpx; color:rgba(255,173,105,.28); font-size:15rpx; letter-spacing:3rpx; transform:rotate(90deg); }
-.risk-check.checked { background: linear-gradient(135deg, #8994ed, #6976d2) !important; }
-.warn { background: #fff1e9 !important; color: #a65a36 !important; border-color: #f4d9c9 !important; }
-.ok { background: #eef9f3 !important; color: #3c8b61 !important; border-color: #d3eedf !important; }
-.risk-item { border-color: #edf0fa !important; }
-.risk-check { border-color: #d5daf8 !important; color: #5866c8 !important; }
+/* 风险页面 - 柔和紫色风格 */
 
-
-.risk-item {
-  display: flex;
-  align-items: flex-start;
-  padding: 20rpx 0;
-  border-bottom: 1rpx solid rgba(0, 180, 255, 0.08);
+page {
+  background: linear-gradient(180deg, #F5F3FF 0%, #F0EAFE 50%, #E8E3FD 100%);
+  color: #2D2D3A;
+  padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
+  position: relative;
+  overflow: hidden;
 }
 
-.risk-item:last-child {
-  border-bottom: none;
+/* 背景装饰 - 交叉线条 */
+page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 500rpx;
+  background: 
+    linear-gradient(90deg, transparent 0%, rgba(139, 92, 246, 0.03) 50%, transparent 100%),
+    linear-gradient(0deg, transparent 0%, rgba(124, 92, 252, 0.03) 50%, transparent 100%);
+  background-size: 200rpx 200rpx;
+  z-index: 0;
+  opacity: 0.7;
+}
+
+page::after {
+  content: '';
+  position: fixed;
+  top: 50%;
+  right: -150rpx;
+  margin-top: -250rpx;
+  width: 500rpx;
+  height: 500rpx;
+  background: radial-gradient(circle, rgba(109, 78, 237, 0.1) 0%, transparent 65%);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+/* 确保内容在装饰层之上 */
+.card, .btn-primary {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==================== 入场动画 ==================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(60rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.risk-section {
+  animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+.risk-section:nth-child(1) { animation-delay: 0.1s; }
+.risk-section:nth-child(2) { animation-delay: 0.2s; }
+.risk-section:nth-child(3) { animation-delay: 0.3s; }
+.risk-section:nth-child(4) { animation-delay: 0.4s; }
+
+.risk-item {
+  animation: fadeInUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+/* ==================== 点击效果 ==================== */
+
+.risk-item {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.risk-item:active {
+  background: #F5F3FF;
+  transform: translateX(8rpx);
+  border-left: 4rpx solid #8B5CF6;
+  padding-left: 28rpx;
 }
 
 .risk-check {
-  width: 40rpx;
-  height: 40rpx;
-  border-radius: 10rpx;
-  border: 1rpx solid rgba(0, 180, 255, 0.2);
-  text-align: center;
-  line-height: 40rpx;
-  margin-right: 20rpx;
-  flex-shrink: 0;
-  color: #ffffff;
-  font-size: 26rpx;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.risk-item:active .risk-check {
+  transform: scale(1.2) rotate(15deg);
+  box-shadow: 0rpx 8rpx 20rpx rgba(124, 92, 252, 0.3);
 }
 
 .risk-check.checked {
-  background: linear-gradient(135deg, #1a5cff, #00d4ff);
-  border-color: transparent;
-}
-
-.risk-body {
-  flex: 1;
-}
-
-.risk-name {
-  font-size: 28rpx;
-  font-weight: 500;
-  color: #ffffff;
-}
-
-.risk-desc {
-  margin-top: 6rpx;
-  font-size: 24rpx;
-  color: #7b8fb0;
-  line-height: 1.5;
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 100%);
+  color: #FFFFFF;
+  box-shadow: 0rpx 8rpx 24rpx rgba(124, 92, 252, 0.4);
 }
 
 .warn {
-  margin-top: 16rpx;
-  background: rgba(255, 107, 53, 0.1);
-  color: #ff6b35;
-  border: 1rpx solid rgba(255, 107, 53, 0.15);
-  border-radius: 14rpx;
-  padding: 18rpx;
-  font-size: 26rpx;
+  transition: all 0.3s ease;
+}
+
+.warn:active {
+  transform: scale(0.98);
+  background: rgba(239, 68, 68, 0.15);
 }
 
 .ok {
-  margin-top: 16rpx;
-  background: rgba(76,219,178,.10) !important;
-  color: #9af0ce !important;
-  border: 1rpx solid rgba(105,230,190,.24) !important;
-  border-radius: 18rpx;
-  padding: 18rpx;
-  font-size: 26rpx;
+  transition: all 0.3s ease;
 }
 
-/* Deep-space glass overrides */
-page { background:transparent !important; color:#f6f3ff !important; }
-page .card { background:rgba(255,255,255,.065) !important; border-color:rgba(255,255,255,.14) !important; box-shadow:0 24rpx 58rpx rgba(4,2,22,.28),inset 0 1rpx 0 rgba(255,255,255,.10) !important; border-radius:26rpx !important; }
-.card-title,.card-sub,.form-label,.risk-name { color:#f7f4ff !important; }
-.card-sub,.risk-desc { color:#aaa4cb !important; }
-.risk-item { border-color:rgba(255,255,255,.10) !important; }
-.risk-check { border-color:rgba(186,162,255,.48) !important; color:#d7c8ff !important; background:rgba(255,255,255,.06) !important; }
-.risk-check.checked { background:linear-gradient(112deg,#a75bff,#4b9cff) !important; color:#fff !important; border-color:transparent !important; }
-.warn { background:rgba(255,130,102,.10) !important; color:#ffc28f !important; border-color:rgba(255,155,132,.26) !important; border-radius:18rpx !important; }
-.ok { background:rgba(76,219,178,.10) !important; color:#9af0ce !important; border-color:rgba(105,230,190,.24) !important; border-radius:18rpx !important; }
+.ok:active {
+  transform: scale(0.98);
+  background: rgba(34, 197, 94, 0.15);
+}
+
+/* 通用样式继承自全局 app.wxss */

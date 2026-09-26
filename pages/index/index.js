@@ -10,15 +10,22 @@ Page({
       { key: 'analysis', name: '房源分析', icon: '◒', desc: '市场对比' },
       { key: 'conclusion', name: '评估结论', icon: '✓', desc: '价值判断' },
       { key: 'mortgage', name: '按揭测算', icon: '＋', desc: '月供/利率' }
-    ]
+    ],
+    showContent: false
   },
   onShow() {
     const loc = app.globalData.location
     this.setData({
       location: loc,
-      records: (wx.getStorageSync('records') || []).slice(0, 3)
+      records: (wx.getStorageSync('records') || []).slice(0, 3),
+      showContent: false
     })
     this.loadStats()
+    
+    // 触发入场动画
+    setTimeout(() => {
+      this.setData({ showContent: true })
+    }, 50)
   },
   loadStats() {
     if (!wx.cloud) return

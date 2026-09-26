@@ -50,11 +50,126 @@ function collect(page) {
   const policyItems = (report.policies || []).flatMap(policy => Object.keys(policy).map(key => ({ label: (policy.city || '政策') + ' · ' + key, value: policy[key], detail: true, group: '政策依据' })))
   const toolItems = []
   ;(report.tools || []).forEach(tool => {
+    // 工具标题
     toolItems.push({ label: tool.label, value: tool.value || tool.note, group: '工具结论', emphasis: true })
-    ;(tool.parts || []).forEach(part => toolItems.push({ label: part.name, value: part.value, group: tool.label, detail: true }))
-    if (tool.formula) toolItems.push({ label: '计算口径', value: tool.formula, group: tool.label, detail: true })
-    if (tool.warning) toolItems.push({ label: '风险提示', value: tool.warning, group: tool.label, warning: true })
+    
+    // 展开所有部件明细
+    ;(tool.parts || []).forEach(part => {
+      toolItems.push({ label: part.name, value: part.value, group: tool.label, detail: true })
+    })
+    
+    // 计算公式
+    if (tool.formula) {
+      toolItems.push({ label: '计算公式', value: tool.formula, group: tool.label, detail: true, highlight: true })
+    }
+    
+    // 输入参数
+    if (tool.inputs && tool.inputs.length) {
+      tool.inputs.forEach(input => {
+        toolItems.push({ label: '参数 · ' + input.label, value: input.value, group: tool.label, detail: true })
+      })
+    }
+    
+    // 风险提示
+    if (tool.warning) {
+      toolItems.push({ label: '风险提示', value: tool.warning, group: tool.label, warning: true })
+    }
   })
+  
+  // 贷款测算 - 详细展示三种还款方式
+  if (d.loanForm && d.loanForm.totalPrice) {
+    const form = d.loanForm
+    const totalPrice = parseFloat(form.totalPrice) || 0
+    const downRate = Math.max(0, Math.min(100, parseFloat(form.downPayment) || 30))
+    const years = Math.max(1, parseFloat(form.termYears) || 30)
+    const commercialRate = parseFloat(form.commercialRate) || 4.1
+    const providentRate = parseFloat(form.providentRate) || 3.1
+    
+    if (totalPrice > 0) {
+      const totalLoan = totalPrice * 10000 * (1 - downRate / 100)
+      const downAmount = totalPrice * 10000 * downRate / 100
+      
+      toolItems.push({ label: '贷款测算详情', value: '三种还款方式对比', group: '工具结论', emphasis: true })
+      toolItems.push({ label: '房屋总价', value: totalPrice + '万元', group: '贷款测算', detail: true })
+      toolItems.push({ label: '首付比例', value: downRate + '%', group: '贷款测算', detail: true })
+      toolItems.push({ label: '首付金额', value: Math.round(downAmount / 10000) + '万元', group: '贷款测算', detail: true, emphasis: true })
+      toolItems.push({ label: '贷款总额', value: Math.round(totalLoan / 10000) + '万元', group: '贷款测算', detail: true, emphasis: true })
+      toolItems.push({ label: '贷款年限', value: years + '年(' + (years * 12) + '期)', group: '贷款测算', detail: true })
+      toolItems.push({ label: '贷款利率', value: commercialRate + '%', group: '贷款测算', detail: true })
+      
+      // 计算等额本息
+      const calcEqualPayment = (principal, rate, years) => {
+        const n = years * 12
+        const r = rate / 12 / 100
+        const monthly = r > 0 ? principal * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1) : principal / n
+        const total = monthly * n
+        return { monthly, total, interest: total - principal }
+      }
+      
+      // 计算等额本金
+      const calcEqualPrincipal = (principal, rate, years) => {
+        const n = years * 12
+        const r = rate / 12 / 100
+        const monthlyPrincipal = principal / n
+        const first = monthlyPrincipal + principal * r
+        const last = monthlyPrincipal + monthlyPrincipal * r
+        const total = principal + principal * r * (n + 1) / 2
+        return { first, last, total, interest: total - principal }
+      }
+      
+      // 计算先息后本
+      const calcInterestFirst = (principal, rate, years) => {
+        const n = years * 12
+        const r = rate / 12 / 100
+        const monthlyInterest = principal * r
+        const lastMonth = principal + monthlyInterest
+        const total = monthlyInterest * n + principal
+        return { monthlyInterest, lastMonth, total, interest: total - principal }
+      }
+      
+      // 方式一：等额本息
+      const ep = calcEqualPayment(totalLoan, commercialRate, years)
+      toolItems.push({ label: '方式一：等额本息', value: '每月还款固定', group: '贷款测算', emphasis: true })
+      toolItems.push({ label: '每月还款', value: Math.round(ep.monthly) + '元', group: '等额本息', detail: true, highlight: true })
+      toolItems.push({ label: '还款总额', value: Math.round(ep.total / 10000) + '万元', group: '等额本息', detail: true })
+      toolItems.push({ label: '支付利息', value: Math.round(ep.interest / 10000) + '万元', group: '等额本息', detail: true })
+      toolItems.push({ label: '计算公式', value: '月供 = 本金 × 月利率 × (1+月利率)^期数 ÷ [(1+月利率)^期数 - 1]', group: '等额本息', detail: true, highlight: true })
+      
+      // 方式二：等额本金
+      const epr = calcEqualPrincipal(totalLoan, commercialRate, years)
+      toolItems.push({ label: '方式二：等额本金', value: '本金固定递减', group: '贷款测算', emphasis: true })
+      toolItems.push({ label: '首月还款', value: Math.round(epr.first) + '元', group: '等额本金', detail: true, highlight: true })
+      toolItems.push({ label: '末月还款', value: Math.round(epr.last) + '元', group: '等额本金', detail: true })
+      toolItems.push({ label: '还款总额', value: Math.round(epr.total / 10000) + '万元', group: '等额本金', detail: true })
+      toolItems.push({ label: '支付利息', value: Math.round(epr.interest / 10000) + '万元', group: '等额本金', detail: true })
+      toolItems.push({ label: '计算公式', value: '月供 = 本金÷期数 + (本金-已还本金) × 月利率', group: '等额本金', detail: true, highlight: true })
+      
+      // 方式三：先息后本
+      const inf = calcInterestFirst(totalLoan, commercialRate, years)
+      toolItems.push({ label: '方式三：先息后本', value: '只还利息到期还本', group: '贷款测算', emphasis: true })
+      toolItems.push({ label: '每月利息', value: Math.round(inf.monthlyInterest) + '元', group: '先息后本', detail: true, highlight: true })
+      toolItems.push({ label: '到期一次性还本', value: Math.round(totalLoan / 10000) + '万元', group: '先息后本', detail: true, emphasis: true })
+      toolItems.push({ label: '还款总额', value: Math.round(inf.total / 10000) + '万元', group: '先息后本', detail: true })
+      toolItems.push({ label: '支付利息', value: Math.round(inf.interest / 10000) + '万元', group: '先息后本', detail: true })
+      toolItems.push({ label: '计算公式', value: '月供 = 本金 × 月利率；末期 = 本金 + 当月利息', group: '先息后本', detail: true, highlight: true })
+      
+      // 三种方式对比总结
+      toolItems.push({ label: '利息对比总结', value: '综合分析', group: '贷款测算', emphasis: true })
+      toolItems.push({ label: '等额本息利息', value: Math.round(ep.interest / 10000) + '万元', group: '利息对比', detail: true })
+      toolItems.push({ label: '等额本金利息', value: Math.round(epr.interest / 10000) + '万元（最省' + Math.round((ep.interest - epr.interest) / 10000) + '万）', group: '利息对比', detail: true, highlight: true })
+      toolItems.push({ label: '先息后本利息', value: Math.round(inf.interest / 10000) + '万元（最高）', group: '利息对比', detail: true, warning: true })
+    }
+  } else if (d.loanResult && d.loanResult.valid) {
+    // 兼容旧版单一结果
+    toolItems.push({ label: '贷款测算', value: '详细结果', group: '工具结论', emphasis: true })
+    ;(d.loanResult.parts || []).forEach(part => {
+      toolItems.push({ label: part.name, value: part.value, group: '贷款测算', detail: true, emphasis: true })
+    })
+    if (d.loanResult.formula) {
+      toolItems.push({ label: '还款公式', value: d.loanResult.formula, group: '贷款测算', detail: true, highlight: true })
+    }
+  }
+  
   if (!toolItems.length) Object.keys(savedFinance).forEach(k => toolItems.push({ label: k, value: savedFinance[k] }))
   return {
     title: selected.community || d.communityName || savedBasic.communityName || '房产评估报告',
@@ -102,11 +217,12 @@ function drawReport(ctx, data, width) {
     y += 48 * scale
   }
   const group = title => {
-    y += 14 * scale
-    ctx.fillStyle = '#f3f6f5'; ctx.fillRect(left, y, contentWidth, 26 * scale)
-    text('明细', left + 12 * scale, y + 6 * scale, 10, colors.muted, true)
-    text(title, left + 55 * scale, y + 5 * scale, 11, colors.strong, true)
-    y += 36 * scale
+    y += 18 * scale
+    ctx.fillStyle = '#f8faf9'; ctx.fillRect(left, y, contentWidth, 32 * scale)
+    ctx.fillStyle = colors.blue; ctx.fillRect(left, y, 4 * scale, 32 * scale)
+    text('分组', left + 14 * scale, y + 9 * scale, 10, colors.muted, true)
+    text(title, left + 60 * scale, y + 8 * scale, 12, colors.strong, true)
+    y += 44 * scale
   }
   const scoreCard = (x, title, score, level, accent) => {
     const cardW = (contentWidth - 14 * scale) / 2
@@ -118,19 +234,64 @@ function drawReport(ctx, data, width) {
   }
   const row = item => {
     if (!item || !item.value || item.value === 'undefined') return
-    const labelX = left + (item.detail ? 42 : 14) * scale
-    const valueX = left + (item.detail ? 210 : 190) * scale
+    const labelX = left + (item.detail ? 48 : 14) * scale
+    const valueX = left + (item.detail ? 220 : 200) * scale
     const rowTop = y
-    const rowHeight = item.emphasis ? 62 : 40
-    if (item.warning) { ctx.fillStyle = '#fff2ea'; ctx.fillRect(left, rowTop, contentWidth, Math.max(rowHeight, 52) * scale); ctx.fillStyle = colors.orange; ctx.fillRect(left, rowTop, 4 * scale, Math.max(rowHeight, 52) * scale) }
-    else if (item.emphasis) { ctx.fillStyle = '#f0f6fa'; ctx.fillRect(left, rowTop, contentWidth, rowHeight * scale); ctx.fillStyle = colors.blue; ctx.fillRect(left, rowTop, 4 * scale, rowHeight * scale) }
-    else if (item.detail) { ctx.fillStyle = '#f8fafb'; ctx.fillRect(left + 20 * scale, rowTop, contentWidth - 20 * scale, rowHeight * scale); ctx.fillStyle = '#b9cbd7'; ctx.fillRect(left + 25 * scale, rowTop + 8 * scale, 2 * scale, 24 * scale) }
-    else { ctx.strokeStyle = colors.line; ctx.lineWidth = 0.6 * scale; ctx.beginPath(); ctx.moveTo(left + 10 * scale, rowTop + rowHeight * scale); ctx.lineTo(right - 10 * scale, rowTop + rowHeight * scale); ctx.stroke() }
-    if (item.detail) text('›', left + 36 * scale, rowTop + 8 * scale, 13, colors.muted, true)
-    text(item.label, labelX, rowTop + (item.emphasis ? 12 : 10) * scale, item.emphasis ? 12 : 11, item.warning ? colors.orange : colors.muted, item.emphasis)
-    const end = wrap(item.value, valueX, rowTop + (item.emphasis ? 10 : 9) * scale, contentWidth - (item.detail ? 226 : 206) * scale, item.emphasis ? 15 : 11, item.warning ? colors.red : item.highlight ? colors.green : colors.text, item.emphasis || item.highlight)
-    y = Math.max(rowTop + rowHeight * scale, end + 8 * scale)
-    if (item.note) y = wrap(item.note, valueX, y - 3 * scale, contentWidth - 206 * scale, 10, colors.muted) + 6 * scale
+    const rowHeight = item.emphasis ? 68 : (item.detail ? 48 : 42)
+    
+    // 背景和装饰
+    if (item.warning) { 
+      ctx.fillStyle = '#fff8f0'; 
+      ctx.fillRect(left, rowTop, contentWidth, Math.max(rowHeight, 56) * scale)
+      ctx.fillStyle = colors.orange
+      ctx.fillRect(left, rowTop, 4 * scale, Math.max(rowHeight, 56) * scale)
+    }
+    else if (item.emphasis) { 
+      ctx.fillStyle = '#f0f6fa'
+      ctx.fillRect(left, rowTop, contentWidth, rowHeight * scale)
+      ctx.fillStyle = colors.blue
+      ctx.fillRect(left, rowTop, 4 * scale, rowHeight * scale)
+    }
+    else if (item.detail) { 
+      ctx.fillStyle = '#fafbfc'
+      ctx.fillRect(left + 28 * scale, rowTop, contentWidth - 28 * scale, rowHeight * scale)
+      ctx.fillStyle = colors.cyan
+      ctx.fillRect(left + 32 * scale, rowTop + 10 * scale, 3 * scale, 28 * scale)
+    }
+    else { 
+      ctx.strokeStyle = colors.line
+      ctx.lineWidth = 0.6 * scale
+      ctx.beginPath()
+      ctx.moveTo(left + 10 * scale, rowTop + rowHeight * scale)
+      ctx.lineTo(right - 10 * scale, rowTop + rowHeight * scale)
+      ctx.stroke()
+    }
+    
+    // 详细项图标
+    if (item.detail) {
+      text('▸', left + 40 * scale, rowTop + 11 * scale, 14, colors.cyan, true)
+    }
+    
+    // 标签
+    text(item.label, labelX, rowTop + (item.emphasis ? 14 : (item.detail ? 12 : 10)) * scale, 
+         item.emphasis ? 13 : (item.detail ? 11 : 11), 
+         item.warning ? colors.orange : (item.highlight ? colors.green : colors.muted), 
+         item.emphasis || item.highlight)
+    
+    // 值
+    const valueColor = item.warning ? colors.red : item.highlight ? colors.green : colors.text
+    const end = wrap(item.value, valueX, rowTop + (item.emphasis ? 13 : (item.detail ? 11 : 9)) * scale, 
+                    contentWidth - (item.detail ? 236 : 216) * scale, 
+                    item.emphasis ? 16 : (item.detail ? 12 : 11), 
+                    valueColor, 
+                    item.emphasis || item.highlight)
+    
+    y = Math.max(rowTop + rowHeight * scale, end + 10 * scale)
+    
+    // 备注
+    if (item.note) {
+      y = wrap(item.note, valueX, y - 4 * scale, contentWidth - 216 * scale, 10, colors.muted) + 8 * scale
+    }
   }
 
   ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, width, 16000 * scale)

@@ -1,24 +1,326 @@
-page { background: #080d24; color: #eef2ff; padding-bottom: calc(43px + env(safe-area-inset-bottom)); }
-.mine-hero { background: linear-gradient(180deg, #0d1330 0%, #151e46 55%, #29266c 100%); }
-.avatar { background: rgba(98,84,232,.2); border-color: rgba(112,221,255,.3); }
-.mine-sub, .record-line { color: #a8b2d6; }
-page .card { background: #111936; border-color: rgba(139,125,255,.18); box-shadow: 0 8rpx 22rpx rgba(2,5,22,.22); }
-page .btn-ghost { color: #70ddff; border-color: rgba(112,221,255,.4); }
-.mine-hero { background: linear-gradient(180deg,#0a1628 0%,#0f2244 50%,#1a3d8f 100%); padding:48rpx 40rpx; display:flex; align-items:center; color:#fff; border-radius:0 0 40rpx 40rpx; margin-bottom:24rpx; }.avatar { width:108rpx; height:108rpx; background:rgba(0,180,255,.15); border:2rpx solid rgba(0,212,255,.3); border-radius:32rpx; display:flex; align-items:center; justify-content:center; font-size:52rpx; margin-right:24rpx; }.mine-name { font-size:36rpx; font-weight:700; }.mine-sub { margin-top:8rpx; font-size:24rpx; color:#b5c9e5; }
-.loc-line { font-size:30rpx; font-weight:600; color:#fff; }.loc-line2 { margin-top:8rpx; font-size:24rpx; color:#a9bddb; }.loc-empty,.rec-empty { font-size:26rpx; color:#9db4d4; }.record { padding:20rpx 0; border-bottom:1rpx solid rgba(0,180,255,.14); }.record:last-child { border-bottom:none; }.record-head { display:flex; justify-content:space-between; align-items:center; }.record-place { font-size:28rpx; font-weight:600; color:#fff; }.record-del { font-size:24rpx; color:#ff9a6c; }.record-line { margin-top:8rpx; font-size:24rpx; color:#b5c9e5; }.record-time { margin-top:6rpx; font-size:22rpx; color:#8fa8ca; }.rec-empty { padding:20rpx 0; }
-page { background:transparent !important; color:#eef2ff !important; padding-bottom:calc(140rpx + env(safe-area-inset-bottom)) !important; } .mine-hero { position:relative; overflow:hidden; background-image:linear-gradient(110deg,rgba(10,22,40,.92),rgba(26,61,143,.76)),url('../../images/house.png'); background-position:center,right 36%; background-size:cover,310rpx auto; background-repeat:no-repeat; }.mine-hero::before { content:'HOME PROFILE  /  01'; position:absolute; right:30rpx; top:22rpx; color:rgba(193,235,255,.48); font-size:15rpx; letter-spacing:2rpx; }.mine-hero::after { content:''; position:absolute; right:-20rpx; bottom:20rpx; width:260rpx; height:2rpx; background:linear-gradient(90deg,transparent,#6de2ff); box-shadow:0 12rpx 0 rgba(109,226,255,.24),0 24rpx 0 rgba(109,226,255,.1); }.avatar { position:relative; z-index:1; box-shadow:0 0 0 10rpx rgba(103,220,255,.06),0 0 28rpx rgba(72,190,255,.24); }.mine-info { position:relative; z-index:1; } page .card { position:relative; overflow:hidden; } page .card::after { content:''; position:absolute; top:0; left:28rpx; width:54rpx; height:2rpx; background:linear-gradient(90deg,#68e0ff,transparent); }
-.mine-hero { background: linear-gradient(135deg,#dce1ff,#c8d1fa) !important; color:#303b66 !important; border-radius:0 0 30rpx 30rpx !important; box-shadow:0 12rpx 26rpx rgba(105,116,200,.12); }
-.mine-name, page .card-title, .record-place, .loc-line { color:#303b66 !important; }
-.mine-sub, .record-line, .record-time, .loc-line2, .loc-empty, .rec-empty { color:#626e91 !important; }
-page .card { background:#fff !important; border-color:#e1e4f7 !important; box-shadow:0 8rpx 22rpx rgba(119,127,185,.08) !important; }
-page .btn-ghost { color:#5866c8 !important; border-color:#cbd1f2 !important; }
-.record { border-color:#edf0fa !important; }
+/* 我的页面 - 柔和紫色风格 + 超级惊艳动效 */
 
-/* Deep-space glass overrides */
-page { background:transparent !important; color:#f6f3ff !important; }
-.mine-hero { background-image:linear-gradient(110deg,rgba(18,12,55,.94),rgba(49,35,116,.78)),url('../../images/house.png') !important; background-position:center,right 36% !important; background-size:cover,310rpx auto !important; border-radius:0 0 34rpx 34rpx !important; box-shadow:0 24rpx 54rpx rgba(4,2,22,.32) !important; }
-.mine-name,.mine-sub,.record-place,.record-line,.record-time,.loc-line,.loc-line2,.loc-empty,.rec-empty { color:#f6f3ff !important; }
-.mine-sub,.record-line,.record-time,.loc-line2,.loc-empty,.rec-empty { color:#aaa4cb !important; }
-page .card { background:rgba(255,255,255,.065) !important; border-color:rgba(255,255,255,.14) !important; box-shadow:0 24rpx 58rpx rgba(4,2,22,.28),inset 0 1rpx 0 rgba(255,255,255,.10) !important; }
-page .btn-ghost { color:#d7c8ff !important; border-color:rgba(186,162,255,.48) !important; background:rgba(255,255,255,.065) !important; }
-.record { border-color:rgba(255,255,255,.10) !important; }
+page {
+  background: linear-gradient(180deg, #FAFAFF 0%, #F5F3FF 100%);
+  color: #2D2D3A;
+  padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
+  position: relative;
+  min-height: 100vh;
+}
+
+.mine-layout {
+  min-height: 100vh;
+}
+
+.mine-main {
+  min-width: 0;
+  padding: 40rpx 24rpx 200rpx;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+/* ==================== 动画定义 ==================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(60rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes floatBubble {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(50rpx, -50rpx) scale(1.1);
+  }
+}
+
+/* ==================== 页面标题区 ==================== */
+.page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-bottom: 40rpx;
+  opacity: 0;
+}
+
+.page-heading.animated {
+  animation: fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.eyebrow {
+  color: #8B5CF6;
+  font-size: 24rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  opacity: 0;
+}
+
+.page-heading.animated .eyebrow {
+  animation: slideInLeft 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;
+}
+
+.page-title {
+  margin-top: 12rpx;
+  background: linear-gradient(135deg, #2D2D3A 0%, #8B5CF6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 56rpx;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -1rpx;
+  opacity: 0;
+}
+
+.page-heading.animated .page-title {
+  animation: fadeInScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+}
+
+.page-subtitle {
+  margin-top: 16rpx;
+  color: #8B8B9A;
+  font-size: 30rpx;
+  font-weight: 500;
+  line-height: 1.5;
+  opacity: 0;
+}
+
+.page-heading.animated .page-subtitle {
+  animation: fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards;
+}
+
+/* ==================== 背景装饰 ==================== */
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.orb-1 {
+  top: -200rpx;
+  right: -200rpx;
+  width: 600rpx;
+  height: 600rpx;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0) 70%);
+  animation: floatBubble 20s ease-in-out infinite;
+}
+
+.orb-2 {
+  bottom: -300rpx;
+  left: -200rpx;
+  width: 800rpx;
+  height: 800rpx;
+  background: radial-gradient(circle, rgba(124, 92, 252, 0.12) 0%, rgba(124, 92, 252, 0) 70%);
+  animation: floatBubble 25s ease-in-out infinite reverse;
+}
+
+/* ==================== 内容动画 ==================== */
+
+.mine-hero {
+  opacity: 0;
+}
+
+.mine-hero.animated {
+  animation: fadeInScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
+}
+
+.card {
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+}
+
+.card.animated {
+  animation: fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.cell {
+  opacity: 0;
+}
+
+.cell.animated {
+  animation: fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ==================== 背景装饰 - 浮动渐变圆形 ==================== */
+
+page::before {
+  content: '';
+  position: fixed;
+  top: -200rpx;
+  right: -200rpx;
+  width: 600rpx;
+  height: 600rpx;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0) 70%);
+  border-radius: 50%;
+  animation: floatBubble 20s ease-in-out infinite;
+  z-index: 0;
+}
+
+page::after {
+  content: '';
+  position: fixed;
+  bottom: -300rpx;
+  left: -200rpx;
+  width: 800rpx;
+  height: 800rpx;
+  background: radial-gradient(circle, rgba(124, 92, 252, 0.12) 0%, rgba(124, 92, 252, 0) 70%);
+  border-radius: 50%;
+  animation: floatBubble 25s ease-in-out infinite reverse;
+  z-index: 0;
+}
+
+@keyframes floatBubble {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(50rpx, -50rpx) scale(1.1);
+  }
+}
+
+.mine-hero {
+  position: relative;
+  z-index: 2;
+  margin: 40rpx 24rpx 24rpx;
+  padding: 48rpx 40rpx;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(20rpx);
+  border-radius: 32rpx;
+  box-shadow: 0rpx 20rpx 60rpx rgba(124, 92, 252, 0.2),
+              0rpx 8rpx 24rpx rgba(124, 92, 252, 0.1);
+  border: 2rpx solid rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.mine-hero:active {
+  transform: scale(0.98);
+}
+
+.cell {
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cell:active {
+  background: #F5F3FF;
+  transform: translateX(8rpx) scale(0.98);
+  border-left: 4rpx solid #8B5CF6;
+}
+
+.record {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.record:active {
+  background: #F5F3FF;
+  transform: translateX(6rpx);
+  border-left: 4rpx solid #8B5CF6;
+  padding-left: 28rpx;
+}
+
+.record-del {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.record-del:active {
+  transform: scale(0.9);
+  color: #EF4444;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+}
+
+.btn-ghost {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-ghost:active {
+  transform: scale(0.95) translateY(2rpx);
+  border-color: #8B5CF6;
+  background: #F5F3FF;
+  box-shadow: 0rpx 4rpx 16rpx rgba(124, 92, 252, 0.2);
+}
+
+/* ==================== 悬停效果 ==================== */
+
+.mine-hero:hover {
+  transform: translateY(-8rpx) scale(1.02);
+  box-shadow: 0rpx 24rpx 72rpx rgba(124, 92, 252, 0.3);
+}
+
+.cell:hover {
+  transform: translateX(12rpx) translateY(-4rpx) scale(1.02);
+  box-shadow: 0rpx 20rpx 60rpx rgba(124, 92, 252, 0.25);
+  background: rgba(139, 92, 246, 0.08);
+  border-left: 4rpx solid #8B5CF6;
+}
+
+.record:hover {
+  transform: translateX(12rpx) scale(1.02);
+  background: rgba(139, 92, 246, 0.08);
+  border-left: 4rpx solid #8B5CF6;
+  padding-left: 28rpx;
+  box-shadow: 0rpx 16rpx 48rpx rgba(124, 92, 252, 0.2);
+}
+
+.record-del:hover {
+  transform: scale(1.1) rotate(-5deg);
+  color: #EF4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.btn-ghost:hover {
+  transform: translateY(-4rpx) scale(1.05);
+  border-color: #8B5CF6;
+  background: #8B5CF6;
+  color: #FFFFFF;
+  box-shadow: 0rpx 20rpx 60rpx rgba(124, 92, 252, 0.4);
+}
+
+/* cell 和 card 延迟设置 */
+.cell.animated:nth-child(1) { animation-delay: 0.3s; }
+.cell.animated:nth-child(2) { animation-delay: 0.35s; }
+.cell.animated:nth-child(3) { animation-delay: 0.4s; }
+.cell.animated:nth-child(4) { animation-delay: 0.45s; }
+.cell.animated:nth-child(5) { animation-delay: 0.5s; }
+.cell.animated:nth-child(n+6) { animation-delay: 0.55s; }
+
+.card.animated:nth-child(1) { animation-delay: 0.2s; }
+.card.animated:nth-child(2) { animation-delay: 0.25s; }
+.card.animated:nth-child(3) { animation-delay: 0.3s; }
+.card.animated:nth-child(n+4) { animation-delay: 0.35s; }

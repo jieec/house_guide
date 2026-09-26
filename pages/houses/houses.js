@@ -37,10 +37,14 @@ Page({
     fromCommDb: false,
     showCityPanel: false,
     citySearch: '',
-    cityFiltered: []
+    cityFiltered: [],
+    showContent: false
   },
 
   onShow() {
+    // 每次显示都触发入场动画
+    this.setData({ showContent: false })
+    
     const loc = app.globalData.location
     if (loc && loc.city) {
       const norm = String(loc.city).replace(/市$/, '')
@@ -49,6 +53,11 @@ Page({
         this.setData({ cityIndex: i })
       }
     }
+    
+    setTimeout(() => {
+      this.setData({ showContent: true })
+    }, 100)
+    
     this.reload()
   },
 
