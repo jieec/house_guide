@@ -1,7 +1,7 @@
 /* 结论页面 - 柔和紫色风格 */
 
 page {
-  background: linear-gradient(180deg, #F5F3FF 0%, #F0EAFE 50%, #E8E3FD 100%);
+  background: url('/images/海中水獭.png') no-repeat center top / cover;
   color: #2D2D3A;
   padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   position: relative;
@@ -22,7 +22,7 @@ page::before {
     radial-gradient(circle at center, transparent 100rpx, rgba(139, 92, 246, 0.02) 100rpx, rgba(139, 92, 246, 0.02) 110rpx, transparent 110rpx),
     radial-gradient(circle at center, transparent 250rpx, rgba(124, 92, 252, 0.03) 250rpx, rgba(124, 92, 252, 0.03) 260rpx, transparent 260rpx),
     radial-gradient(circle at center, transparent 400rpx, rgba(109, 78, 237, 0.02) 400rpx, rgba(109, 78, 237, 0.02) 410rpx, transparent 410rpx);
-  z-index: 0;
+  z-index: -5;
 }
 
 page::after {
@@ -34,7 +34,7 @@ page::after {
   height: 400rpx;
   background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
   border-radius: 50%;
-  z-index: 0;
+  z-index: -5;
 }
 
 /* 确保内容在装饰层之上 */

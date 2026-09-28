@@ -1,7 +1,7 @@
 /* 金融页面 - 柔和紫色风格 + 超级惊艳动效 */
 
 page {
-  background: linear-gradient(180deg, #F5F3FF 0%, #F0EAFE 50%, #E8E3FD 100%);
+  background: url('/images/云中水獭.png') no-repeat center top / cover;
   color: #2D2D3A;
   padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   position: relative;
@@ -20,7 +20,7 @@ page::before {
     radial-gradient(ellipse 800rpx 150rpx at 50% 100%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
     radial-gradient(ellipse 600rpx 120rpx at 30% 120%, rgba(124, 92, 252, 0.04) 0%, transparent 50%),
     radial-gradient(ellipse 500rpx 100rpx at 70% 110%, rgba(109, 78, 237, 0.04) 0%, transparent 50%);
-  z-index: 0;
+  z-index: -5;
 }
 
 page::after {
@@ -32,7 +32,7 @@ page::after {
   height: 400rpx;
   background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
   border-radius: 50%;
-  z-index: 0;
+  z-index: -5;
 }
 
 /* 确保内容在装饰层之上 */

@@ -1,3 +1,6 @@
+<!-- 全局固定背景 -->
+<image class="global-fixed-bg" src="/images/整体背景.png" mode="aspectFill"></image>
+
 <view class="home-layout">
   <view class="home-main">
     <view class="page-heading {{showContent ? 'animated' : ''}}">
@@ -10,10 +13,10 @@
     </view>
 
     <view class="welcome-panel {{showContent ? 'animated' : ''}}">
-      <image class="welcome-city-art" src="../../images/bg-city.png" mode="aspectFill"></image>
-      <view class="welcome-glow glow-purple"></view>
-      <view class="welcome-glow glow-cyan"></view>
-      <view class="welcome-grid-lines"></view>
+      <!-- OtterLife 模板风格背景 - 云中水獭 -->
+      <image class="welcome-bg-illustration" src="/images/云中水獭.png" mode="aspectFill"></image>
+      <view class="welcome-overlay"></view>
+      
       <view class="welcome-copy">
         <view class="welcome-kicker">PROPERTY INSIGHT</view>
         <view class="welcome-title">看清房产价值，<text>从这里开始</text></view>
@@ -35,7 +38,11 @@
     </view>
 
     <view class="location-row {{showContent ? 'animated' : ''}}">
-      <view class="location-symbol">⌖</view>
+      <!-- 水中水獭背景 -->
+      <image class="location-bg-illustration" src="/images/水中水獭.png" mode="aspectFill"></image>
+      <view class="location-symbol">
+        <view class="css-icon css-icon-location"></view>
+      </view>
       <view class="location-copy" wx:if="{{location && location.city}}" bindtap="goLocation">
         <view class="location-title">{{location.province}} {{location.city}} {{location.district}}</view>
         <view class="location-detail">{{location.estate || '未填写楼盘'}}{{location.community ? ' · ' + location.community : ''}}</view>
@@ -52,14 +59,23 @@
       <view class="section-count">04 <text>TOOLS</text></view>
     </view>
     <view class="tool-grid">
+      <!-- 海中水獭背景 -->
+      <image class="tool-grid-bg-illustration" src="/images/海中水獭.png" mode="aspectFill"></image>
       <view class="tool-item {{showContent ? 'animated' : ''}}" wx:for="{{quickModules}}" wx:key="key" data-key="{{item.key}}" bindtap="goModule">
-        <view class="tool-topline"><view class="tool-icon tool-icon-{{index}}">{{item.icon}}</view><view class="tool-arrow">↗</view></view>
+        <view class="tool-topline">
+          <view class="tool-icon tool-icon-{{index}}" style="background: {{item.iconBg}}">
+            <view class="css-icon css-icon-{{item.key}}"></view>
+          </view>
+          <view class="tool-arrow">↗</view>
+        </view>
         <view class="tool-name">{{item.name}}</view>
         <view class="tool-desc">{{item.desc}}</view>
       </view>
     </view>
 
     <view class="summary-strip {{showContent ? 'animated' : ''}}">
+      <!-- 爱心水獭背景 -->
+      <image class="summary-bg-illustration" src="/images/爱心水獭.png" mode="aspectFill"></image>
       <view class="summary-copy"><view class="summary-title">从基础信息到专业结论</view><view class="summary-desc">让每一项房产数据，都成为决策依据。</view></view>
       <view class="summary-mark">01 <text>/ 04</text></view>
     </view>

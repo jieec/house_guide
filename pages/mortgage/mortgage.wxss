@@ -1,7 +1,7 @@
 /* 贷款页面 - 柔和紫色风格 */
 
 page {
-  background: linear-gradient(180deg, #F5F3FF 0%, #F0EAFE 50%, #E8E3FD 100%);
+  background: url('/images/海中水獭.png') no-repeat center top / cover;
   color: #2D2D3A;
   padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   position: relative;
@@ -19,7 +19,7 @@ page::before {
   background-image: radial-gradient(circle, rgba(139, 92, 246, 0.08) 2rpx, transparent 2rpx);
   background-size: 100rpx 100rpx;
   mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
-  z-index: 0;
+  z-index: -5;
 }
 
 page::after {
@@ -32,7 +32,7 @@ page::after {
   height: 600rpx;
   background: radial-gradient(circle, rgba(124, 92, 252, 0.12) 0%, transparent 65%);
   border-radius: 50%;
-  z-index: 0;
+  z-index: -5;
 }
 
 /* 确保内容在装饰层之上 */

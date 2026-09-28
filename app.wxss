@@ -1,12 +1,106 @@
 /* 柔和紫色现代设计系统 - 参考 OtterLife & 阿里AI外呼 */
 
 page {
-  background: linear-gradient(180deg, #F5F3FF 0%, #F0EAFE 100%);
   color: #2D2D3A;
   padding-bottom: calc(100rpx + env(safe-area-inset-bottom));
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "PingFang SC", sans-serif;
   font-size: 28rpx;
   line-height: 1.6;
+  position: relative;
+  overflow-x: hidden;
+  background: transparent;
+}
+
+/* 全局固定背景层 - 铺满整个屏幕，滚动时不动 */
+.global-fixed-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -10;
+  pointer-events: none;
+}
+
+/* 背景淡入动画 */
+@keyframes bgFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ==================== 顶部彩色装饰条 ==================== */
+page::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(90deg, 
+    #8B5CF6 0%, 
+    #06B6D4 25%, 
+    #10B981 50%, 
+    #F59E0B 75%, 
+    #EF4444 100%
+  );
+  background-size: 200% 100%;
+  z-index: 9999;
+  animation: rainbow-slide 10s linear infinite;
+}
+
+@keyframes rainbow-slide {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* ==================== 背景装饰球 ==================== */
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80rpx);
+  opacity: 0.4;
+  z-index: 0;
+  pointer-events: none;
+  animation: float-orb 20s ease-in-out infinite;
+}
+
+@keyframes float-orb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(50rpx, -30rpx) scale(1.1); }
+  66% { transform: translate(-30rpx, 50rpx) scale(0.9); }
+}
+
+.orb-1 {
+  width: 400rpx;
+  height: 400rpx;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.3), transparent);
+  top: 10%;
+  right: -100rpx;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 500rpx;
+  height: 500rpx;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.25), transparent);
+  bottom: 20%;
+  left: -150rpx;
+  animation-delay: 5s;
+}
+
+.orb-3 {
+  width: 350rpx;
+  height: 350rpx;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.2), transparent);
+  top: 50%;
+  left: 50%;
+  animation-delay: 10s;
 }
 
 /* ==================== 全局惊艳动画 ==================== */

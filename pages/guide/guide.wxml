@@ -1,3 +1,6 @@
+<!-- 全局固定背景 -->
+<image class="global-fixed-bg" src="/images/整体背景.png" mode="aspectFill"></image>
+
 <view class="guide-layout">
   <view class="guide-main">
     <view class="page-heading {{showContent ? 'animated' : ''}}">
@@ -64,14 +67,6 @@
             <view class="data-label">{{item.label}}</view>
             <view class="data-value {{item.value === '暂无数据' ? 'muted' : ''}}">{{item.value}}</view>
           </view>
-        </view>
-        <view class="section-title" wx:if="{{report.areaRangeText}}">面积段分布</view>
-        <view class="data-card" wx:if="{{report.areaRangeText}}">
-          <view class="data-value">{{report.areaRangeText}}</view>
-        </view>
-        <view class="section-title" wx:if="{{report.layoutText}}">户型分布</view>
-        <view class="data-card" wx:if="{{report.layoutText}}">
-          <view class="data-value">{{report.layoutText}}</view>
         </view>
         <view class="section-title">位置配套</view>
         <view class="data-card">

@@ -1,3 +1,6 @@
+<!-- 全局固定背景 -->
+<view class="global-fixed-bg"></view>
+
 <view class="locate-bar">
   <view class="locate-btn {{locating ? 'locating' : ''}}" bindtap="locateMe">
     📍 {{locating ? '定位中...' : 'GPS自动定位'}}

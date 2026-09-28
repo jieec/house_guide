@@ -1,7 +1,7 @@
 /* 房源分析页面 - 柔和紫色风格 */
 
 page {
-  background: linear-gradient(180deg, #F5F3FF 0%, #F0EAFE 50%, #E8E3FD 100%);
+  background: transparent;
   color: #2D2D3A;
   padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   position: relative;
@@ -24,7 +24,7 @@ page::before {
       rgba(139, 92, 246, 0.04) 60rpx,
       rgba(139, 92, 246, 0.04) 120rpx
     );
-  z-index: 0;
+  z-index: -5;
   opacity: 0.7;
 }
 
@@ -37,7 +37,7 @@ page::after {
   height: 800rpx;
   background: radial-gradient(circle, rgba(109, 78, 237, 0.1) 0%, rgba(124, 92, 252, 0.05) 40%, transparent 70%);
   border-radius: 50%;
-  z-index: 0;
+  z-index: -5;
 }
 
 /* 确保内容在装饰层之上 */

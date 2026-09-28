@@ -1,3 +1,6 @@
+<!-- 全局固定背景 -->
+<view class="global-fixed-bg"></view>
+
 <view class="card">
   <view class="card-title">购房目的</view>
   <picker class="form-input-wrap" range="{{purposes}}" value="{{purposeIndex}}" bindchange="onPurpose">

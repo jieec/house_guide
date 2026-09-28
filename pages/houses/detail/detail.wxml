@@ -1,3 +1,6 @@
+<!-- 全局固定背景 -->
+<view class="global-fixed-bg"></view>
+
 <view wx:if="{{item}}" class="detail">
   <view class="d-hero">
     <view class="d-title">{{item.title || item.community || '房源'}}</view>

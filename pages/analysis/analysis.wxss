@@ -1,7 +1,7 @@
 /* 分析页面 - 柔和紫色风格 */
 
 page {
-  background: linear-gradient(180deg, #F5F3FF 0%, #F0EAFE 50%, #E8E3FD 100%);
+  background: url('/images/水中水獭.png') no-repeat center top / cover;
   color: #2D2D3A;
   padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   position: relative;
@@ -24,7 +24,7 @@ page::before {
     transparent 60%
   );
   background-size: 80rpx 80rpx;
-  z-index: 0;
+  z-index: -5;
   opacity: 0.5;
 }
 

@@ -1,3 +1,6 @@
+<!-- 全局固定背景 -->
+<image class="global-fixed-bg" src="/images/整体背景.png" mode="aspectFill"></image>
+
 <view class="mine-layout">
   <view class="mine-main">
     <view class="page-heading {{showContent ? 'animated' : ''}}">
@@ -10,15 +13,19 @@
 
     <view class="bg-orb orb-1"></view>
     <view class="bg-orb orb-2"></view>
+    <view class="bg-orb orb-3"></view>
 
     <view class="mine-hero {{showContent ? 'animated' : ''}}">
-  <view class="avatar">🏠</view>
-  <view class="mine-info">
-    <view class="mine-name">我的购房评估</view>
-    <view class="mine-sub" wx:if="{{user && user.phoneMasked}}">已绑定 {{user.phoneMasked}}</view>
-    <view class="mine-sub" wx:else>记录你的选房与测算进度</view>
-  </view>
-</view>
+      <view class="avatar">
+        <view class="avatar-icon">🏠</view>
+        <view class="avatar-glow"></view>
+      </view>
+      <view class="mine-info">
+        <view class="mine-name">我的购房评估</view>
+        <view class="mine-sub" wx:if="{{user && user.phoneMasked}}">已绑定 {{user.phoneMasked}}</view>
+        <view class="mine-sub" wx:else>记录你的选房与测算进度</view>
+      </view>
+    </view>
 
 <view class="card {{showContent ? 'animated' : ''}}">
   <view class="card-title">当前定位</view>

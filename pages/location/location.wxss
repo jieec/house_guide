@@ -1,7 +1,7 @@
 /* 位置页面 - 柔和紫色风格 + 超级惊艳动效 */
 
 page {
-  background: linear-gradient(180deg, #F5F3FF 0%, #F0EAFE 50%, #E8E3FD 100%);
+  background: transparent;
   color: #2D2D3A;
   padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   position: relative;
@@ -21,7 +21,7 @@ page::before {
     linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px);
   background-size: 60rpx 60rpx;
   mask-image: linear-gradient(180deg, black 0%, transparent 100%);
-  z-index: 0;
+  z-index: -5;
 }
 
 page::after {

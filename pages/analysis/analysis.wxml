@@ -1,3 +1,6 @@
+<!-- 全局固定背景 -->
+<view class="global-fixed-bg"></view>
+
 <view class="card" wx:if="{{autoFilled}}">
   <view class="auto-banner">✅ 已从基本信息自动带入小区价格/楼龄/成交量等数据，下方可手动修正</view>
 </view>

@@ -1,3 +1,6 @@
+<!-- 全局固定背景 -->
+<view class="global-fixed-bg"></view>
+
 <view class="card">
   <view class="card-title">房龄融资风险</view>
   <view class="card-sub">楼龄较大或贷款年限过长时，融资可能受限</view>

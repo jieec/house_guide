@@ -1,3 +1,6 @@
+<!-- 全局固定背景 -->
+<image class="global-fixed-bg" src="/images/整体背景.png" mode="aspectFill"></image>
+
 <view class="houses-layout">
   <view class="houses-main">
     <view class="page-heading {{showContent ? 'animated' : ''}}">
@@ -7,9 +10,6 @@
         <view class="page-subtitle">搜索小区，查看二手房和新房详情</view>
       </view>
     </view>
-
-    <view class="bg-orb orb-1"></view>
-    <view class="bg-orb orb-2"></view>
 
     <view class="city-card {{showContent ? 'animated' : ''}}" bindtap="openCityPanel">
       <view class="city-icon">⌖</view>

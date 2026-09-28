@@ -1,7 +1,7 @@
 /* 基础页面 - 柔和紫色风格 + 超级惊艳动效 */
 
 page {
-  background: linear-gradient(180deg, #F5F3FF 0%, #F0EAFE 50%, #E8E3FD 100%);
+  background: url('/images/爱心水獭.png') no-repeat center top / cover;
   color: #2D2D3A;
   padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   position: relative;
@@ -19,7 +19,7 @@ page::before {
   height: 800rpx;
   background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, rgba(124, 92, 252, 0.04) 30%, transparent 60%);
   border-radius: 50%;
-  z-index: 0;
+  z-index: -5;
 }
 
 page::after {
@@ -31,7 +31,7 @@ page::after {
   height: 500rpx;
   background: radial-gradient(circle, rgba(109, 78, 237, 0.1) 0%, transparent 70%);
   border-radius: 50%;
-  z-index: 0;
+  z-index: -5;
 }
 
 /* 确保内容在装饰层之上 */

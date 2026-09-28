@@ -1,3 +1,6 @@
+<!-- 全局固定背景 -->
+<view class="global-fixed-bg"></view>
+
 <view class="card">
   <view class="card-title">税费测算</view>
   <view class="card-sub">按二手房交易常见税费规则估算（契税/增值税/个税）</view>

@@ -1,3 +1,6 @@
+<!-- 全局固定背景 -->
+<view class="global-fixed-bg"></view>
+
 <view class="c-head">
   <view class="c-city">{{city}}</view>
   <view class="c-name">{{name}}</view>

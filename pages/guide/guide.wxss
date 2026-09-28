@@ -1,15 +1,37 @@
 /* 指南页面 - 柔和紫色风格 + 入场动画 */
 
 page {
-  background: linear-gradient(180deg, #FAFAFF 0%, #F5F3FF 100%);
+  background: transparent;
   color: #2D2D3A;
   padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   position: relative;
   min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* 顶部装饰条 */
+page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(90deg, #8B5CF6 0%, #06B6D4 33%, #10B981 66%, #F59E0B 100%);
+  z-index: 9999;
+  background-size: 200% 100%;
+  animation: rainbow-flow 8s linear infinite;
+}
+
+@keyframes rainbow-flow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }
 
 .guide-layout {
   min-height: 100vh;
+  position: relative;
+  z-index: 1;
 }
 
 .guide-main {

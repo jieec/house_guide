@@ -1,3 +1,6 @@
+<!-- 全局固定背景 -->
+<view class="global-fixed-bg"></view>
+
 <view class="card">
   <view class="card-title">按揭测算</view>
   <view class="form-row">
