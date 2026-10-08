@@ -68,6 +68,16 @@
             <view class="data-value {{item.value === '暂无数据' ? 'muted' : ''}}">{{item.value}}</view>
           </view>
         </view>
+        <block wx:if="{{report.deals.length}}">
+          <view class="section-title">最近成交记录</view>
+          <view class="data-card">
+            <view class="deal-summary" wx:if="{{report.dealSummary}}">{{report.dealSummary}}</view>
+            <view class="deal-item" wx:for="{{report.deals}}" wx:key="title">
+              <view class="deal-title">{{item.title}}</view>
+              <view class="deal-meta">{{item.date}}<text wx:if="{{item.total}}"> · {{item.total}}</text><text wx:if="{{item.unit}}"> · {{item.unit}}</text></view>
+            </view>
+          </view>
+        </block>
         <view class="section-title">位置配套</view>
         <view class="data-card">
           <view class="sub-title">交通</view>
