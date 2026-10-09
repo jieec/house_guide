@@ -102,7 +102,7 @@ page::before {
 .eyebrow {
   color: #38BDF8;
   font-size: 26rpx;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 4rpx;
   text-transform: uppercase;
   opacity: 0;
@@ -116,7 +116,7 @@ page::before {
   margin-top: 12rpx;
   color: #FFFFFF;
   font-size: 60rpx;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.15;
   letter-spacing: -2rpx;
   opacity: 0;
