@@ -519,6 +519,35 @@ page::before {
   font-weight: 500;
 }
 
+/* 最近成交记录 */
+.deal-summary {
+  color: #8B8B9A;
+  font-size: 26rpx;
+  line-height: 1.5;
+  margin-bottom: 16rpx;
+}
+
+.deal-item {
+  padding: 18rpx 0;
+  border-bottom: 2rpx solid #F5F3FF;
+}
+
+.deal-item:last-child {
+  border-bottom: 0;
+}
+
+.deal-title {
+  color: #2D2D3A;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.deal-meta {
+  color: #8B8B9A;
+  font-size: 24rpx;
+  margin-top: 6rpx;
+}
+
 .sub-title {
   color: #2D2D3A;
   font-size: 32rpx;

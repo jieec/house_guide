@@ -57,7 +57,7 @@ Page({
     loading: false,
     searchResults: [],
     selectedCommunity: null,
-    report: { basic: [], prices: [], advice: [], tools: [], competitors: [], traffic: [], schools: [], missing: [] },
+    report: { basic: [], prices: [], advice: [], tools: [], competitors: [], traffic: [], schools: [], missing: [], deals: [], dealSummary: '' },
     dataStatus: '',
     updatedAt: '',
     showContent: false
@@ -285,6 +285,7 @@ Page({
     const houses = [...sales, ...rents]
     const dbQuery = null
     const base = doc.base || {}, price = doc.price || {}, props = doc.ajk_props || {}
+    const bk = doc.beike || {}, dealHistory = doc.deals || {}
     const pois = doc.pois || {}, cats = doc.categories || {}
     const deals = auctionDeals.filter(it => /成交|已售|法拍|拍卖/.test([it.category, it.status, it.trade_status].join('')))
     const salePrices = sales.map(it => num(it.unit_price)).filter(Boolean)
@@ -311,8 +312,8 @@ Page({
       const rent = num(it.rent_month), area = num(it.area_sqm)
       return rent && area ? rent / area : 0
     }).filter(Boolean)
-    const communityAvg = num(first(price.price, doc.ajk_avg_price, avg(salePrices)))
-    const recentAvg = num(first(price.recentDealPrice, price.dealPrice, avg(dealPrices)))
+    const communityAvg = num(first(price.price, doc.ajk_avg_price, bk.avg_price, avg(salePrices)))
+    const recentAvg = num(first(price.recentDealPrice, price.dealPrice, dealHistory.avg_unit_price, avg(dealPrices)))
     const listingAvg = num(first(price.listingPrice, avg(salePrices)))
     const rentAvg = num(first(price.rentPerSqm, price.rent, avg(rentsSqm)))
     const auctionAvg = num(first(price.auctionPrice, doc.auction_avg_price, avg(auctionDeals.map(it => num(it.unit_price)))))
@@ -369,12 +370,19 @@ Page({
       basic: [
         { label: '位置', value: show(location) }, { label: '小区名称', value: show(doc.community) },
         { label: '户型分布', value: layoutText || '暂无数据' },
-        { label: '房屋性质', value: show(propertyType) },
-        { label: '建成年代', value: show(completion) }, { label: '区域排名', value: show(areaRank) },
+        { label: '房屋性质', value: show(first(bk.ownership, base.shipType, propertyType)) },
+        { label: '建成年代', value: show(first(bk.build_year, completion)) },
+        { label: '建筑类型', value: show(first(bk.build_type, base.buildType, props['建筑类型'])) },
+        { label: '总户数 / 楼栋数', value: [bk.household_count, bk.building_count].filter(Boolean).join(' / ') || '暂无数据' },
+        { label: '区域排名', value: show(areaRank) },
         { label: '成交套数', value: show(sales.length, '套') },
-        { label: '开发商', value: show(first(base.developer, props['开发商'])) },
-        { label: '物业公司', value: show(first(base.propertyCompany, props['物业公司'])) },
-        { label: '容积率 / 绿化率', value: [first(base.plotRatio, props['容积率']), first(base.greenRate, props['绿化率'])].filter(Boolean).join(' / ') || '暂无数据' }
+        { label: '开发商', value: show(first(bk.developer, base.developer, props['开发商'])) },
+        { label: '物业公司', value: show(first(bk.property_company, base.propertyCompany, props['物业公司'])) },
+        { label: '物业费', value: show(first(bk.property_fee, base.propertyMoney, props['物业费'])) },
+        { label: '容积率 / 绿化率', value: [first(bk.plot_ratio, base.plotRatio, props['容积率']), first(bk.greening_rate, base.greeningRatio, base.greenRate, props['绿化率'])].filter(Boolean).join(' / ') || '暂无数据' },
+        { label: '车位配比', value: show(base.parking) },
+        { label: '贝壳参考均价', value: bk.avg_price ? bk.avg_price + ' 元/㎡' : '暂无数据' },
+        { label: '挂牌率', value: bk.listing_rate ? (bk.listing_rate * 100).toFixed(1) + '%（在售 ' + (bk.listing_count || 0) + ' 套）' : '暂无数据' }
       ],
       priceChartMax,
       prices: chartItems,
@@ -445,6 +453,13 @@ Page({
         }
       ],
       competitors, traffic, schools, missing,
+      deals: (dealHistory.recent || []).map(it => ({
+        title: it.title || '',
+        date: it.date || '',
+        total: it.total_wan ? it.total_wan + ' 万' : '',
+        unit: it.unit_price ? it.unit_price + ' 元/㎡' : ''
+      })),
+      dealSummary: dealHistory.count ? ('贝壳累计 ' + dealHistory.count + ' 笔成交 · 成交均价 ' + (dealHistory.avg_unit_price || '—') + ' 元/㎡ · 最近成交 ' + (dealHistory.latest_date || '—')) : '',
       policies,
       layoutText
     }
