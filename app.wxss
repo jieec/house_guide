@@ -3,12 +3,14 @@
 page {
   color: #2D2D3A;
   padding-bottom: calc(100rpx + env(safe-area-inset-bottom));
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "PingFang SC", sans-serif;
+  font-family: "SF Pro Text", "SF Pro Icons", -apple-system, BlinkMacSystemFont, "Inter", "Sora", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size: 28rpx;
   line-height: 1.6;
   position: relative;
   overflow-x: hidden;
   background: transparent;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* 全局固定背景层 - 铺满整个屏幕，滚动时不动 */

@@ -79,10 +79,10 @@ page {
 }
 
 .eyebrow {
-  color: #8B5CF6;
-  font-size: 24rpx;
-  font-weight: 700;
-  letter-spacing: 3rpx;
+  color: #38BDF8;
+  font-size: 26rpx;
+  font-weight: 800;
+  letter-spacing: 4rpx;
   text-transform: uppercase;
   opacity: 0;
 }
@@ -93,14 +93,11 @@ page {
 
 .page-title {
   margin-top: 12rpx;
-  background: linear-gradient(135deg, #2D2D3A 0%, #8B5CF6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 56rpx;
+  color: #FFFFFF;
+  font-size: 60rpx;
   font-weight: 800;
-  line-height: 1.2;
-  letter-spacing: -1rpx;
+  line-height: 1.15;
+  letter-spacing: -2rpx;
   opacity: 0;
 }
 
@@ -110,8 +107,8 @@ page {
 
 .page-subtitle {
   margin-top: 16rpx;
-  color: #5A5A6A;
-  font-size: 30rpx;
+  color: #FFFFFF;
+  font-size: 32rpx;
   font-weight: 600;
   line-height: 1.5;
   opacity: 0;

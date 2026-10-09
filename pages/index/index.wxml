@@ -19,21 +19,9 @@
       
       <view class="welcome-copy">
         <view class="welcome-kicker">PROPERTY INSIGHT</view>
-        <view class="welcome-title">看清房产价值，<text>从这里开始</text></view>
-        <view class="welcome-desc">整合市场行情、房屋信息与专业分析，帮助你全面了解房产。</view>
+        <view class="welcome-title">看清房产价值<text>从这里开始</text></view>
+        <view class="welcome-desc">整合市场行情、房屋信息与专业分析，帮助你全面了解房产</view>
         <view class="primary-action" bindtap="goGuide"><text>查看评估报告</text><text class="action-arrow">›</text></view>
-      </view>
-      <view class="welcome-visual">
-        <view class="visual-orbit orbit-back"></view>
-        <view class="visual-orbit orbit-front"></view>
-        <view class="visual-building building-one"></view>
-        <view class="visual-building building-two"></view>
-        <view class="visual-building building-three"></view>
-        <!-- Removed mascot for cleaner design -->
-        <view class="visual-spark spark-one"></view>
-        <view class="visual-spark spark-two"></view>
-        <view class="visual-ground"></view>
-        <view class="visual-label">价值分析</view>
       </view>
     </view>
 
