@@ -41,7 +41,35 @@
         "type": "folder"
       },
       {
+        "value": "data",
+        "type": "folder"
+      },
+      {
         "value": "*.xlsx",
+        "type": "file"
+      },
+      {
+        "value": "布局图.png",
+        "type": "file"
+      },
+      {
+        "value": "微信图片*.png",
+        "type": "file"
+      },
+      {
+        "value": "images/bear.png",
+        "type": "file"
+      },
+      {
+        "value": "images/bg-city.png",
+        "type": "file"
+      },
+      {
+        "value": "images/reference.png",
+        "type": "file"
+      },
+      {
+        "value": "images/微信图片*.png",
         "type": "file"
       }
     ],

@@ -1,7 +1,7 @@
 /* 房源列表页 - 柔和紫色风格 + 超级惊艳动效 */
 
 page {
-  background: url('/images/云中水獭.png') no-repeat center top / cover;
+  background: url('/images/云中水獭.jpg') no-repeat center top / cover;
   color: #2D2D3A;
   padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   position: relative;

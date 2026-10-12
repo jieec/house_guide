@@ -1,7 +1,7 @@
 /* 风险页面 - 柔和紫色风格 */
 
 page {
-  background: url('/images/爱心水獭.png') no-repeat center top / cover;
+  background: url('/images/爱心水獭.jpg') no-repeat center top / cover;
   color: #2D2D3A;
   padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   position: relative;
