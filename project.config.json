@@ -49,23 +49,15 @@
         "type": "file"
       },
       {
+        "value": "unused_assets",
+        "type": "folder"
+      },
+      {
         "value": "布局图.png",
         "type": "file"
       },
       {
         "value": "微信图片*.png",
-        "type": "file"
-      },
-      {
-        "value": "images/bear.png",
-        "type": "file"
-      },
-      {
-        "value": "images/bg-city.png",
-        "type": "file"
-      },
-      {
-        "value": "images/reference.png",
         "type": "file"
       },
       {
