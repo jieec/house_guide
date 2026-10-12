@@ -1,5 +1,5 @@
 <!-- 全局固定背景 -->
-<view class="global-fixed-bg"></view>
+<image class="global-fixed-bg" src="/images/整体背景.png" mode="aspectFill"></image>
 
 <view class="c-head">
   <view class="c-city">{{city}}</view>

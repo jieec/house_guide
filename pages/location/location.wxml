@@ -1,5 +1,5 @@
 <!-- 全局固定背景 -->
-<view class="global-fixed-bg"></view>
+<image class="global-fixed-bg" src="/images/整体背景.png" mode="aspectFill"></image>
 
 <view class="locate-bar">
   <view class="locate-btn {{locating ? 'locating' : ''}}" bindtap="locateMe">
