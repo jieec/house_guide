@@ -41,7 +41,27 @@
         "type": "folder"
       },
       {
+        "value": "data",
+        "type": "folder"
+      },
+      {
         "value": "*.xlsx",
+        "type": "file"
+      },
+      {
+        "value": "unused_assets",
+        "type": "folder"
+      },
+      {
+        "value": "布局图.png",
+        "type": "file"
+      },
+      {
+        "value": "微信图片*.png",
+        "type": "file"
+      },
+      {
+        "value": "images/微信图片*.png",
         "type": "file"
       }
     ],
