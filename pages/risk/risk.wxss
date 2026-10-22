@@ -1,54 +1,29 @@
-/* 风险页面 - 柔和紫色风格 */
+/* 页面基础 */
 
 page {
-  background: url('/images/爱心水獭.jpg') no-repeat center top / cover;
-  color: #2D2D3A;
+  background: #F6F5FC;
+  color: #2A2846;
   padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   position: relative;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
-/* 背景装饰 - 交叉线条 */
-page::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 500rpx;
-  background: 
-    linear-gradient(90deg, transparent 0%, rgba(139, 92, 246, 0.03) 50%, transparent 100%),
-    linear-gradient(0deg, transparent 0%, rgba(124, 92, 252, 0.03) 50%, transparent 100%);
-  background-size: 200rpx 200rpx;
-  z-index: -5;
-  opacity: 0.7;
-}
-
-page::after {
-  content: '';
-  position: fixed;
-  top: 50%;
-  right: -150rpx;
-  margin-top: -250rpx;
-  width: 500rpx;
-  height: 500rpx;
-  background: radial-gradient(circle, rgba(109, 78, 237, 0.1) 0%, transparent 65%);
-  border-radius: 50%;
-  z-index: -5;
-}
-
-/* 确保内容在装饰层之上 */
-.card, .btn-primary {
+.risk-layout {
+  min-height: 100vh;
   position: relative;
   z-index: 1;
 }
 
-/* ==================== 入场动画 ==================== */
+.risk-main {
+  padding: 24rpx;
+}
 
-@keyframes fadeInUp {
+/* ==================== 动画 ==================== */
+
+@keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(60rpx);
+    transform: translateY(16rpx);
   }
   to {
     opacity: 1;
@@ -56,10 +31,15 @@ page::after {
   }
 }
 
-@keyframes fadeInScale {
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
@@ -67,63 +47,278 @@ page::after {
   }
 }
 
-.risk-section {
-  animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
-}
-
-.risk-section:nth-child(1) { animation-delay: 0.1s; }
-.risk-section:nth-child(2) { animation-delay: 0.2s; }
-.risk-section:nth-child(3) { animation-delay: 0.3s; }
-.risk-section:nth-child(4) { animation-delay: 0.4s; }
+/* ==================== 风险清单 ==================== */
 
 .risk-item {
-  animation: fadeInUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
-}
-
-/* ==================== 点击效果 ==================== */
-
-.risk-item {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  gap: 16rpx;
+  padding: 16rpx;
+  background: #F1EFFA;
+  border-radius: 20rpx;
+  margin-bottom: 12rpx;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
 }
 
 .risk-item:active {
-  background: #F5F3FF;
-  transform: translateX(8rpx);
-  border-left: 4rpx solid #8B5CF6;
-  padding-left: 28rpx;
+  background: #E8E5F5;
+  transform: translateX(4rpx);
 }
 
 .risk-check {
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 32rpx;
+  height: 32rpx;
+  background: #FFFFFF;
+  border: 2rpx solid #E8E5F5;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16rpx;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
 }
 
-.risk-item:active .risk-check {
-  transform: scale(1.2) rotate(15deg);
-  box-shadow: 0rpx 8rpx 20rpx rgba(124, 92, 252, 0.3);
+.risk-check .ic {
+  width: 20rpx;
+  height: 20rpx;
 }
 
-.risk-check.checked {
-  background: linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 100%);
-  color: #FFFFFF;
-  box-shadow: 0rpx 8rpx 24rpx rgba(124, 92, 252, 0.4);
+/* 融资风险提示 / 正常提示 */
+.warn,
+.ok {
+  display: flex;
+  align-items: flex-start;
+  gap: 10rpx;
+  margin-top: 18rpx;
+  padding: 18rpx 20rpx;
+  border-radius: 18rpx;
+  font-family: var(--font-serif);
+  font-size: 23rpx;
+  line-height: 1.7;
+  letter-spacing: 0.3rpx;
 }
 
 .warn {
-  transition: all 0.3s ease;
+  background: #FDF4EC;
+  border: 1rpx solid #F0DEC9;
+  color: #8A5A2B;
 }
 
-.warn:active {
-  transform: scale(0.98);
-  background: rgba(239, 68, 68, 0.15);
+.warn .ic {
+  width: 24rpx;
+  height: 24rpx;
+  margin-top: 5rpx;
+  color: #A8743F;
 }
 
 .ok {
+  background: #EFECFA;
+  border: 1rpx solid #E7E3F6;
+  color: #4C4A6E;
+}
+
+.ok .ic {
+  width: 24rpx;
+  height: 24rpx;
+  margin-top: 5rpx;
+  color: #52467B;
+}
+
+.risk-item.checked .risk-check {
+  background: #52467B;
+  border-color: #C1BAD9;
+  color: #FFFFFF;
+}
+
+.risk-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.risk-title {
+  color: #2A2846;
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 6rpx;
+}
+
+.risk-desc {
+  color: #4C4A6E;
+  font-size: 24rpx;
+  line-height: 1.4;
+}
+
+.risk-type {
+  color: #FFFFFF;
+  font-size: 20rpx;
+  font-weight: 600;
+  padding: 4rpx 10rpx;
+  border-radius: 8rpx;
+  display: inline-block;
+  margin-top: 8rpx;
+}
+
+.risk-type.warn {
+  background: #C08A55;
+}
+
+.risk-type.error {
+  background: #A94D58;
+}
+
+.risk-type.info {
+  background: #5A70A8;
+}
+
+.risk-type.success {
+  background: #E7E3F6;
+}
+
+/* ==================== 区块 · status-card ==================== */
+
+.status-card {
+  background: #F1EFFA;
+  border-radius: 20rpx;
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
   transition: all 0.3s ease;
 }
 
-.ok:active {
+.status-card:active {
   transform: scale(0.98);
-  background: rgba(34, 197, 94, 0.15);
 }
 
-/* 通用样式继承自全局 app.wxss */
+.status-icon {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  flex-shrink: 0;
+}
+
+.status-icon.warn {
+  background: rgba(255, 152, 0, 0.15);
+  color: #C08A55;
+}
+
+.status-icon.error {
+  background: rgba(244, 67, 54, 0.15);
+  color: #A94D58;
+}
+
+.status-icon.ok {
+  background: rgba(82, 70, 123, 0.15);
+  color: #52467B;
+}
+
+.status-content {
+  flex: 1;
+}
+
+.status-title {
+  color: #2A2846;
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 4rpx;
+}
+
+.status-desc {
+  color: #4C4A6E;
+  font-size: 24rpx;
+}
+
+.status-value {
+  color: #52467B;
+  font-size: 28rpx;
+  font-weight: 700;
+  text-align: right;
+}
+
+.form-row:active {
+  background: #E8E5F5;
+  transform: scale(0.98);
+}
+
+/* ==================== 区块 · suggestion-box ==================== */
+
+.suggestion-box {
+  background: rgba(82, 70, 123, 0.1);
+  border-left: 4rpx solid #C1BAD9;
+  border-radius: 12rpx;
+  padding: 16rpx;
+  margin: 16rpx 0;
+  font-size: 26rpx;
+  color: #52467B;
+  transition: all 0.3s ease;
+}
+
+.suggestion-box.warning {
+  background: rgba(255, 152, 0, 0.1);
+  border-left-color: #C08A55;
+  color: #C08A55;
+}
+
+.suggestion-box.error {
+  background: rgba(244, 67, 54, 0.1);
+  border-left-color: #A94D58;
+  color: #A94D58;
+}
+
+.suggestion-title {
+  font-weight: 600;
+  margin-bottom: 6rpx;
+}
+
+.suggestion-desc {
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+/* ==================== 空状态 ==================== */
+
+.empty-state {
+  text-align: center;
+  padding: 60rpx 24rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 16rpx;
+}
+
+.empty-title {
+  color: #2A2846;
+  font-size: 32rpx;
+  font-weight: 400;
+  margin-bottom: 8rpx;
+  font-family: var(--font-serif);
+  letter-spacing: 2rpx;
+}
+
+.empty-desc {
+  color: #6B6890;
+  font-size: 26rpx;
+  font-family: var(--font-serif);
+  line-height: 1.8;
+}
+
+/* ==================== 风险项 ==================== */
+
+.risk-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.risk-name {
+  font-size: 27rpx;
+  font-weight: 600;
+  color: #2A2846;
+  letter-spacing: 0.3rpx;
+}

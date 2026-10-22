@@ -1,11 +1,22 @@
 <!-- 全局固定背景 -->
-<image class="global-fixed-bg" src="/images/整体背景.png" mode="aspectFill"></image>
+<image class="global-fixed-bg" src="/images/整体背景.jpg" mode="aspectFill"></image>
 
-<view class="card" wx:if="{{autoFilled}}">
-  <view class="auto-banner">✅ 已从基本信息自动带入小区价格/楼龄/成交量等数据，下方可手动修正</view>
+<view class="page-heading animated">
+  <view class="heading-main">
+    <view class="eyebrow">STEP 02 / ANALYSIS</view>
+    <view class="page-title">房源分析</view>
+    <view class="page-subtitle">价格、租售比与成交量，对照同小区行情</view>
+  </view>
 </view>
 
-<view class="card">
+<view class="auto-banner banner-standalone animated" wx:if="{{autoFilled}}" style="animation-delay: 0.05s">
+  <view class="auto-banner-head">
+    <view class="ic ic-check"></view>
+    <text>已从基本信息自动带入小区价格 / 楼龄 / 成交量等数据，下方可手动修正</text>
+  </view>
+</view>
+
+<view class="card animated" style="animation-delay: 0.10s">
   <view class="card-title">价格分析</view>
   <view class="form-row">
     <view class="form-label">销售价</view>
@@ -14,7 +25,7 @@
   <view class="form-row">
     <view class="form-label">评估价来源</view>
     <picker class="form-input-wrap" range="{{evalSources}}" value="{{evalSourceIndex}}" bindchange="onEvalSource">
-      <view>{{evalSources[evalSourceIndex]}}<text class="picker-arrow">▾</text></view>
+      <view>{{evalSources[evalSourceIndex]}}<view class="ic ic-chevron picker-arrow"></view></view>
     </picker>
   </view>
   <view class="form-row">
@@ -23,7 +34,7 @@
   </view>
 </view>
 
-<view class="card">
+<view class="card animated" style="animation-delay: 0.15s">
   <view class="card-title">好成交价格测算</view>
   <view class="card-sub">参考同小区近期成交价与拍卖折价率，测算建议好成交价</view>
   <view class="form-row">
@@ -59,13 +70,13 @@
   </view>
 </view>
 
-<view class="card">
+<view class="card animated" style="animation-delay: 0.20s">
   <view class="card-title">租售比分析</view>
   <view class="card-sub">租售比 = 租金水平(元/平/月) / 房价(元/平)，不同业态房价口径不同</view>
   <view class="form-row">
     <view class="form-label">业态</view>
     <picker class="form-input-wrap" range="{{bizTypes}}" value="{{bizIndex}}" bindchange="onBizChange">
-      <view>{{bizTypes[bizIndex]}}<text class="picker-arrow">▾</text></view>
+      <view>{{bizTypes[bizIndex]}}<view class="ic ic-chevron picker-arrow"></view></view>
     </picker>
   </view>
   <view class="form-row">
@@ -89,7 +100,7 @@
   </view>
 </view>
 
-<view class="card">
+<view class="card animated" style="animation-delay: 0.25s">
   <view class="card-title">成交量与走势</view>
   <view class="form-row">
     <view class="form-label">近期成交量</view>
@@ -101,7 +112,7 @@
   </view>
 </view>
 
-<view class="card">
+<view class="card animated" style="animation-delay: 0.30s">
   <view class="card-title">政策面</view>
   <view class="form-row">
     <view class="form-label">基本政策</view>

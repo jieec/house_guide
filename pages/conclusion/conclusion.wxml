@@ -1,17 +1,25 @@
 <!-- 全局固定背景 -->
-<image class="global-fixed-bg" src="/images/整体背景.png" mode="aspectFill"></image>
+<image class="global-fixed-bg" src="/images/整体背景.jpg" mode="aspectFill"></image>
 
-<view class="card">
-  <view class="card-title">购房目的</view>
-  <picker class="form-input-wrap" range="{{purposes}}" value="{{purposeIndex}}" bindchange="onPurpose">
-    <view>{{purposes[purposeIndex]}}<text class="picker-arrow">▾</text></view>
-  </picker>
-  <view class="tips" wx:if="{{purposeIndex === 0}}">💡 首次刚需：关注自住舒适度、学区、交通与价格承受能力</view>
-  <view class="tips" wx:if="{{purposeIndex === 1}}">💡 投资：回报率 = 租售比，关注租金水平与增值空间</view>
-  <view class="tips" wx:if="{{purposeIndex === 2}}">💡 极致性价比：针对金融客户，测算销售价与评估价差额</view>
+<view class="page-heading animated">
+  <view class="heading-main">
+    <view class="eyebrow">STEP 03 / CONCLUSION</view>
+    <view class="page-title">评估结论</view>
+    <view class="page-subtitle">结合购房目的与性价比，给出最终判断</view>
+  </view>
 </view>
 
-<view class="card">
+<view class="card animated" style="animation-delay: 0.05s">
+  <view class="card-title">购房目的</view>
+  <picker class="form-input-wrap" range="{{purposes}}" value="{{purposeIndex}}" bindchange="onPurpose">
+    <view>{{purposes[purposeIndex]}}<view class="ic ic-chevron picker-arrow"></view></view>
+  </picker>
+  <view class="tips" wx:if="{{purposeIndex === 0}}"><view class="ic ic-info"></view>首次刚需：关注自住舒适度、学区、交通与价格承受能力</view>
+  <view class="tips" wx:if="{{purposeIndex === 1}}"><view class="ic ic-info"></view>投资：回报率 = 租售比，关注租金水平与增值空间</view>
+  <view class="tips" wx:if="{{purposeIndex === 2}}"><view class="ic ic-info"></view>极致性价比：针对金融客户，测算销售价与评估价差额</view>
+</view>
+
+<view class="card animated" style="animation-delay: 0.10s">
   <view class="card-title">极致性价比测算</view>
   <view class="card-sub">(销售价 - 评估价) × 面积 × 85折，分档：高50万以上 / 中20-50万 / 低0-20万</view>
   <view class="form-row">
@@ -33,7 +41,7 @@
   </view>
 </view>
 
-<view class="card" wx:if="{{records.length}}">
+<view class="card animated" wx:if="{{records.length}}" style="animation-delay: 0.15s">
   <view class="card-title">登记记录</view>
   <view class="record" wx:for="{{records}}" wx:key="id">
     <view class="record-head"><view class="record-place">{{item.place}} {{item.estate}} {{item.community}}</view><view class="record-del" data-id="{{item.id}}" catchtap="removeRecord">删除</view></view>

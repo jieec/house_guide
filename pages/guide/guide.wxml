@@ -3,7 +3,7 @@
 
 <view class="guide-layout">
   <view class="guide-main">
-    <view class="page-heading {{showContent ? 'animated' : ''}}">
+    <view class="page-heading animated">
       <view>
         <view class="eyebrow">GUIDE / REPORT</view>
         <view class="page-title">小区报告</view>
@@ -14,7 +14,7 @@
     <view class="bg-orb orb-1"></view>
     <view class="bg-orb orb-2"></view>
 
-    <view class="query-card animate-item {{showContent ? 'animated' : ''}}" style="animation-delay: 0.1s;">
+    <view class="query-card animated" style="animation-delay: 0.05s;">
     <view class="query-title">选择位置和小区</view>
     <view class="location-row" bindtap="goLocation">
       <view>
@@ -22,10 +22,10 @@
         <view class="location-value" wx:if="{{location && location.city}}">{{location.province}} {{location.city}} {{location.district}}</view>
         <view class="location-empty" wx:else>请先选择省 / 市 / 区</view>
       </view>
-      <view class="change">修改 ›</view>
+      <view class="change"><text>修改</text><view class="ic ic-arrow-right"></view></view>
     </view>
     <view class="search-box">
-      <text class="search-icon">⌕</text>
+      <view class="search-icon"><view class="ic ic-search"></view></view>
       <input class="search-input" value="{{keyword}}" placeholder="输入小区名称" bindinput="onKeyword" />
       <text class="searching" wx:if="{{searching}}">查询中</text>
     </view>
@@ -39,7 +39,7 @@
 
   <view class="empty-state" wx:if="{{!selectedCommunity && !loading}}">
     <image class="empty-house" src="../../images/house.png" mode="aspectFit"></image>
-    <view class="empty-icon">⌂</view>
+    <view class="empty-icon"><view class="ic ic-home"></view></view>
     <view class="empty-title">选择小区后自动生成分析</view>
     <view class="empty-text">页面只读取后台爬取的数据，不需要用户逐项填写。</view>
   </view>
@@ -52,7 +52,7 @@
       </view>
       <view class="reload" bindtap="reloadReport">刷新</view>
     </view>
-    <scroll-view class="tabs animate-item {{showContent ? 'animated' : ''}}" style="animation-delay: 0.2s;" scroll-x enhanced show-scrollbar="{{false}}">
+    <scroll-view class="tabs animated" style="animation-delay: 0.10s;" scroll-x enhanced show-scrollbar="{{false}}">
       <view class="tabs-inner">
         <view class="tab {{activeTab === index ? 'active' : ''}}" wx:for="{{tabs}}" wx:key="*this" data-index="{{index}}" bindtap="switchTab">{{item}}</view>
       </view>
@@ -61,12 +61,15 @@
 
     <block wx:if="{{!loading}}">
       <view wx:if="{{activeTab === 0}}">
-        <view class="section-title animate-item {{showContent ? 'animated' : ''}}" style="animation-delay: 0.3s;">楼盘信息</view>
-        <view class="data-card animate-item {{showContent ? 'animated' : ''}}" style="animation-delay: 0.35s;">
-          <view class="data-row" wx:for="{{report.basic}}" wx:key="label">
-            <view class="data-label">{{item.label}}</view>
-            <view class="data-value {{item.value === '暂无数据' ? 'muted' : ''}}">{{item.value}}</view>
-          </view>
+        <view class="section-title animated" style="animation-delay: 0.15s;">楼盘信息</view>
+        <view class="data-card animated" style="animation-delay: 0.20s;">
+          <block wx:for="{{report.basicGroups}}" wx:for-item="group" wx:key="title">
+            <view class="data-group-title" wx:if="{{group.title}}">{{group.title}}</view>
+            <view class="data-row" wx:for="{{group.rows}}" wx:key="label">
+              <view class="data-label">{{item.label}}</view>
+              <view class="data-value {{item.value === '暂无数据' ? 'muted' : ''}}">{{item.value}}</view>
+            </view>
+          </block>
         </view>
         <block wx:if="{{report.deals.length}}">
           <view class="section-title">最近成交记录</view>
@@ -186,7 +189,7 @@
                   <view class="cat-score" style="color:{{item.color}}">{{item.score}}分</view>
                   <view class="cat-pct">{{item.pct}}%</view>
                 </view>
-                <view class="cat-arrow">{{expandedAdvice === 'inv-' + index ? '⌃' : '⌄'}}</view>
+                <view class="cat-arrow {{expandedAdvice === 'inv-' + index ? 'is-open' : ''}}"><view class="ic ic-chevron"></view></view>
               </view>
               <view class="cat-card-body" wx:if="{{expandedAdvice === 'inv-' + index}}">
                 <view class="cat-threshold">判断标准：{{item.threshold}}</view>
@@ -252,7 +255,7 @@
                   <view class="cat-score" style="color:{{item.color}}">{{item.score}}分</view>
                   <view class="cat-pct">{{item.pct}}%</view>
                 </view>
-                <view class="cat-arrow">{{expandedAdvice === 'live-' + index ? '⌃' : '⌄'}}</view>
+                <view class="cat-arrow {{expandedAdvice === 'live-' + index ? 'is-open' : ''}}"><view class="ic ic-chevron"></view></view>
               </view>
               <view class="cat-card-body" wx:if="{{expandedAdvice === 'live-' + index}}">
                 <view class="cat-threshold">判断标准：{{item.threshold}}</view>
@@ -279,7 +282,7 @@
             </view>
             <view class="tool-result">
               <view class="tool-value">{{item.value}}</view>
-              <view class="tool-arrow">{{expandedTool === index ? '⌃' : '⌄'}}</view>
+              <view class="tool-arrow {{expandedTool === index ? 'is-open' : ''}}"><view class="ic ic-chevron"></view></view>
             </view>
           </view>
           <view class="tool-detail" wx:if="{{expandedTool === index}}">
@@ -307,11 +310,11 @@
                   </view>
                   <view class="form-row">
                     <view class="form-label">贷款期限</view>
-                    <picker class="field-picker-wrap" mode="selector" range="{{loanTermOptions}}" value="{{loanForm.termIndex}}" bindchange="onLoanTermChange"><view class="form-picker"><text>{{loanForm.termYears}}年</text><text class="picker-arrow">⌄</text></view></picker>
+                    <picker class="field-picker-wrap" mode="selector" range="{{loanTermOptions}}" value="{{loanForm.termIndex}}" bindchange="onLoanTermChange"><view class="form-picker"><text>{{loanForm.termYears}}年</text><view class="ic ic-chevron picker-arrow"></view></view></picker>
                   </view>
                   <view class="form-row">
                     <view class="form-label">还款方式</view>
-                    <picker class="field-picker-wrap" mode="selector" range="{{repaymentOptions}}" value="{{loanForm.repaymentIndex}}" bindchange="onRepaymentChange"><view class="form-picker"><text>{{loanForm.repayment}}</text><text class="picker-arrow">⌄</text></view></picker>
+                    <picker class="field-picker-wrap" mode="selector" range="{{repaymentOptions}}" value="{{loanForm.repaymentIndex}}" bindchange="onRepaymentChange"><view class="form-picker"><text>{{loanForm.repayment}}</text><view class="ic ic-chevron picker-arrow"></view></view></picker>
                   </view>
                   <view class="loan-section-title rate-title">利率设置</view>
                   <view class="form-row" wx:if="{{loanForm.loanType !== '公积金贷款'}}">

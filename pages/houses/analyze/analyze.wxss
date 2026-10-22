@@ -2,7 +2,7 @@
 
 page {
   background: transparent;
-  color: #2D2D3A;
+  color: #2A2846;
   padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   position: relative;
   min-height: 100vh;
@@ -21,8 +21,8 @@ page::before {
       45deg,
       transparent,
       transparent 60rpx,
-      rgba(139, 92, 246, 0.04) 60rpx,
-      rgba(139, 92, 246, 0.04) 120rpx
+      rgba(82, 70, 123, 0.04) 60rpx,
+      rgba(82, 70, 123, 0.04) 120rpx
     );
   z-index: -5;
   opacity: 0.7;
@@ -35,13 +35,10 @@ page::after {
   right: -200rpx;
   width: 800rpx;
   height: 800rpx;
-  background: radial-gradient(circle, rgba(109, 78, 237, 0.1) 0%, rgba(124, 92, 252, 0.05) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(7, 168, 42, 0.1) 0%, rgba(82, 70, 123, 0.05) 40%, transparent 70%);
   border-radius: 50%;
   z-index: -5;
-}
-
-/* 确保内容在装饰层之上 */
-.card, .btn-primary, .btn-ghost, canvas {
+}canvas {
   position: relative;
   z-index: 1;
 }
@@ -110,7 +107,7 @@ page::after {
 }
 
 .info-row:active {
-  background: #F5F3FF;
+  background: #EFECFA;
   transform: translateX(6rpx);
   margin: 0 -12rpx;
   padding-left: 16rpx;
@@ -124,8 +121,8 @@ page::after {
 
 .score-card:active {
   transform: scale(0.95) translateY(4rpx);
-  box-shadow: 0rpx 12rpx 32rpx rgba(124, 92, 252, 0.2);
-  background: #F5F3FF;
+  box-shadow: 0rpx 12rpx 32rpx rgba(82, 70, 123, 0.2);
+  background: #EFECFA;
 }
 
 .dimension-item {
@@ -133,9 +130,9 @@ page::after {
 }
 
 .dimension-item:active {
-  background: #F5F3FF;
+  background: #EFECFA;
   transform: translateX(8rpx);
-  border-left: 4rpx solid #8B5CF6;
+  border-left: 4rpx solid #C1BAD9;
   padding-left: 28rpx;
 }
 
@@ -145,46 +142,97 @@ page::after {
 
 .tag:active {
   transform: scale(0.92) translateY(2rpx);
-  background: linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 100%);
+  background: linear-gradient(135deg, #52467B 0%, #372C57 100%);
   color: #FFFFFF;
-  box-shadow: 0rpx 4rpx 16rpx rgba(124, 92, 252, 0.3);
+  box-shadow: 0rpx 4rpx 16rpx rgba(82, 70, 123, 0.3);
 }
 
 /* ==================== 悬停效果 ==================== */
 
 .house-header:hover {
   transform: translateY(-4rpx) scale(1.01);
-  box-shadow: 0rpx 16rpx 48rpx rgba(124, 92, 252, 0.2);
+  box-shadow: 0rpx 16rpx 48rpx rgba(82, 70, 123, 0.2);
 }
 
 .analysis-section:hover {
   transform: translateY(-2rpx);
-  box-shadow: 0rpx 12rpx 40rpx rgba(124, 92, 252, 0.15);
+  box-shadow: 0rpx 12rpx 40rpx rgba(82, 70, 123, 0.15);
 }
 
 .info-row:hover {
-  background: rgba(139, 92, 246, 0.06);
+  background: rgba(82, 70, 123, 0.06);
   transform: translateX(8rpx);
-  color: #8B5CF6;
+  color: #52467B;
 }
 
 .score-card:hover {
   transform: translateY(-6rpx) scale(1.03);
-  box-shadow: 0rpx 24rpx 72rpx rgba(124, 92, 252, 0.3);
+  box-shadow: 0rpx 24rpx 72rpx rgba(82, 70, 123, 0.3);
 }
 
 .dimension-item:hover {
-  background: rgba(139, 92, 246, 0.08);
+  background: rgba(82, 70, 123, 0.08);
   transform: translateX(12rpx);
-  border-left: 4rpx solid #8B5CF6;
+  border-left: 4rpx solid #C1BAD9;
   padding-left: 28rpx;
 }
 
 .tag:hover {
   transform: scale(1.08) translateY(-2rpx);
-  background: linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 100%);
+  background: linear-gradient(135deg, #52467B 0%, #372C57 100%);
   color: #FFFFFF;
-  box-shadow: 0rpx 8rpx 24rpx rgba(124, 92, 252, 0.4);
+  box-shadow: 0rpx 8rpx 24rpx rgba(82, 70, 123, 0.4);
 }
 
 /* 通用样式继承自全局 app.wxss */
+
+/* ==================== 分析页头部 ==================== */
+
+.a-hero {
+  background: linear-gradient(135deg, #E7E3F6 0%, #EDEAF9 55%, #F5F4FC 100%);
+  border: 1rpx solid #D8D3EC;
+  border-radius: 36rpx;
+  padding: 34rpx 30rpx;
+  margin-bottom: 22rpx;
+  box-shadow: 0 14rpx 40rpx rgba(55, 44, 87, 0.07);
+}
+
+.a-city {
+  font-size: 22rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
+  color: #695C93;
+  text-transform: uppercase;
+}
+
+.a-title {
+  font-family: var(--font-serif);
+  font-size: 36rpx;
+  font-weight: 400;
+  color: #2A2846;
+  line-height: 1.45;
+  letter-spacing: 1rpx;
+  margin-top: 10rpx;
+}
+
+.a-price {
+  font-family: var(--font-serif);
+  font-size: 52rpx;
+  color: #372C57;
+  letter-spacing: 1rpx;
+  margin-top: 16rpx;
+  line-height: 1.25;
+}
+
+.a-unit2 {
+  font-size: 24rpx;
+  color: #5F5C82;
+}
+
+.a-meta {
+  font-family: var(--font-serif);
+  font-size: 24rpx;
+  color: #5F5C82;
+  margin-top: 10rpx;
+  letter-spacing: 0.4rpx;
+}

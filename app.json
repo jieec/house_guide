@@ -1,15 +1,15 @@
 {
   "pages": ["pages/index/index", "pages/houses/houses", "pages/houses/community/community", "pages/houses/detail/detail", "pages/houses/analyze/analyze", "pages/guide/guide", "pages/mine/mine", "pages/location/location", "pages/basic/basic", "pages/analysis/analysis", "pages/conclusion/conclusion", "pages/finance/finance", "pages/risk/risk", "pages/tax/tax", "pages/mortgage/mortgage"],
   "window": {
-    "navigationBarBackgroundColor": "#8B5CF6",
-    "navigationBarTitleText": "购房指南",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#F5F3FF",
-    "backgroundTextStyle": "light"
+    "navigationBarBackgroundColor": "#E7E3F6",
+    "navigationBarTitleText": "房产评估",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F6F5FC",
+    "backgroundTextStyle": "dark"
   },
   "tabBar": {
-    "color": "#B8B8C9",
-    "selectedColor": "#8B5CF6",
+    "color": "#9490B2",
+    "selectedColor": "#52467B",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
     "custom": true,

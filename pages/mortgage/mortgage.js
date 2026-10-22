@@ -2,7 +2,6 @@ const calc = require('../../utils/calc.js')
 
 Page({
   data: {
-    showContent: false,
     loanAmount: '',
     rateTypes: ['LPR利率', '基础利率'],
     rateTypeIndex: 0,
@@ -33,14 +32,7 @@ Page({
   onShow() {
     const saved = wx.getStorageSync('mortgage')
     
-    // 触发入场动画
-    this.setData({ 
-      showContent: false,
-      ...(saved || {})
-    })
-    setTimeout(() => {
-      this.setData({ showContent: true })
-    }, 100)
+    this.setData({ ...(saved || {}) })
   },
   onInput(e) {
     this.setData({ [e.currentTarget.dataset.field]: e.detail.value })

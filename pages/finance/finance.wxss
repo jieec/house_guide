@@ -1,51 +1,29 @@
-/* 金融页面 - 柔和紫色风格 + 超级惊艳动效 */
+/* 页面基础 */
 
 page {
-  background: url('/images/云中水獭.jpg') no-repeat center top / cover;
-  color: #2D2D3A;
+  background: #F6F5FC;
+  color: #2A2846;
   padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   position: relative;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
-/* 背景装饰 - 波浪图案 */
-page::before {
-  content: '';
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 400rpx;
-  background: 
-    radial-gradient(ellipse 800rpx 150rpx at 50% 100%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse 600rpx 120rpx at 30% 120%, rgba(124, 92, 252, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse 500rpx 100rpx at 70% 110%, rgba(109, 78, 237, 0.04) 0%, transparent 50%);
-  z-index: -5;
-}
-
-page::after {
-  content: '';
-  position: fixed;
-  top: 100rpx;
-  left: -100rpx;
-  width: 400rpx;
-  height: 400rpx;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
-  border-radius: 50%;
-  z-index: -5;
-}
-
-/* 确保内容在装饰层之上 */
-.card, .btn-primary, .btn-ghost {
+.finance-layout {
+  min-height: 100vh;
   position: relative;
   z-index: 1;
 }
 
-/* 入场动画 */
-@keyframes fadeInUp {
+.finance-main {
+  padding: 24rpx;
+}
+
+/* ==================== 动画 ==================== */
+
+@keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(60rpx);
+    transform: translateY(16rpx);
   }
   to {
     opacity: 1;
@@ -53,10 +31,15 @@ page::after {
   }
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.85);
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
@@ -64,41 +47,194 @@ page::after {
   }
 }
 
-/* 结果卡片动画 */
-.result {
-  animation: scaleIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
-/* 表单行动画 */
-.form-row {
-  animation: fadeInUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+.form-row:active {
+  background: #E8E5F5;
+  transform: scale(0.98);
 }
 
-.form-row:nth-child(1) { animation-delay: 0.1s; }
-.form-row:nth-child(2) { animation-delay: 0.2s; }
-.form-row:nth-child(3) { animation-delay: 0.3s; }
-.form-row:nth-child(4) { animation-delay: 0.4s; }
-.form-row:nth-child(5) { animation-delay: 0.5s; }
-.form-row:nth-child(n+6) { animation-delay: 0.6s; }
-
-/* ==================== 点击效果 ==================== */
+/* ==================== 银行列表 ==================== */
 
 .bank {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: #FFFFFF;
+  border: 2rpx solid #E8E5F5;
+  border-radius: 20rpx;
+  padding: 20rpx;
+  margin-bottom: 12rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
 }
 
 .bank:active {
-  background: #F5F3FF;
-  transform: translateX(8rpx) scale(0.98);
-  box-shadow: 0rpx 8rpx 20rpx rgba(124, 92, 252, 0.15);
+  background: #F1EFFA;
+  border-color: #C1BAD9;
+  transform: translateX(4rpx);
+  box-shadow: 0 4rpx 12rpx rgba(82, 70, 123, 0.15);
+}
+
+.bank-info {
+  flex: 1;
+}
+
+.bank-name {
+  color: #2A2846;
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 6rpx;
+}
+
+.bank-rate {
+  color: #4C4A6E;
+  font-size: 24rpx;
 }
 
 .bank-call {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: #E7E3F6;
+  color: #52467B;
+  border: none;
+  border-radius: 12rpx;
+  padding: 10rpx 16rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  cursor: pointer;
 }
 
 .bank-call:active {
-  transform: scale(0.9);
-  color: #6D4EED;
-  background: rgba(139, 92, 246, 0.15);
+  background: rgba(82, 70, 123, 0.2);
+  transform: scale(0.95);
+}
+
+.result-total {
+  background: rgba(82, 70, 123, 0.08);
+  margin: 12rpx -20rpx -20rpx;
+  padding: 16rpx 20rpx;
+  border-radius: 0 0 20rpx 20rpx;
+}
+
+.result-total .result-label,
+.result-total .result-num {
+  font-weight: 700;
+}
+
+.result-total .result-num {
+  color: #372C57;
+  font-size: 36rpx;
+}
+
+/* ==================== 区块 · data-grid ==================== */
+
+.data-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12rpx;
+  margin: 16rpx 0;
+}
+
+.data-item {
+  background: #F1EFFA;
+  border-radius: 20rpx;
+  padding: 16rpx;
+  text-align: center;
+}
+
+.data-value {
+  color: #52467B;
+  font-size: 36rpx;
+  font-weight: 700;
+  margin-bottom: 8rpx;
+}
+
+.data-label {
+  color: #4C4A6E;
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.warn-tip.error {
+  background: rgba(244, 67, 54, 0.1);
+  border-left-color: #A94D58;
+  color: #A94D58;
+}
+
+.success-tip {
+  background: rgba(82, 70, 123, 0.1);
+  border-left: 4rpx solid #C1BAD9;
+  border-radius: 12rpx;
+  padding: 16rpx;
+  color: #52467B;
+  font-size: 26rpx;
+  margin: 16rpx 0;
+}
+
+/* ==================== 区块 · chart-container ==================== */
+
+.chart-container {
+  background: #F1EFFA;
+  border-radius: 20rpx;
+  padding: 20rpx;
+  margin: 16rpx 0;
+  position: relative;
+  height: 300rpx;
+}
+
+.chart-title {
+  color: #2A2846;
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+}
+
+/* ==================== 区块 · item-list ==================== */
+
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.list-item-left {
+  flex: 1;
+}
+
+.list-item-value {
+  color: #52467B;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+/* ==================== 空状态 ==================== */
+
+.empty-state {
+  text-align: center;
+  padding: 60rpx 24rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 16rpx;
+}
+
+.empty-title {
+  color: #2A2846;
+  font-size: 32rpx;
+  font-weight: 400;
+  margin-bottom: 8rpx;
+  font-family: var(--font-serif);
+  letter-spacing: 2rpx;
+}
+
+.empty-desc {
+  color: #6B6890;
+  font-size: 26rpx;
+  font-family: var(--font-serif);
+  line-height: 1.8;
 }

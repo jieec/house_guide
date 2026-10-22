@@ -1,4 +1,4 @@
-/* 底部导航栏 - 超级惊艳的紫色风格 + 悬空半透明 */
+/* 底部导航栏 — 青瓷主题 · 悬空半透明 */
 
 .bottom-nav {
   position: fixed;
@@ -11,8 +11,8 @@
   backdrop-filter: blur(20rpx);
   -webkit-backdrop-filter: blur(20rpx);
   border-radius: 32rpx;
-  box-shadow: 0rpx 12rpx 48rpx rgba(124, 92, 252, 0.2),
-              0rpx 4rpx 16rpx rgba(124, 92, 252, 0.12),
+  box-shadow: 0rpx 12rpx 48rpx rgba(82, 70, 123, 0.1),
+              0rpx 4rpx 16rpx rgba(82, 70, 123, 0.06),
               inset 0rpx 1rpx 0rpx rgba(255, 255, 255, 0.8);
   border: 2rpx solid rgba(255, 255, 255, 0.9);
   box-sizing: border-box;
@@ -45,7 +45,7 @@
   justify-content: center;
   align-items: center;
   border-radius: 24rpx;
-  color: #B8B8C9;
+  color: #9490B2;
   font-size: 24rpx;
   line-height: 1.3;
   font-weight: 500;
@@ -62,7 +62,7 @@
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(82, 70, 123, 0.2) 0%, transparent 70%);
   transform: translate(-50%, -50%);
   transition: width 0.6s ease, height 0.6s ease;
 }
@@ -73,11 +73,11 @@
 }
 
 .bottom-nav-item.selected {
-  color: #FFFFFF;
-  background: linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 100%);
-  box-shadow: 0rpx 12rpx 32rpx rgba(124, 92, 252, 0.5),
-              0rpx 4rpx 12rpx rgba(124, 92, 252, 0.3),
-              inset 0rpx 2rpx 4rpx rgba(255, 255, 255, 0.3);
+  color: #372C57;
+  background: linear-gradient(135deg, #E7E3F6 0%, #D8D3EC 100%);
+  box-shadow: 0rpx 10rpx 28rpx rgba(82, 70, 123, 0.16),
+              0rpx 4rpx 12rpx rgba(82, 70, 123, 0.1),
+              inset 0rpx 2rpx 4rpx rgba(255, 255, 255, 0.7);
   transform: translateY(-8rpx) scale(1.05);
   animation: tabSelected 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -105,7 +105,7 @@
   height: 8rpx;
   border-radius: 8rpx;
   background: linear-gradient(90deg, transparent 0%, #FFFFFF 50%, transparent 100%);
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 .bottom-nav-icon {
@@ -121,7 +121,7 @@
 
 .bottom-nav-item.selected .bottom-nav-icon {
   transform: scale(1.2) rotate(5deg);
-  filter: drop-shadow(0rpx 4rpx 8rpx rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0rpx 4rpx 8rpx rgba(55, 44, 87, 0.2));
 }
 
 .bottom-nav-label {
@@ -145,10 +145,10 @@
 /* 桌面端悬停效果 - 超级明显 */
 @media (hover: hover) {
   .bottom-nav-item:not(.selected):hover {
-    background: #F5F3FF;
-    color: #8B5CF6;
+    background: #EFECFA;
+    color: #52467B;
     transform: translateY(-6rpx) scale(1.05);
-    box-shadow: 0rpx 8rpx 24rpx rgba(124, 92, 252, 0.2);
+    box-shadow: 0rpx 8rpx 24rpx rgba(82, 70, 123, 0.2);
   }
   
   .bottom-nav-item:not(.selected):hover .bottom-nav-icon {
@@ -156,8 +156,8 @@
   }
   
   .bottom-nav-item.selected:hover {
-    box-shadow: 0rpx 16rpx 40rpx rgba(124, 92, 252, 0.6),
-                0rpx 8rpx 20rpx rgba(124, 92, 252, 0.4);
+    box-shadow: 0rpx 16rpx 40rpx rgba(82, 70, 123, 0.2),
+                0rpx 8rpx 20rpx rgba(82, 70, 123, 0.12);
     transform: translateY(-12rpx) scale(1.08);
   }
 }

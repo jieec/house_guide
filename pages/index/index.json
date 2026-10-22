@@ -1,7 +1,7 @@
 {
   "navigationBarTitleText": "房产价值评估",
-  "navigationBarBackgroundColor": "#171033",
-  "backgroundColor": "#171033",
-  "navigationBarTextStyle": "white",
-  "backgroundTextStyle": "light"
+  "navigationBarBackgroundColor": "#E7E3F6",
+  "backgroundColor": "#F6F5FC",
+  "navigationBarTextStyle": "black",
+  "backgroundTextStyle": "dark"
 }

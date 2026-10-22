@@ -2,7 +2,7 @@
 
 page {
   background: transparent;
-  color: #2D2D3A;
+  color: #2A2846;
   padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   position: relative;
   overflow: hidden;
@@ -17,8 +17,8 @@ page::before {
   right: -100rpx;
   height: 600rpx;
   background: 
-    linear-gradient(45deg, transparent 48%, rgba(139, 92, 246, 0.03) 48%, rgba(139, 92, 246, 0.03) 52%, transparent 52%),
-    linear-gradient(-45deg, transparent 48%, rgba(124, 92, 252, 0.03) 48%, rgba(124, 92, 252, 0.03) 52%, transparent 52%);
+    linear-gradient(45deg, transparent 48%, rgba(82, 70, 123, 0.03) 48%, rgba(82, 70, 123, 0.03) 52%, transparent 52%),
+    linear-gradient(-45deg, transparent 48%, rgba(82, 70, 123, 0.03) 48%, rgba(82, 70, 123, 0.03) 52%, transparent 52%);
   background-size: 80rpx 80rpx;
   z-index: -5;
   opacity: 0.6;
@@ -32,15 +32,9 @@ page::after {
   margin-left: -300rpx;
   width: 600rpx;
   height: 600rpx;
-  background: radial-gradient(circle, rgba(109, 78, 237, 0.08) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(7, 168, 42, 0.08) 0%, transparent 65%);
   border-radius: 50%;
   z-index: -5;
-}
-
-/* 确保内容在装饰层之上 */
-.card, .btn-primary, .btn-ghost {
-  position: relative;
-  z-index: 1;
 }
 
 /* ==================== 入场动画 ==================== */
@@ -102,7 +96,7 @@ page::after {
 }
 
 .info-row:active {
-  background: #F5F3FF;
+  background: #EFECFA;
   transform: translateX(6rpx);
   margin: 0 -12rpx;
   padding-left: 16rpx;
@@ -116,9 +110,9 @@ page::after {
 
 .tag:active {
   transform: scale(0.92) translateY(2rpx);
-  background: linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 100%);
+  background: linear-gradient(135deg, #52467B 0%, #372C57 100%);
   color: #FFFFFF;
-  box-shadow: 0rpx 4rpx 16rpx rgba(124, 92, 252, 0.3);
+  box-shadow: 0rpx 4rpx 16rpx rgba(82, 70, 123, 0.3);
 }
 
 .house-item {
@@ -126,9 +120,9 @@ page::after {
 }
 
 .house-item:active {
-  background: #F5F3FF;
+  background: #EFECFA;
   transform: translateX(8rpx) scale(0.98);
-  box-shadow: 0rpx 8rpx 20rpx rgba(124, 92, 252, 0.15);
+  box-shadow: 0rpx 8rpx 20rpx rgba(82, 70, 123, 0.15);
 }
 
 .map-view {
@@ -151,35 +145,296 @@ page::after {
 
 .community-header:hover {
   transform: translateY(-4rpx) scale(1.01);
-  box-shadow: 0rpx 16rpx 48rpx rgba(124, 92, 252, 0.2);
+  box-shadow: 0rpx 16rpx 48rpx rgba(82, 70, 123, 0.2);
 }
 
 .info-row:hover {
-  background: rgba(139, 92, 246, 0.06);
+  background: rgba(82, 70, 123, 0.06);
   transform: translateX(8rpx);
-  color: #8B5CF6;
+  color: #52467B;
 }
 
 .tag:hover {
   transform: scale(1.08) translateY(-2rpx);
-  background: linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 100%);
+  background: linear-gradient(135deg, #52467B 0%, #372C57 100%);
   color: #FFFFFF;
-  box-shadow: 0rpx 8rpx 24rpx rgba(124, 92, 252, 0.4);
+  box-shadow: 0rpx 8rpx 24rpx rgba(82, 70, 123, 0.4);
 }
 
 .house-item:hover {
   transform: translateY(-6rpx) translateX(8rpx) scale(1.02);
-  box-shadow: 0rpx 20rpx 60rpx rgba(124, 92, 252, 0.25);
+  box-shadow: 0rpx 20rpx 60rpx rgba(82, 70, 123, 0.25);
 }
 
 .map-view:hover {
   transform: scale(1.02);
-  box-shadow: 0rpx 16rpx 48rpx rgba(124, 92, 252, 0.2);
+  box-shadow: 0rpx 16rpx 48rpx rgba(82, 70, 123, 0.2);
 }
 
 .info-section:hover {
   transform: translateY(-2rpx);
-  box-shadow: 0rpx 12rpx 40rpx rgba(124, 92, 252, 0.15);
+  box-shadow: 0rpx 12rpx 40rpx rgba(82, 70, 123, 0.15);
 }
 
 /* 通用样式继承自全局 app.wxss */
+
+/* ==================== 页头 ==================== */
+
+.c-head {
+  margin-bottom: 28rpx;
+}
+
+.c-city {
+  font-size: 22rpx;
+  font-weight: 700;
+  letter-spacing: 5rpx;
+  color: #695C93;
+  text-transform: uppercase;
+  margin-bottom: 10rpx;
+}
+
+.c-name {
+  font-family: var(--font-serif);
+  font-size: 42rpx;
+  font-weight: 400;
+  color: #2A2846;
+  letter-spacing: 2rpx;
+  line-height: 1.35;
+}
+
+.c-count {
+  font-family: var(--font-serif);
+  font-size: 25rpx;
+  color: #5F5C82;
+  letter-spacing: 0.5rpx;
+  margin-top: 10rpx;
+  line-height: 1.7;
+}
+
+/* ==================== 小区评分 ==================== */
+
+.grade-row {
+  display: flex;
+  align-items: center;
+  gap: 26rpx;
+}
+
+.grade-score {
+  font-family: var(--font-serif);
+  font-size: 64rpx;
+  color: #52467B;
+  line-height: 1;
+  flex: 0 0 auto;
+  letter-spacing: 1rpx;
+}
+
+.grade-list {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.grade-item {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+  font-family: var(--font-serif);
+  font-size: 23rpx;
+  color: #5F5C82;
+  line-height: 1.6;
+}
+
+.grade-name {
+  flex: 0 0 auto;
+  color: #4A4769;
+}
+
+.grade-val {
+  flex: 0 0 auto;
+  color: #52467B;
+}
+
+.grade-tips {
+  flex: 1;
+  min-width: 0;
+  color: #6B6890;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==================== 小区概况 ==================== */
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24rpx 20rpx;
+}
+
+.info-cell {
+  min-width: 0;
+}
+
+.info-v {
+  font-size: 27rpx;
+  font-weight: 600;
+  color: #2A2846;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.info-k {
+  font-family: var(--font-serif);
+  font-size: 22rpx;
+  color: #6B6890;
+  margin-top: 6rpx;
+  letter-spacing: 0.3rpx;
+}
+
+/* ==================== 周边配套 ==================== */
+
+.poi-group {
+  padding: 18rpx 0;
+  border-bottom: 1rpx dashed #EBE8F7;
+}
+
+.poi-group:last-child {
+  border-bottom: none;
+}
+
+.poi-title {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #372C57;
+  margin-bottom: 12rpx;
+  letter-spacing: 0.3rpx;
+}
+
+.poi-title .ic {
+  width: 26rpx;
+  height: 26rpx;
+  color: #695C93;
+}
+
+.poi-count {
+  font-family: var(--font-serif);
+  font-size: 22rpx;
+  color: #9490B2;
+  font-weight: 400;
+}
+
+.poi-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6rpx 14rpx;
+  padding: 10rpx 0;
+}
+
+.poi-name {
+  font-family: var(--font-serif);
+  font-size: 24rpx;
+  color: #4A4769;
+}
+
+.poi-dist {
+  font-family: var(--font-serif);
+  font-size: 22rpx;
+  color: #6B6890;
+}
+
+.poi-info {
+  flex: 1 0 100%;
+  font-family: var(--font-serif);
+  font-size: 22rpx;
+  color: #9490B2;
+  line-height: 1.6;
+}
+
+.poi-toggle,
+.intro-toggle {
+  margin-top: 14rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #52467B;
+  letter-spacing: 0.5rpx;
+  padding: 12rpx 0;
+}
+
+/* ==================== 周边竞品 ==================== */
+
+.near-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #EBE8F7;
+}
+
+.near-item:last-child {
+  border-bottom: none;
+}
+
+.near-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.near-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #2A2846;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.near-meta {
+  font-family: var(--font-serif);
+  font-size: 22rpx;
+  color: #6B6890;
+  margin-top: 4rpx;
+}
+
+.near-right {
+  text-align: right;
+  flex: 0 0 auto;
+}
+
+.near-price {
+  font-family: var(--font-serif);
+  font-size: 25rpx;
+  color: #52467B;
+}
+
+.near-score {
+  font-family: var(--font-serif);
+  font-size: 22rpx;
+  color: #6B6890;
+  margin-top: 4rpx;
+}
+
+/* ==================== 小区介绍 ==================== */
+
+.intro {
+  font-family: var(--font-serif);
+  font-size: 25rpx;
+  color: #4A4769;
+  line-height: 1.9;
+  letter-spacing: 0.4rpx;
+}
+
+.intro-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}

@@ -1,0 +1,602 @@
+/* ========================================
+   共享组件 —— 雾紫主题
+   被 2 个以上页面复用的区块样式集中在这里，
+   避免每页各写一份导致视觉漂移
+   ======================================== */
+
+/* ==================== 加载 / 空态 ==================== */
+
+.load-tip {
+  text-align: center;
+  padding: 40rpx 0;
+  font-family: var(--font-serif);
+  font-size: 25rpx;
+  color: #6B6890;
+  letter-spacing: 1rpx;
+}
+
+.empty-tip {
+  text-align: center;
+  padding: 90rpx 24rpx;
+  font-family: var(--font-serif);
+  font-size: 27rpx;
+  color: #5F5C82;
+  line-height: 1.9;
+  letter-spacing: 0.5rpx;
+}
+
+.empty-emoji {
+  display: block;
+  font-size: 64rpx;
+  margin-bottom: 18rpx;
+  opacity: 0.55;
+}
+
+.empty-symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60rpx;
+  color: #C1BAD9;
+  margin-bottom: 16rpx;
+}
+
+/* ==================== 类型切换 ==================== */
+
+.type-bar {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.type-chip {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  border-radius: 999rpx;
+  background: #FFFFFF;
+  border: 1rpx solid #EBE8F7;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #5F5C82;
+  letter-spacing: 0.4rpx;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.type-chip:active {
+  transform: scale(0.97);
+}
+
+.type-active {
+  background: linear-gradient(135deg, #625A9A 0%, #52467B 100%);
+  color: #FFFFFF;
+  border-color: transparent;
+  box-shadow: 0 8rpx 20rpx rgba(82, 70, 123, 0.22);
+}
+
+/* ==================== 房源卡片 ==================== */
+
+.house-card {
+  background: #FFFFFF;
+  border: 1rpx solid #EBE8F7;
+  border-radius: 30rpx;
+  padding: 26rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 6rpx 28rpx rgba(55, 44, 87, 0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.house-card:active {
+  transform: scale(0.985);
+  box-shadow: 0 12rpx 34rpx rgba(55, 44, 87, 0.09);
+}
+
+.house-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  margin-bottom: 14rpx;
+}
+
+.house-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #2A2846;
+  line-height: 1.45;
+  letter-spacing: 0.3rpx;
+}
+
+.house-tag {
+  flex: 0 0 auto;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  background: #E7E3F6;
+  color: #52467B;
+  font-size: 20rpx;
+  font-weight: 600;
+  letter-spacing: 0.5rpx;
+}
+
+.tag-green {
+  background: #E8E5F5;
+  color: #4C4A6E;
+}
+
+.house-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx 20rpx;
+  margin-bottom: 12rpx;
+}
+
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  font-family: var(--font-serif);
+  font-size: 24rpx;
+  color: #5F5C82;
+  letter-spacing: 0.3rpx;
+}
+
+.meta-item .ic {
+  width: 24rpx;
+  height: 24rpx;
+  color: #8378AC;
+}
+
+.house-loc {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-family: var(--font-serif);
+  font-size: 24rpx;
+  color: #6B6890;
+  letter-spacing: 0.3rpx;
+  margin-bottom: 16rpx;
+}
+
+.house-loc .ic {
+  width: 22rpx;
+  height: 22rpx;
+  color: #8378AC;
+}
+
+.house-foot {
+  display: flex;
+  align-items: baseline;
+  gap: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #EBE8F7;
+}
+
+.house-price {
+  font-family: var(--font-serif);
+  font-size: 36rpx;
+  color: #52467B;
+  letter-spacing: 0.5rpx;
+  line-height: 1.2;
+}
+
+.price-unit {
+  font-size: 22rpx;
+  color: #6B6890;
+  margin-left: 4rpx;
+}
+
+.house-unit {
+  font-family: var(--font-serif);
+  font-size: 23rpx;
+  color: #6B6890;
+}
+
+.analyze-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  margin-left: auto;
+  padding: 10rpx 22rpx;
+  border-radius: 999rpx;
+  background: #E7E3F6;
+  color: #52467B;
+  font-size: 22rpx;
+  font-weight: 600;
+  letter-spacing: 0.5rpx;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.analyze-chip .ic {
+  width: 20rpx;
+  height: 20rpx;
+}
+
+.analyze-chip:active {
+  background: #D8D3EC;
+  transform: scale(0.96);
+}
+
+.house-tags {
+  margin-top: 12rpx;
+  font-family: var(--font-serif);
+  font-size: 23rpx;
+  color: #6B6890;
+  line-height: 1.7;
+}
+
+/* ==================== 列表行 ==================== */
+
+.cell {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  background: #FFFFFF;
+  border: 1rpx solid #EBE8F7;
+  border-radius: 26rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 4rpx 20rpx rgba(55, 44, 87, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.cell:active {
+  transform: scale(0.985);
+  box-shadow: 0 10rpx 28rpx rgba(55, 44, 87, 0.08);
+}
+
+.cell-left {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+.cell-icon {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 18rpx;
+  background: #E7E3F6;
+  color: #52467B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  flex: 0 0 56rpx;
+}
+
+.cell-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #2A2846;
+  letter-spacing: 0.3rpx;
+}
+
+.cell-desc {
+  font-family: var(--font-serif);
+  font-size: 24rpx;
+  color: #6B6890;
+  margin-top: 4rpx;
+  letter-spacing: 0.3rpx;
+}
+
+.cell-score {
+  font-family: var(--font-serif);
+  font-size: 26rpx;
+  color: #52467B;
+  flex: 0 0 auto;
+}
+
+.cell-arrow {
+  width: 26rpx;
+  height: 26rpx;
+  flex: 0 0 26rpx;
+  color: #C1BAD9;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.cell:active .cell-arrow {
+  color: #52467B;
+  transform: translateX(4rpx);
+}
+
+/* ==================== 按钮 ==================== */
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  height: 96rpx;
+  margin-top: 24rpx;
+  border-radius: 26rpx;
+  background: linear-gradient(135deg, #625A9A 0%, #52467B 100%);
+  color: #FFFFFF;
+  font-size: 29rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+  box-shadow: 0 12rpx 30rpx rgba(82, 70, 123, 0.24);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary .ic {
+  width: 28rpx;
+  height: 28rpx;
+  opacity: 0.9;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+  box-shadow: 0 16rpx 36rpx rgba(82, 70, 123, 0.3);
+}
+
+.btn-ghost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 84rpx;
+  margin-top: 20rpx;
+  border-radius: 24rpx;
+  background: #EFECFA;
+  color: #52467B;
+  font-size: 27rpx;
+  font-weight: 600;
+  letter-spacing: 0.5rpx;
+  border: 1rpx solid #EBE8F7;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-ghost:active {
+  background: #E7E3F6;
+  transform: scale(0.985);
+}
+
+/* ==================== 提示条 ==================== */
+
+.auto-banner {
+  padding: 20rpx 22rpx;
+  border-radius: 20rpx;
+  background: #EFECFA;
+  border: 1rpx solid #E7E3F6;
+  font-family: var(--font-serif);
+  font-size: 24rpx;
+  color: #4A4769;
+  line-height: 1.75;
+  letter-spacing: 0.3rpx;
+}
+
+.auto-banner-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10rpx;
+}
+
+/* 独立使用（不套在卡片里）时补下边距 */
+.banner-standalone {
+  margin-bottom: 20rpx;
+}
+
+.auto-banner-head .ic {
+  width: 24rpx;
+  height: 24rpx;
+  margin-top: 6rpx;
+  color: #52467B;
+}
+
+.auto-note {
+  font-family: var(--font-serif);
+  font-size: 23rpx;
+  color: #6B6890;
+  line-height: 1.7;
+  letter-spacing: 0.3rpx;
+}
+
+.warn-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10rpx;
+  margin-top: 18rpx;
+  padding: 18rpx 20rpx;
+  border-radius: 18rpx;
+  background: #FDF4EC;
+  border: 1rpx solid #F0DEC9;
+  font-family: var(--font-serif);
+  font-size: 23rpx;
+  color: #8A5A2B;
+  line-height: 1.7;
+  letter-spacing: 0.3rpx;
+}
+
+.warn-tip .ic {
+  width: 24rpx;
+  height: 24rpx;
+  margin-top: 5rpx;
+  color: #A8743F;
+}
+
+.risk-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 10rpx;
+  font-family: var(--font-serif);
+  font-size: 25rpx;
+  color: #4A4769;
+  line-height: 1.8;
+  padding: 14rpx 0;
+  border-bottom: 1rpx dashed #EBE8F7;
+}
+
+.risk-line .ic {
+  width: 24rpx;
+  height: 24rpx;
+  margin-top: 7rpx;
+  color: #A8743F;
+}
+
+.risk-line:last-child {
+  border-bottom: none;
+}
+
+/* ==================== 结果补充 ==================== */
+
+.result-total {
+  border-top: 1rpx solid #D8D3EC;
+  margin-top: 4rpx;
+}
+
+.result-total .result-num {
+  color: #372C57;
+  font-size: 38rpx;
+}
+
+.result-highlight {
+  margin: 6rpx 0 14rpx;
+  padding: 26rpx 24rpx;
+  border-radius: 22rpx;
+  background: linear-gradient(135deg, #E7E3F6 0%, #F1EFFA 100%);
+  border: 1rpx solid #D8D3EC;
+  text-align: center;
+}
+
+.result-highlight-label {
+  font-family: var(--font-serif);
+  font-size: 23rpx;
+  color: #5F5C82;
+  letter-spacing: 1rpx;
+}
+
+.result-highlight-value {
+  font-family: var(--font-serif);
+  font-size: 52rpx;
+  color: #372C57;
+  letter-spacing: 1rpx;
+  line-height: 1.25;
+  margin-top: 8rpx;
+}
+
+/* ==================== 银行列表 ==================== */
+
+.bank {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #EBE8F7;
+}
+
+.bank:last-child {
+  border-bottom: none;
+}
+
+.bank-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.bank-name {
+  font-size: 27rpx;
+  font-weight: 600;
+  color: #2A2846;
+}
+
+.bank-type {
+  font-family: var(--font-serif);
+  font-size: 23rpx;
+  color: #6B6890;
+  margin-top: 4rpx;
+}
+
+.bank-call {
+  font-family: var(--font-serif);
+  font-size: 25rpx;
+  color: #52467B;
+  flex: 0 0 auto;
+}
+
+/* ==================== 标签 ==================== */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 8rpx 18rpx;
+  border-radius: 999rpx;
+  background: #EFECFA;
+  color: #52467B;
+  font-size: 22rpx;
+  font-weight: 600;
+  letter-spacing: 0.5rpx;
+}
+
+/* ==================== 详情卡片（community / detail 共用） ==================== */
+
+.d-card {
+  background: #FFFFFF;
+  border: 1rpx solid #EBE8F7;
+  border-radius: 30rpx;
+  padding: 26rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 6rpx 28rpx rgba(55, 44, 87, 0.05);
+}
+
+.d-card-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #372C57;
+  letter-spacing: 0.5rpx;
+  margin-bottom: 20rpx;
+}
+
+/* ==================== PDF 导出区 ==================== */
+
+.report-export-area {
+  margin-top: 32rpx;
+  padding: 30rpx 28rpx;
+  border-radius: 28rpx;
+  background: #FFFFFF;
+  border: 1rpx solid #EBE8F7;
+  text-align: center;
+  box-shadow: 0 6rpx 28rpx rgba(55, 44, 87, 0.05);
+}
+
+.report-export-title {
+  font-family: var(--font-serif);
+  font-size: 29rpx;
+  color: #2A2846;
+  letter-spacing: 1rpx;
+}
+
+.report-export-subtitle {
+  font-family: var(--font-serif);
+  font-size: 23rpx;
+  color: #6B6890;
+  margin-top: 8rpx;
+  letter-spacing: 0.3rpx;
+  line-height: 1.7;
+}
+
+.report-export-button {
+  margin-top: 22rpx;
+  height: 84rpx;
+  line-height: 84rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #625A9A 0%, #52467B 100%);
+  color: #FFFFFF;
+  font-size: 27rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+  border: none;
+}
+
+.report-export-button::after {
+  border: none;
+}
+
+.pdf-canvas {
+  position: fixed;
+  left: -9999rpx;
+  top: 0;
+  width: 750rpx;
+  height: 2000rpx;
+}

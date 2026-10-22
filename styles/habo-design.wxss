@@ -1,0 +1,354 @@
+/* ========================================
+   Habo 设计系统 v2 — 「雾紫」Lavender Theme
+   主色：#E7E3F6（雾紫 · 浅薰衣草）
+   深色阶仅用于文字与主操作，保证对比度；
+   铺底一律保持浅色，不追求饱和
+   ======================================== */
+
+page {
+  /* ---------- 主色系（由 #E7E3F6 推导的完整色阶） ---------- */
+  --habo-primary: #E7E3F6;          /* 主题色：大面积铺底 / 标签 / 选中态 */
+  --habo-primary-50: #F6F5FC;
+  --habo-primary-100: #EFECFA;
+  --habo-primary-200: #E7E3F6;      /* ← 主题色本体 */
+  --habo-primary-300: #D8D3EC;
+  --habo-primary-400: #C1BAD9;
+  --habo-primary-500: #A198C4;
+  --habo-primary-600: #8378AC;
+  --habo-primary-700: #695C93;
+  --habo-primary-800: #52467B;      /* 强调文字 / 主按钮 */
+  --habo-primary-900: #372C57;      /* 深墨紫：标题 / 反白底 */
+
+  --habo-primary-strong: #52467B;
+  --habo-primary-dark: #372C57;
+  --habo-primary-mid: #9A8FC6;
+  --habo-primary-light: #EFECFA;
+  --habo-primary-line: #D8D3EC;
+
+  /* ---------- 辅助色（保留语义色，降饱和以贴合雾紫调） ---------- */
+  --habo-red: #A94D58;
+  --habo-orange: #C08A55;
+  --habo-blue: #5A70A8;
+  --habo-yellow: #C0A055;
+
+  /* ---------- 背景色系 ---------- */
+  --habo-bg-light: #F6F5FC;         /* 页面底色 */
+  --habo-bg-white: #FFFFFF;         /* 卡片底色 */
+  --habo-bg-gray-100: #F1EFFA;
+  --habo-bg-gray-200: #E8E5F5;
+  --habo-bg-gray-300: #D8D3EC;
+
+  /* ---------- 文字色系（墨紫而非纯黑，更柔和） ---------- */
+  --habo-text-dark: #2A2846;
+  --habo-text-gray-1: #4C4A6E;
+  --habo-text-gray-2: #6C6A8E;
+  --habo-text-gray-3: #9490B2;
+  --habo-text-light: #F5F5F5;
+
+  /* ---------- 边框 & 分隔线 ---------- */
+  --habo-border-light: #EBE8F7;
+  --habo-border-dark: #D8D3EC;
+
+  /* ---------- 阴影（带紫调，避免死灰） ---------- */
+  --habo-shadow-xs: 0 2rpx 8rpx rgba(55, 44, 87, 0.04);
+  --habo-shadow-sm: 0 4rpx 16rpx rgba(55, 44, 87, 0.06);
+  --habo-shadow-md: 0 8rpx 24rpx rgba(55, 44, 87, 0.09);
+  --habo-shadow-lg: 0 14rpx 36rpx rgba(55, 44, 87, 0.12);
+
+  /* ---------- 圆角 ---------- */
+  --habo-radius-xs: 8rpx;
+  --habo-radius-sm: 12rpx;
+  --habo-radius-md: 20rpx;
+  --habo-radius-lg: 28rpx;
+  --habo-radius-xl: 36rpx;
+  --habo-radius-full: 9999rpx;
+
+  /* ---------- 间距 ---------- */
+  --habo-spacing-xs: 4rpx;
+  --habo-spacing-sm: 8rpx;
+  --habo-spacing-md: 16rpx;
+  --habo-spacing-lg: 24rpx;
+  --habo-spacing-xl: 32rpx;
+  --habo-spacing-2xl: 48rpx;
+
+  /* ---------- 字体族 ---------- */
+  /* 无衬线：正文与标题，优先中文字体 */
+  --habo-font-family-base: 'PingFang SC', 'HarmonyOS Sans SC', 'Microsoft YaHei', 'Hiragino Sans GB', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  /* 衬线：仅用于页面主标题，营造气质感 */
+  --habo-font-family-serif: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', serif;
+
+  /* ---------- 字号层级 ---------- */
+  --habo-font-size-xs: 24rpx;    /* 辅助文字 */
+  --habo-font-size-sm: 26rpx;    /* 说明文本 */
+  --habo-font-size-md: 28rpx;    /* 正文 */
+  --habo-font-size-lg: 32rpx;    /* 卡片 / 模块标题 */
+  --habo-font-size-xl: 36rpx;    /* 区块标题 */
+  --habo-font-size-2xl: 40rpx;   /* 页面主标题 */
+  --habo-font-size-3xl: 48rpx;   /* 数字 / 强调 */
+
+  /* ---------- 行高 ---------- */
+  --habo-line-height-tight: 1.25;
+  --habo-line-height-normal: 1.6;
+  --habo-line-height-relaxed: 1.8;
+}
+
+/* ========================================
+   组件基础类
+   ======================================== */
+
+/* 卡片容器 */
+.habo-card {
+  background: var(--habo-bg-white);
+  border-radius: var(--habo-radius-lg);
+  border: 1rpx solid var(--habo-border-light);
+  box-shadow: var(--habo-shadow-sm);
+  padding: var(--habo-spacing-lg);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.habo-card:active {
+  box-shadow: var(--habo-shadow-md);
+  transform: translateY(-2rpx);
+}
+
+/* 按钮组件 */
+.habo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--habo-spacing-md) var(--habo-spacing-lg);
+  border-radius: var(--habo-radius-md);
+  font-size: var(--habo-font-size-md);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--habo-font-family-base);
+  letter-spacing: 0.5rpx;
+}
+
+/* 主按钮：深青实底 + 白字（对比度 ≈ 7:1） */
+.habo-btn-primary {
+  background: var(--habo-primary-strong);
+  color: #FFFFFF;
+  box-shadow: 0 6rpx 18rpx rgba(82, 70, 123, 0.22);
+}
+
+.habo-btn-primary:active {
+  background: var(--habo-primary-dark);
+  transform: scale(0.98);
+  box-shadow: 0 10rpx 24rpx rgba(82, 70, 123, 0.3);
+}
+
+/* 次按钮：淡青瓷底 + 深青字 */
+.habo-btn-secondary {
+  background: var(--habo-primary);
+  color: var(--habo-primary-900);
+  border: 1rpx solid var(--habo-primary-line);
+}
+
+.habo-btn-secondary:active {
+  background: var(--habo-primary-300);
+}
+
+/* 输入框 */
+.habo-input {
+  width: 100%;
+  padding: 16rpx 18rpx;
+  border-radius: var(--habo-radius-md);
+  border: 2rpx solid var(--habo-border-light);
+  font-size: 28rpx;
+  font-family: var(--habo-font-family-base);
+  background: var(--habo-bg-white);
+  color: var(--habo-text-dark);
+  transition: all 0.2s ease;
+  line-height: 1.5;
+  min-height: 48rpx;
+}
+
+.habo-input:focus {
+  border-color: var(--habo-primary-500);
+  box-shadow: 0 0 0 4rpx rgba(82, 70, 123, 0.1);
+}
+
+/* 标签 */
+.habo-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6rpx 14rpx;
+  border-radius: var(--habo-radius-full);
+  font-size: var(--habo-font-size-xs);
+  font-weight: 500;
+  background: var(--habo-primary);
+  color: var(--habo-primary-900);
+}
+
+.habo-tag-success {
+  background: var(--habo-primary);
+  color: var(--habo-primary-900);
+}
+
+.habo-tag-warning {
+  background: rgba(192, 138, 85, 0.12);
+  color: var(--habo-orange);
+}
+
+.habo-tag-danger {
+  background: rgba(191, 100, 112, 0.12);
+  color: var(--habo-red);
+}
+
+.habo-tag-info {
+  background: rgba(110, 124, 184, 0.12);
+  color: var(--habo-blue);
+}
+
+/* 文本类 */
+.habo-text-title {
+  font-family: var(--habo-font-family-serif);
+  font-size: var(--habo-font-size-2xl);
+  font-weight: 600;
+  color: var(--habo-text-dark);
+  line-height: var(--habo-line-height-tight);
+  letter-spacing: 1rpx;
+}
+
+.habo-text-heading {
+  font-size: var(--habo-font-size-lg);
+  font-weight: 700;
+  color: var(--habo-text-dark);
+  line-height: var(--habo-line-height-tight);
+}
+
+.habo-text-body {
+  font-size: var(--habo-font-size-md);
+  font-weight: 400;
+  color: var(--habo-text-gray-1);
+  line-height: var(--habo-line-height-normal);
+}
+
+.habo-text-caption {
+  font-size: var(--habo-font-size-xs);
+  font-weight: 400;
+  color: var(--habo-text-gray-2);
+  line-height: var(--habo-line-height-normal);
+}
+
+/* 列表项 */
+.habo-list-item {
+  display: flex;
+  align-items: center;
+  padding: var(--habo-spacing-md);
+  border-bottom: 1rpx solid var(--habo-border-light);
+}
+
+.habo-list-item:last-child {
+  border-bottom: none;
+}
+
+.habo-list-item-icon {
+  flex-shrink: 0;
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: var(--habo-spacing-md);
+  background: var(--habo-primary);
+  border-radius: var(--habo-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--habo-primary-900);
+  font-size: 20rpx;
+}
+
+.habo-list-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.habo-list-item-title {
+  font-size: var(--habo-font-size-md);
+  font-weight: 600;
+  color: var(--habo-text-dark);
+  margin-bottom: 4rpx;
+}
+
+.habo-list-item-desc {
+  font-size: var(--habo-font-size-xs);
+  color: var(--habo-text-gray-2);
+}
+
+/* 进度条 */
+.habo-progress {
+  width: 100%;
+  height: 8rpx;
+  background: var(--habo-bg-gray-200);
+  border-radius: var(--habo-radius-full);
+  overflow: hidden;
+}
+
+.habo-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--habo-primary-600) 0%, var(--habo-primary-400) 100%);
+  border-radius: var(--habo-radius-full);
+  transition: width 0.3s ease;
+}
+
+/* 分隔线 */
+.habo-divider {
+  height: 1rpx;
+  background: var(--habo-border-light);
+  margin: var(--habo-spacing-md) 0;
+}
+
+.habo-divider-gray {
+  background: var(--habo-bg-gray-200);
+  margin: var(--habo-spacing-lg) 0;
+}
+
+/* ========================================
+   动画效果
+   ======================================== */
+
+@keyframes habo-fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes habo-slideUp {
+  from {
+    transform: translateY(24rpx);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes habo-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.habo-animate-fade-in {
+  animation: habo-fadeIn 0.3s ease backwards;
+}
+
+.habo-animate-slide-up {
+  animation: habo-slideUp 0.4s ease backwards;
+}
+
+.habo-animate-pulse {
+  animation: habo-pulse 2s ease-in-out infinite;
+}

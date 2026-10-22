@@ -1,10 +1,10 @@
 <!-- 全局固定背景 -->
-<image class="global-fixed-bg" src="/images/整体背景.png" mode="aspectFill"></image>
+<image class="global-fixed-bg" src="/images/整体背景.jpg" mode="aspectFill"></image>
 
 <view wx:if="{{loading}}" class="load-tip">加载中...</view>
 
 <block wx:elif="{{item}}">
-  <view class="a-hero">
+  <view class="a-hero animated" style="animation-delay: 0.05s">
     <view class="a-city">{{item.city}} · {{item.community || item.district || ''}}</view>
     <view class="a-title">{{item.title}}</view>
     <view class="a-price" wx:if="{{saleTotal}}">{{saleTotal}}万<text class="a-unit2" wx:if="{{salePer}}"> · {{salePer}}元/㎡</text></view>
@@ -12,7 +12,7 @@
   </view>
 
   <block wx:if="{{isRent}}">
-    <view class="card">
+    <view class="card animated" style="animation-delay: 0.10s">
       <view class="card-title">租售比参考</view>
       <view class="card-sub">当前为租房房源：租金单价 {{rentPerSqm}} 元/平/月</view>
       <view class="form-row">
@@ -34,13 +34,13 @@
   </block>
 
   <block wx:else>
-    <view class="card">
+    <view class="card animated" style="animation-delay: 0.15s">
       <view class="card-title">分析参数</view>
       <view class="card-sub">已自动填入房源数据，只需确认或微调</view>
       <view class="form-row">
         <view class="form-label">购房目的</view>
         <picker class="form-input-wrap" range="{{purposes}}" value="{{purposeIndex}}" bindchange="onPurpose">
-          <view>{{purposes[purposeIndex]}}<text class="picker-arrow">▾</text></view>
+          <view>{{purposes[purposeIndex]}}<view class="ic ic-chevron picker-arrow"></view></view>
         </picker>
       </view>
       <view class="form-row">
@@ -66,26 +66,26 @@
       <view class="form-row">
         <view class="form-label">是否首套</view>
         <picker class="form-input-wrap" range="{{suiteType}}" value="{{suiteIndex}}" bindchange="onSuite">
-          <view>{{suiteType[suiteIndex]}}<text class="picker-arrow">▾</text></view>
+          <view>{{suiteType[suiteIndex]}}<view class="ic ic-chevron picker-arrow"></view></view>
         </picker>
       </view>
       <view class="form-row">
         <view class="form-label">是否满2年</view>
         <picker class="form-input-wrap" range="{{fullTwo}}" value="{{fullTwoIndex}}" bindchange="onFullTwo">
-          <view>{{fullTwo[fullTwoIndex]}}<text class="picker-arrow">▾</text></view>
+          <view>{{fullTwo[fullTwoIndex]}}<view class="ic ic-chevron picker-arrow"></view></view>
         </picker>
       </view>
       <view class="form-row">
         <view class="form-label">满五唯一</view>
         <picker class="form-input-wrap" range="{{fullFive}}" value="{{fullFiveIndex}}" bindchange="onFullFive">
-          <view>{{fullFive[fullFiveIndex]}}<text class="picker-arrow">▾</text></view>
+          <view>{{fullFive[fullFiveIndex]}}<view class="ic ic-chevron picker-arrow"></view></view>
         </picker>
       </view>
-      <view class="warn-tip" wx:if="{{missingTip}}">⚠️ {{missingTip}}</view>
+      <view class="warn-tip" wx:if="{{missingTip}}"><view class="ic ic-alert"></view>{{missingTip}}</view>
       <view class="btn-ghost" bindtap="calc">重新分析</view>
     </view>
 
-    <view class="card" wx:if="{{gap}}">
+    <view class="card animated" wx:if="{{gap}}" style="animation-delay: 0.20s">
       <view class="card-title">性价比测算</view>
       <view class="card-sub">(销售价 - 评估价) × 面积 × 85折</view>
       <view class="result">
@@ -100,7 +100,7 @@
       </view>
     </view>
 
-    <view class="card" wx:if="{{loanAmount}}">
+    <view class="card animated" wx:if="{{loanAmount}}" style="animation-delay: 0.25s">
       <view class="card-title">融资建议</view>
       <view class="result">
         <view class="result-line">
@@ -121,7 +121,7 @@
       </view>
     </view>
 
-    <view class="card" wx:if="{{monthly}}">
+    <view class="card animated" wx:if="{{monthly}}" style="animation-delay: 0.30s">
       <view class="card-title">按揭测算</view>
       <view class="result">
         <view class="result-line">
@@ -139,7 +139,7 @@
       </view>
     </view>
 
-    <view class="card" wx:if="{{totalTax}}">
+    <view class="card animated" wx:if="{{totalTax}}" style="animation-delay: 0.35s">
       <view class="card-title">税费测算</view>
       <view class="result">
         <view class="result-line">
@@ -161,9 +161,9 @@
       </view>
     </view>
 
-    <view class="card" wx:if="{{risks.length}}">
+    <view class="card animated" wx:if="{{risks.length}}" style="animation-delay: 0.40s">
       <view class="card-title">风险提示</view>
-      <view class="risk-line" wx:for="{{risks}}" wx:key="*this">⚠️ {{item}}</view>
+      <view class="risk-line" wx:for="{{risks}}" wx:key="*this"><view class="ic ic-alert"></view>{{item}}</view>
     </view>
   </block>
 </block>

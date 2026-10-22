@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<title>首页配色对比 · 青瓷 → 雾紫</title>
+<link rel="stylesheet" href="font-wenkai.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  /* ===== 青瓷（原） ===== */
+  .mint{
+    --a50:#F7FBFA; --a100:#EFF7F6; --a200:#DDECEB; --a300:#C8DFDC; --a400:#AACCC7;
+    --a500:#86B3AC; --a600:#63968E; --a700:#4A7B74; --a800:#35635E; --a900:#22443F;
+    --ink900:#1E2E2C; --ink300:#93A3A0; --line:#EAF2F1;
+    --muted:#8A9A97; --body:#465855; --sub:#5E716E; --meta:#526663; --eyebrow:#63968E;
+    --hero:linear-gradient(135deg,#DDECEB 0%,#E3F0EE 55%,#F1F8F7 100%);
+    --heroOv:linear-gradient(90deg,rgba(221,236,235,.88) 0%,rgba(247,251,250,.35) 100%);
+    --cta:linear-gradient(135deg,#3F716B,#35635E);
+    --ctaSh:rgba(53,99,94,.26);
+    --i1:linear-gradient(135deg,#4A7B74,#22443F);
+    --i2:linear-gradient(135deg,#5C8CA8,#46738C);
+    --i3:linear-gradient(135deg,#C08A55,#A8743F);
+    --i4:linear-gradient(135deg,#C0A055,#A8743F);
+    --navTxt:#16302C; --navSt:#3D5B57;
+    --sh:rgba(34,68,63,.06); --shDeep:rgba(34,68,63,.16); --shCta:rgba(53,99,94,.15);
+    --glow:#35635E;
+  }
+  /* ===== 雾紫（新） ===== */
+  .lav{
+    --a50:#F6F5FC; --a100:#EFECFA; --a200:#E7E3F6; --a300:#D8D3EC; --a400:#C1BAD9;
+    --a500:#A198C4; --a600:#8378AC; --a700:#695C93; --a800:#52467B; --a900:#372C57;
+    --ink900:#2A2846; --ink300:#9490B2; --line:#EBE8F7;
+    --muted:#6B6890; --body:#4A4769; --sub:#5F5C82; --meta:#574F79; --eyebrow:#695C93;
+    --hero:linear-gradient(135deg,#E7E3F6 0%,#EDEAF9 55%,#F5F4FC 100%);
+    --heroOv:linear-gradient(90deg,rgba(231,227,246,.88) 0%,rgba(246,245,252,.35) 100%);
+    --cta:linear-gradient(135deg,#625A9A,#52467B);
+    --ctaSh:rgba(82,70,123,.26);
+    --i1:linear-gradient(135deg,#695C93,#372C57);
+    --i2:linear-gradient(135deg,#5F7EB8,#4A5F96);
+    --i3:linear-gradient(135deg,#96688A,#7A4E6C);
+    --i4:linear-gradient(135deg,#C0A055,#A8743F);
+    --navTxt:#1E1B38; --navSt:#443D63;
+    --sh:rgba(55,44,87,.06); --shDeep:rgba(55,44,87,.16); --shCta:rgba(82,70,123,.15);
+    --glow:#52467B;
+  }
+
+  :root{--serif:"WenKai","Noto Serif SC","Songti SC",serif;
+        --sans:"PingFang SC","Microsoft YaHei",sans-serif;}
+  body{background:#EDEDF3;font-family:var(--sans);padding:34px 26px 64px;color:#2A2E45;}
+
+  .head{max-width:860px;margin:0 auto 26px;text-align:center;}
+  .head h1{font-family:var(--serif);font-weight:400;font-size:25px;letter-spacing:2px;color:#262B44;}
+  .head p{font-family:var(--serif);font-size:13.5px;color:#6E7495;margin-top:9px;letter-spacing:.4px;line-height:1.8;}
+
+  .swatches{display:flex;gap:6px;justify-content:center;margin:20px 0 30px;flex-wrap:wrap;}
+  .sw{width:60px;text-align:center;}
+  .sw i{display:block;height:34px;border-radius:8px;border:1px solid rgba(0,0,0,.05);}
+  .sw span{display:block;font-size:8.5px;color:#7A7F9C;margin-top:5px;letter-spacing:.2px;
+    font-family:ui-monospace,monospace;}
+
+  .stage{display:flex;gap:34px;justify-content:center;align-items:flex-start;flex-wrap:wrap;}
+  .col{width:375px;}
+  .cap{text-align:center;font-size:11px;letter-spacing:1.6px;margin-bottom:11px;
+    font-weight:700;color:#6B7190;text-transform:uppercase;}
+  .cap b{font-family:var(--serif);font-weight:400;font-size:14px;letter-spacing:1px;
+    color:#262B44;text-transform:none;display:block;margin-top:3px;}
+
+  .frame{background:var(--a50);border-radius:34px;overflow:hidden;position:relative;
+    box-shadow:0 22px 56px var(--shDeep);border:1px solid rgba(255,255,255,.8);}
+  .nav{height:78px;background:var(--a200);display:flex;align-items:flex-end;justify-content:center;
+    padding-bottom:11px;position:relative;}
+  .nav .st{position:absolute;top:9px;left:20px;right:20px;display:flex;justify-content:space-between;
+    font-size:11px;color:var(--navSt);font-weight:600;}
+  .nav .t{font-size:15px;font-weight:600;color:var(--navTxt);letter-spacing:.5px;}
+  .screen{padding:20px 16px 110px;}
+
+  /* 标题区 */
+  .heading{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;}
+  .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:2.4px;color:var(--eyebrow);
+    text-transform:uppercase;margin-bottom:7px;}
+  .title{font-family:var(--serif);font-size:21px;font-weight:400;letter-spacing:1px;
+    line-height:1.4;color:var(--ink900);}
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:var(--a200);
+    border-radius:999px;font-size:10.5px;color:var(--a900);white-space:nowrap;margin-top:2px;
+    font-family:var(--serif);}
+  .badge .d{width:5px;height:5px;border-radius:50%;background:var(--a600);}
+  .badge b{font-weight:400;font-size:12px;}
+
+  /* 关注对象 */
+  .ctx{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);
+    border-radius:15px;padding:12px 13px;margin-bottom:14px;box-shadow:0 3px 14px var(--sh);}
+  .ctx-ic{width:33px;height:33px;border-radius:11px;background:var(--a200);flex:0 0 33px;
+    display:flex;align-items:center;justify-content:center;}
+  .ctx-main{flex:1;min-width:0;}
+  .ctx-t{font-size:14px;font-weight:600;color:var(--ink900);letter-spacing:.2px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ctx-d{font-family:var(--serif);font-size:12.5px;color:var(--sub);margin-top:2px;letter-spacing:.3px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ctx-a{font-size:12px;font-weight:600;color:var(--a800);white-space:nowrap;flex:0 0 auto;}
+
+  /* Hero */
+  .hero{position:relative;border-radius:20px;padding:20px 18px 17px;overflow:hidden;
+    background:var(--hero);border:1px solid var(--a300);box-shadow:0 8px 24px var(--sh);}
+  .hero .ov{position:absolute;inset:0;background:var(--heroOv);}
+  .hero-in{position:relative;}
+  .h-title{font-family:var(--serif);font-size:20px;font-weight:400;line-height:1.55;
+    letter-spacing:1px;color:var(--ink900);}
+  .h-title span{display:block;color:var(--a800);}
+  .h-desc{font-family:var(--serif);font-size:14px;color:var(--body);line-height:1.8;
+    margin:9px 0 15px;letter-spacing:.3px;}
+  .h-desc span{display:block;}
+  .cta{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:13px;
+    background:var(--cta);color:#fff;font-size:13px;font-weight:600;letter-spacing:.5px;
+    box-shadow:0 6px 16px var(--ctaSh);}
+  .cta .ar{font-size:13px;opacity:.85;}
+  .h-meta{display:flex;align-items:center;gap:9px;margin-top:15px;padding-top:13px;
+    border-top:1px solid var(--shCta);font-family:var(--serif);font-size:12px;color:var(--meta);
+    letter-spacing:.3px;}
+  .h-meta i{width:3px;height:3px;border-radius:50%;background:var(--a400);display:block;}
+
+  /* 区块标题 */
+  .sec{display:flex;justify-content:space-between;align-items:flex-end;margin:26px 0 12px;}
+  .sec-t{font-size:16px;font-weight:700;color:var(--a900);letter-spacing:.3px;}
+  .sec-c{font-family:var(--serif);font-size:13px;color:var(--sub);margin-top:3px;letter-spacing:.3px;}
+  .sec-n{font-family:var(--serif);font-size:15px;color:var(--a800);}
+  .sec-n small{font-size:9.5px;color:var(--ink300);font-family:var(--sans);font-weight:600;
+    letter-spacing:1px;margin-left:4px;}
+
+  /* 工具卡 */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .tool{background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px 13px 14px;
+    box-shadow:0 3px 14px var(--sh);}
+  .tool-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px;}
+  .tool-ic{width:29px;height:29px;border-radius:9px;display:flex;align-items:center;
+    justify-content:center;color:#fff;font-size:12px;font-weight:700;}
+  .i1{background:var(--i1);} .i2{background:var(--i2);}
+  .i3{background:var(--i3);} .i4{background:var(--i4);}
+  .tool-n{font-family:var(--serif);font-size:13px;color:var(--muted);letter-spacing:.5px;line-height:1;}
+  .tool-name{font-size:13px;font-weight:600;color:var(--ink900);letter-spacing:.2px;}
+  .tool-d{font-family:var(--serif);font-size:12.5px;color:var(--sub);margin-top:4px;
+    line-height:1.6;letter-spacing:.2px;}
+
+  /* 收尾条 */
+  .strip{margin-top:16px;border-radius:18px;padding:16px 18px;display:flex;
+    justify-content:space-between;align-items:center;
+    background:linear-gradient(135deg,var(--a200) 0%,var(--a50) 100%);border:1px solid var(--a300);}
+  .strip-t{font-family:var(--serif);font-size:15.5px;color:var(--ink900);letter-spacing:.8px;line-height:1.4;}
+  .strip-d{font-family:var(--serif);font-size:12.5px;color:var(--body);margin-top:4px;letter-spacing:.3px;}
+  .strip-m{font-family:var(--serif);font-size:15px;color:var(--a800);text-align:right;line-height:1.3;}
+  .strip-m small{display:block;font-size:9.5px;color:var(--ink300);font-family:var(--sans);
+    letter-spacing:1px;font-weight:600;margin-top:2px;}
+
+  /* 底部导航 */
+  .tabbar{position:absolute;left:12px;right:12px;bottom:14px;height:52px;
+    background:rgba(255,255,255,.82);backdrop-filter:blur(18px);border-radius:17px;
+    border:1px solid rgba(255,255,255,.9);box-shadow:0 10px 34px var(--shCta);
+    display:flex;align-items:center;padding:5px 8px;gap:6px;}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    height:100%;border-radius:13px;color:var(--ink300);font-size:10px;font-weight:600;}
+  .tab .g{font-size:14px;line-height:1;}
+  .tab.on{background:linear-gradient(135deg,var(--a200),var(--a300));color:var(--a900);
+    box-shadow:0 5px 16px var(--shCta);}
+
+  .note{max-width:860px;margin:34px auto 0;background:#fff;border:1px solid #E4E5F0;
+    border-radius:16px;padding:20px 24px;font-family:var(--serif);font-size:13px;
+    color:#4E5473;line-height:2;letter-spacing:.3px;}
+  .note b{color:#2F3360;font-weight:400;border-bottom:1px solid #D2D5EC;}
+</style></head><body>
+
+<div class="head">
+  <h1>首页配色 · 青瓷 → 雾紫</h1>
+  <p>色相从青绿（约 176°）转到蓝紫（约 252°），亮度与饱和度基本不动<br>所以整体仍然是浅色，只是冷暖换了一个方向</p>
+</div>
+
+<div class="swatches">
+  <div class="sw"><i style="background:#F6F5FC"></i><span>#F6F5FC</span></div>
+  <div class="sw"><i style="background:#EFECFA"></i><span>#EFECFA</span></div>
+  <div class="sw"><i style="background:#E7E3F6"></i><span>#E7E3F6</span></div>
+  <div class="sw"><i style="background:#D8D3EC"></i><span>#D8D3EC</span></div>
+  <div class="sw"><i style="background:#C1BAD9"></i><span>#C1BAD9</span></div>
+  <div class="sw"><i style="background:#A198C4"></i><span>#A198C4</span></div>
+  <div class="sw"><i style="background:#8378AC"></i><span>#8378AC</span></div>
+  <div class="sw"><i style="background:#695C93"></i><span>#695C93</span></div>
+  <div class="sw"><i style="background:#52467B"></i><span>#52467B</span></div>
+  <div class="sw"><i style="background:#372C57"></i><span>#372C57</span></div>
+</div>
+
+<div class="stage">
+
+  <!-- ============ 原配色 ============ -->
+  <div class="col">
+    <div class="cap">Before<b>青瓷 · 原配色</b></div>
+    <div class="frame mint">
+      <div class="nav"><div class="st"><span>9:41</span><span>▮▮▮ ⌁</span></div><div class="t">房产价值评估</div></div>
+      <div class="screen">
+        <div class="heading">
+          <div><div class="eyebrow">Property Insight</div><div class="title">房产价值评估</div></div>
+          <div class="badge"><span class="d"></span>已收录 <b>1,286</b> 套</div>
+        </div>
+
+        <div class="ctx">
+          <div class="ctx-ic">
+            <svg width="15" height="17" viewBox="0 0 24 24" fill="none">
+              <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z" stroke="#35635E" stroke-width="1.7" stroke-linejoin="round"/>
+              <circle cx="12" cy="10" r="2.4" stroke="#35635E" stroke-width="1.7"/>
+            </svg>
+          </div>
+          <div class="ctx-main"><div class="ctx-t">广东省 深圳市 南山区</div><div class="ctx-d">华润城 · 润府三期</div></div>
+          <div class="ctx-a">修改 ›</div>
+        </div>
+
+        <div class="hero">
+          <div class="ov"></div>
+          <div class="hero-in">
+            <div class="h-title">看清房产价值<span>从这里开始</span></div>
+            <div class="h-desc"><span>整合市场行情、房屋信息与专业分析</span><span>帮助你全面了解房产的真实价值</span></div>
+            <div class="cta">查看评估报告 <span class="ar">›</span></div>
+            <div class="h-meta"><span>数据来源：公开成交与挂牌信息</span><i></i><span>仅供参考</span></div>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div><div class="sec-t">快捷工具</div><div class="sec-c">按顺序完成，得到完整评估</div></div>
+          <div class="sec-n">04 <small>TOOLS</small></div>
+        </div>
+
+        <div class="grid">
+          <div class="tool"><div class="tool-top"><div class="tool-ic i1">▤</div><div class="tool-n">01</div></div>
+            <div class="tool-name">基本信息</div><div class="tool-d">房屋概况</div></div>
+          <div class="tool"><div class="tool-top"><div class="tool-ic i2">▥</div><div class="tool-n">02</div></div>
+            <div class="tool-name">房源分析</div><div class="tool-d">市场对比</div></div>
+          <div class="tool"><div class="tool-top"><div class="tool-ic i3">✓</div><div class="tool-n">03</div></div>
+            <div class="tool-name">评估结论</div><div class="tool-d">价值判断</div></div>
+          <div class="tool"><div class="tool-top"><div class="tool-ic i4">⌂</div><div class="tool-n">04</div></div>
+            <div class="tool-name">按揭测算</div><div class="tool-d">月供/利率</div></div>
+        </div>
+
+        <div class="strip">
+          <div><div class="strip-t">从基础信息到专业结论</div><div class="strip-d">让每一项房产数据，都成为决策依据。</div></div>
+          <div class="strip-m">04<small>STEPS</small></div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab on"><span class="g">⌂</span>首页</div>
+        <div class="tab"><span class="g">▤</span>房源</div>
+        <div class="tab"><span class="g">◈</span>指南</div>
+        <div class="tab"><span class="g">☺</span>我的</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 新配色 ============ -->
+  <div class="col">
+    <div class="cap">After<b>雾紫 · 新配色</b></div>
+    <div class="frame lav">
+      <div class="nav"><div class="st"><span>9:41</span><span>▮▮▮ ⌁</span></div><div class="t">房产价值评估</div></div>
+      <div class="screen">
+        <div class="heading">
+          <div><div class="eyebrow">Property Insight</div><div class="title">房产价值评估</div></div>
+          <div class="badge"><span class="d"></span>已收录 <b>1,286</b> 套</div>
+        </div>
+
+        <div class="ctx">
+          <div class="ctx-ic">
+            <svg width="15" height="17" viewBox="0 0 24 24" fill="none">
+              <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z" stroke="#52467B" stroke-width="1.7" stroke-linejoin="round"/>
+              <circle cx="12" cy="10" r="2.4" stroke="#52467B" stroke-width="1.7"/>
+            </svg>
+          </div>
+          <div class="ctx-main"><div class="ctx-t">广东省 深圳市 南山区</div><div class="ctx-d">华润城 · 润府三期</div></div>
+          <div class="ctx-a">修改 ›</div>
+        </div>
+
+        <div class="hero">
+          <div class="ov"></div>
+          <div class="hero-in">
+            <div class="h-title">看清房产价值<span>从这里开始</span></div>
+            <div class="h-desc"><span>整合市场行情、房屋信息与专业分析</span><span>帮助你全面了解房产的真实价值</span></div>
+            <div class="cta">查看评估报告 <span class="ar">›</span></div>
+            <div class="h-meta"><span>数据来源：公开成交与挂牌信息</span><i></i><span>仅供参考</span></div>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div><div class="sec-t">快捷工具</div><div class="sec-c">按顺序完成，得到完整评估</div></div>
+          <div class="sec-n">04 <small>TOOLS</small></div>
+        </div>
+
+        <div class="grid">
+          <div class="tool"><div class="tool-top"><div class="tool-ic i1">▤</div><div class="tool-n">01</div></div>
+            <div class="tool-name">基本信息</div><div class="tool-d">房屋概况</div></div>
+          <div class="tool"><div class="tool-top"><div class="tool-ic i2">▥</div><div class="tool-n">02</div></div>
+            <div class="tool-name">房源分析</div><div class="tool-d">市场对比</div></div>
+          <div class="tool"><div class="tool-top"><div class="tool-ic i3">✓</div><div class="tool-n">03</div></div>
+            <div class="tool-name">评估结论</div><div class="tool-d">价值判断</div></div>
+          <div class="tool"><div class="tool-top"><div class="tool-ic i4">⌂</div><div class="tool-n">04</div></div>
+            <div class="tool-name">按揭测算</div><div class="tool-d">月供/利率</div></div>
+        </div>
+
+        <div class="strip">
+          <div><div class="strip-t">从基础信息到专业结论</div><div class="strip-d">让每一项房产数据，都成为决策依据。</div></div>
+          <div class="strip-m">04<small>STEPS</small></div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab on"><span class="g">⌂</span>首页</div>
+        <div class="tab"><span class="g">▤</span>房源</div>
+        <div class="tab"><span class="g">◈</span>指南</div>
+        <div class="tab"><span class="g">☺</span>我的</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="note">
+  <b>换色逻辑：</b>不是重新挑一套颜色，而是把原来每个色值按同一规则整体旋转色相——
+  浅色阶（<span style="font-family:ui-monospace,monospace">#DDECEB → #E7E3F6</span>）只挪色相不动明度，
+  所以卡片、背景、标签的「浅」完全保留；深色阶（<span style="font-family:ui-monospace,monospace">#35635E → #52467B</span>）
+  同理只换冷暖，对比度反而从 7.4:1 提到 8.2:1。<br>
+  <b>一处顺手修的：</b>「评估结论」和「按揭测算」两个图标原来都是同一个琥珀色，几乎分不出来；
+  现在「评估结论」改成藕紫，四个图标形成 靛 → 蓝 → 藕 → 琥珀 的冷暖渐变，既区分得开，也压住了整体的紫调。
+</div>
+
+</body></html>

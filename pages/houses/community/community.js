@@ -46,13 +46,13 @@ Page({
         const c = res.data[0]
         const pois = c.pois || {}
         const poiList = [
-          { title: '公交', icon: '🚌', items: pois.bus || [] },
-          { title: '地铁', icon: '🚇', items: pois.subway || [] },
-          { title: '学校', icon: '🏫', items: pois.school || [] },
-          { title: '医院', icon: '🏥', items: pois.hospital || [] },
-          { title: '购物', icon: '🛍️', items: pois.buy || [] },
-          { title: '餐饮', icon: '🍜', items: pois.restaurant || [] },
-          { title: '银行', icon: '🏦', items: pois.bank || [] }
+          { title: '公交', key: 'bus', items: pois.bus || [] },
+          { title: '地铁', key: 'subway', items: pois.subway || [] },
+          { title: '学校', key: 'school', items: pois.school || [] },
+          { title: '医院', key: 'hospital', items: pois.hospital || [] },
+          { title: '购物', key: 'shop', items: pois.buy || [] },
+          { title: '餐饮', key: 'food', items: pois.restaurant || [] },
+          { title: '银行', key: 'bank', items: pois.bank || [] }
         ]
         const gradeItems = (c.grade && c.grade.list) || []
         const base = c.base || {}

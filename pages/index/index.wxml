@@ -3,69 +3,91 @@
 
 <view class="home-layout">
   <view class="home-main">
-    <view class="page-heading {{showContent ? 'animated' : ''}}">
-      <view>
-        <view class="eyebrow">HOME / OVERVIEW</view>
+
+    <!-- ============ 标题区 ============ -->
+    <view class="page-heading animated">
+      <view class="heading-main">
+        <view class="eyebrow">PROPERTY INSIGHT</view>
         <view class="page-title">房产价值评估</view>
-        <view class="page-subtitle">用数据，做出更安心的置业决策</view>
       </view>
-      <view class="heading-badge"><text class="status-dot"></text> 房产助手在线</view>
-    </view>
-
-    <view class="welcome-panel {{showContent ? 'animated' : ''}}">
-      <!-- OtterLife 模板风格背景 - 云中水獭 -->
-      <image class="welcome-bg-illustration" src="/images/云中水獭.jpg" mode="aspectFill"></image>
-      <view class="welcome-overlay"></view>
-      
-      <view class="welcome-copy">
-        <view class="welcome-kicker">PROPERTY INSIGHT</view>
-        <view class="welcome-title">看清房产价值<text>从这里开始</text></view>
-        <view class="welcome-desc">整合市场行情、房屋信息与专业分析，帮助你全面了解房产</view>
-        <view class="primary-action" bindtap="goGuide"><text>查看评估报告</text><text class="action-arrow">›</text></view>
+      <view class="heading-badge" wx:if="{{statText}}">
+        <text class="status-dot"></text><text class="badge-value">{{statText}}</text>
       </view>
     </view>
 
-    <view class="location-row {{showContent ? 'animated' : ''}}">
-      <!-- 水中水獭背景 -->
-      <image class="location-bg-illustration" src="/images/水中水獭.jpg" mode="aspectFill"></image>
-      <view class="location-symbol">
+    <!-- ============ 当前关注对象 ============ -->
+    <view class="ctx-card {{hasLoc ? '' : 'is-empty'}} animated" style="animation-delay: .04s" bindtap="goLocation">
+      <view class="ctx-icon">
         <view class="css-icon css-icon-location"></view>
       </view>
-      <view class="location-copy" wx:if="{{location && location.city}}" bindtap="goLocation">
-        <view class="location-title">{{location.province}} {{location.city}} {{location.district}}</view>
-        <view class="location-detail">{{location.estate || '未填写楼盘'}}{{location.community ? ' · ' + location.community : ''}}</view>
+      <view class="ctx-body">
+        <block wx:if="{{hasLoc}}">
+          <view class="ctx-title">{{locTitle}}</view>
+          <view class="ctx-desc">{{locDesc}}</view>
+        </block>
+        <block wx:else>
+          <view class="ctx-title">设置关注区域</view>
+          <view class="ctx-desc">选择省 / 市 / 楼盘 / 小区</view>
+        </block>
       </view>
-      <view class="location-copy" wx:else bindtap="goLocation">
-        <view class="location-title">设置当前关注区域</view>
-        <view class="location-detail">选择省份、城市、楼盘与小区</view>
-      </view>
-      <view class="location-edit" bindtap="goLocation">修改区域 <text>›</text></view>
+      <view class="ctx-action"><text>{{hasLoc ? '修改' : '去设置'}}</text><view class="ic ic-arrow-right ctx-arrow"></view></view>
     </view>
 
-    <view class="section-heading {{showContent ? 'animated' : ''}}">
-      <view><view class="section-title">快捷工具</view><view class="section-caption">房产评估所需工具，一站完成</view></view>
+    <!-- ============ 主视觉 ============ -->
+    <view class="hero-card animated" style="animation-delay: .08s">
+      <image class="hero-ill" src="/images/云中水獭.jpg" mode="aspectFill"></image>
+      <view class="hero-overlay"></view>
+      <view class="hero-body">
+        <view class="hero-title">看清房产价值<text>从这里开始</text></view>
+        <view class="hero-desc">
+          <text>整合市场行情、房屋信息与专业分析</text>
+          <text>帮助你全面了解房产的真实价值</text>
+        </view>
+        <view class="hero-cta" bindtap="goGuide"><text>查看评估报告</text><view class="ic ic-arrow-right cta-arrow"></view></view>
+        <view class="hero-meta">
+          <text>数据来源：公开成交与挂牌信息</text>
+          <text class="meta-dot"></text>
+          <text>仅供参考</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ============ 快捷工具 ============ -->
+    <view class="section-heading animated" style="animation-delay: .14s">
+      <view>
+        <view class="section-title">快捷工具</view>
+        <view class="section-caption">按顺序完成，得到完整评估</view>
+      </view>
       <view class="section-count">04 <text>TOOLS</text></view>
     </view>
+
     <view class="tool-grid">
-      <!-- 海中水獭背景 -->
-      <image class="tool-grid-bg-illustration" src="/images/海中水獭.jpg" mode="aspectFill"></image>
-      <view class="tool-item {{showContent ? 'animated' : ''}}" wx:for="{{quickModules}}" wx:key="key" data-key="{{item.key}}" bindtap="goModule">
+      <view class="tool-item animated"
+            wx:for="{{quickModules}}"
+            wx:key="key"
+            data-key="{{item.key}}"
+            bindtap="goModule"
+            style="animation-delay: {{0.18 + index * 0.04}}s">
         <view class="tool-topline">
-          <view class="tool-icon tool-icon-{{index}}" style="background: {{item.iconBg}}">
+          <view class="tool-icon" style="background: {{item.iconBg}}">
             <view class="css-icon css-icon-{{item.key}}"></view>
           </view>
-          <view class="tool-arrow">↗</view>
+          <view class="tool-index">0{{index + 1}}</view>
         </view>
         <view class="tool-name">{{item.name}}</view>
         <view class="tool-desc">{{item.desc}}</view>
       </view>
     </view>
 
-    <view class="summary-strip {{showContent ? 'animated' : ''}}">
-      <!-- 爱心水獭背景 -->
-      <image class="summary-bg-illustration" src="/images/爱心水獭.jpg" mode="aspectFill"></image>
-      <view class="summary-copy"><view class="summary-title">从基础信息到专业结论</view><view class="summary-desc">让每一项房产数据，都成为决策依据。</view></view>
-      <view class="summary-mark">01 <text>/ 04</text></view>
+    <!-- ============ 收尾 ============ -->
+    <view class="summary-strip animated" style="animation-delay: .34s">
+      <image class="summary-ill" src="/images/爱心水獭.jpg" mode="aspectFill"></image>
+      <view class="summary-copy">
+        <view class="summary-title">从基础信息到专业结论</view>
+        <view class="summary-desc">让每一项房产数据，都成为决策依据。</view>
+      </view>
+      <view class="summary-mark">04<text>STEPS</text></view>
     </view>
+
   </view>
 </view>

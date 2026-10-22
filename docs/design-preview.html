@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>雾紫主题 · 设计预览</title>
+<link rel="stylesheet" href="font-wenkai.css">
+<style>
+  :root{
+    --m50:#F6F5FC; --m100:#EFECFA; --m200:#E7E3F6; --m300:#D8D3EC;
+    --m400:#C1BAD9; --m500:#A198C4; --m600:#8378AC; --m700:#695C93;
+    --m800:#52467B; --m900:#372C57;
+    --ink900:#2A2846; --ink700:#4C4A6E; --ink500:#6C6A8E; --ink300:#9490B2;
+    --line:#EBE8F7;
+    --serif:"WenKai","Noto Serif SC","Songti SC","SimSun",serif;
+    --sans:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei","Hiragino Sans GB",-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:#EDEAF9;font-family:var(--sans);color:var(--ink900);
+    padding:48px 28px 80px;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+  .doc-head{margin-bottom:40px;}
+  .doc-kicker{
+    font-size:12px;letter-spacing:3px;text-transform:uppercase;
+    color:var(--m600);font-weight:600;margin-bottom:10px;
+  }
+  .doc-title{
+    font-family:var(--serif);font-size:38px;font-weight:600;letter-spacing:2px;
+    color:var(--ink900);line-height:1.35;
+  }
+  .doc-sub{margin-top:10px;font-size:14px;color:var(--ink500);line-height:1.8;}
+  .doc-sub code{background:#fff;padding:1px 6px;border-radius:4px;color:var(--m800);font-size:13px;}
+
+  .section-label{
+    font-size:12px;letter-spacing:2px;color:var(--ink300);font-weight:600;
+    text-transform:uppercase;margin:52px 0 18px;display:flex;align-items:center;gap:12px;
+  }
+  .section-label::after{content:"";flex:1;height:1px;background:#D8D3EC;}
+
+  /* ---------- 手机预览 ---------- */
+  .phones{display:flex;gap:36px;flex-wrap:wrap;}
+  .phone{
+    width:375px;flex:0 0 375px;background:var(--m50);border-radius:38px;
+    box-shadow:0 24px 60px rgba(34,68,63,.14),0 2px 6px rgba(34,68,63,.06);
+    overflow:hidden;border:1px solid #EDEAF9;
+  }
+  .nav{
+    height:76px;background:var(--m200);display:flex;align-items:flex-end;
+    justify-content:center;padding-bottom:10px;position:relative;
+  }
+  .nav .status{
+    position:absolute;top:8px;left:20px;right:20px;display:flex;
+    justify-content:space-between;font-size:11px;color:var(--ink700);font-weight:600;
+  }
+  .nav .title{font-size:15px;font-weight:600;color:var(--ink900);letter-spacing:.5px;}
+  .screen{padding:18px 16px 96px;position:relative;}
+
+  .eyebrow{
+    font-size:11px;font-weight:700;letter-spacing:2px;color:var(--m700);
+    text-transform:uppercase;margin-bottom:6px;
+  }
+  .page-title{
+    font-family:var(--serif);font-size:21px;font-weight:400;color:var(--ink900);
+    letter-spacing:1px;line-height:1.45;
+  }
+  .page-subtitle{font-family:var(--serif);font-size:13.5px;color:#5F5C82;margin-top:6px;line-height:1.75;letter-spacing:.3px;}
+
+  .badge-online{
+    display:inline-flex;align-items:center;gap:5px;padding:5px 10px;
+    background:var(--m200);border-radius:12px;font-size:11px;
+    color:var(--m900);font-weight:600;margin-top:12px;
+  }
+  .dot{width:5px;height:5px;border-radius:50%;background:var(--m600);}
+
+  .hero{
+    margin-top:16px;border-radius:18px;padding:22px 20px;
+    background:linear-gradient(135deg,var(--m200) 0%,#F4F2FC 78%);
+    border:1px solid var(--m300);
+    box-shadow:0 8px 24px rgba(34,68,63,.07);
+  }
+  .hero .kicker{font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--m700);margin-bottom:8px;}
+  .hero-title{
+    font-family:var(--serif);font-size:20px;font-weight:400;line-height:1.55;
+    color:var(--ink900);letter-spacing:1px;
+  }
+  .hero-title span{display:block;color:var(--m800);}
+  .hero-desc{font-family:var(--serif);font-size:14px;color:#4A4769;line-height:1.8;margin:10px 0 16px;letter-spacing:.3px;}
+  .btn-primary{
+    display:inline-flex;align-items:center;gap:8px;padding:10px 18px;
+    background:linear-gradient(135deg,#625A9A 0%,#52467B 100%);
+    color:#fff;border-radius:14px;font-size:13px;font-weight:600;letter-spacing:.5px;
+    box-shadow:0 6px 18px rgba(53,99,94,.24);
+  }
+
+  .row{
+    margin-top:12px;background:#fff;border-radius:16px;padding:14px;
+    border:1px solid var(--line);box-shadow:0 4px 16px rgba(34,68,63,.06);
+    display:flex;align-items:center;gap:12px;
+  }
+  .row-icon{
+    width:34px;height:34px;border-radius:11px;background:var(--m200);
+    display:flex;align-items:center;justify-content:center;flex:0 0 34px;
+  }
+  .pin{width:11px;height:14px;background:var(--m800);border-radius:50% 50% 50% 0;transform:rotate(-45deg);}
+  .row-title{font-size:14px;font-weight:600;color:var(--ink900);}
+  .row-desc{font-size:12px;color:var(--ink500);margin-top:2px;}
+  .row-action{font-size:12px;font-weight:600;color:var(--m800);margin-left:auto;}
+
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;margin:24px 0 12px;}
+  .sec-title{font-size:16px;font-weight:700;color:var(--m900);letter-spacing:.3px;}
+  .sec-cap{font-family:var(--serif);font-size:13.5px;color:#5F5C82;margin-top:3px;line-height:1.7;letter-spacing:.3px;}
+  .sec-count{font-family:var(--serif);font-size:17px;font-weight:400;color:var(--m800);}
+  .sec-count small{font-size:10px;color:var(--ink300);font-family:var(--sans);font-weight:500;margin-left:3px;}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .tool{
+    background:#fff;border-radius:16px;padding:14px;border:1px solid var(--line);
+    box-shadow:0 4px 16px rgba(34,68,63,.06);
+  }
+  .tool-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+  .tool-ic{
+    width:30px;height:30px;border-radius:10px;display:flex;align-items:center;
+    justify-content:center;color:#fff;font-size:13px;
+  }
+  .ic-1{background:linear-gradient(135deg,#695C93,#372C57);}
+  .ic-2{background:linear-gradient(135deg,#5F7EB8,#4A5F96);}
+  .ic-3{background:linear-gradient(135deg,#C08A55,#A8743F);}
+  .ic-4{background:linear-gradient(135deg,#C0A055,#A8743F);}
+  .tool-arrow{font-size:12px;font-weight:700;color:var(--m700);}
+  .tool-name{font-size:13px;font-weight:600;color:var(--ink900);}
+  .tool-desc{font-family:var(--serif);font-size:12.5px;color:#5F5C82;margin-top:4px;line-height:1.7;}
+
+  .strip{
+    margin-top:16px;border-radius:18px;padding:18px;
+    background:linear-gradient(135deg,var(--m200) 0%,var(--m50) 100%);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .strip-title{font-family:var(--serif);font-size:16px;font-weight:400;color:var(--ink900);letter-spacing:.8px;}
+  .strip-desc{font-family:var(--serif);font-size:13.5px;color:#4A4769;margin-top:5px;line-height:1.7;}
+  .strip-mark{font-family:var(--serif);font-size:18px;font-weight:400;color:var(--m800);}
+  .strip-mark small{font-size:10px;color:var(--ink300);font-family:var(--sans);}
+
+  /* 底部导航 */
+  .tabbar{
+    position:absolute;left:12px;right:12px;bottom:14px;height:52px;
+    background:rgba(255,255,255,.78);backdrop-filter:blur(18px);
+    border-radius:18px;border:1px solid rgba(255,255,255,.9);
+    box-shadow:0 12px 40px rgba(53,99,94,.1);
+    display:flex;align-items:center;padding:5px 8px;gap:6px;
+  }
+  .tab{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:2px;height:100%;border-radius:13px;color:var(--ink300);
+    font-size:10px;font-weight:600;
+  }
+  .tab .gl{font-size:15px;line-height:1;}
+  .tab.on{
+    background:linear-gradient(135deg,var(--m200),var(--m300));
+    color:var(--m900);
+    box-shadow:0 6px 18px rgba(53,99,94,.16);
+  }
+
+  /* ---------- 表单页 ---------- */
+  .card{
+    background:#fff;border-radius:18px;padding:16px;margin-top:14px;
+    border:1px solid var(--line);box-shadow:0 4px 16px rgba(34,68,63,.06);
+  }
+  .card-title{font-size:15px;font-weight:700;color:var(--ink900);letter-spacing:.3px;}
+  .card-sub{font-family:var(--serif);font-size:13px;color:#5F5C82;margin-top:4px;line-height:1.7;}
+  .field{margin-top:14px;}
+  .label{font-size:13px;font-weight:600;color:var(--ink900);margin-bottom:6px;display:block;}
+  .input{
+    height:40px;border:1px solid var(--line);border-radius:14px;background:#fff;
+    display:flex;align-items:center;padding:0 14px;font-size:13px;color:var(--ink300);
+  }
+  .input.focus{border-color:var(--m500);box-shadow:0 0 0 4px rgba(53,99,94,.1);color:var(--ink900);}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .chip{padding:6px 14px;border-radius:999px;background:var(--m100);color:var(--ink700);font-size:12px;font-weight:500;}
+  .chip.on{background:var(--m800);color:#fff;font-weight:600;}
+  .btn-ghost{
+    display:inline-flex;padding:9px 16px;border-radius:14px;background:var(--m200);
+    color:var(--m900);font-size:13px;font-weight:600;border:1px solid var(--m300);
+  }
+  .divider{height:1px;background:var(--line);margin:16px 0;}
+  .kv{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;}
+  .kv span:first-child{color:var(--ink500);}
+  .kv span:last-child{font-weight:600;color:var(--ink900);}
+  .kv .big{font-family:var(--serif);font-size:20px;color:var(--m900);font-weight:600;}
+
+  /* ---------- 色板 ---------- */
+  .swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+  .sw{border-radius:14px;overflow:hidden;background:#fff;border:1px solid #EDEAF9;}
+  .sw .chip-color{height:62px;}
+  .sw .meta{padding:9px 11px;}
+  .sw .name{font-size:11px;font-weight:600;color:var(--ink900);}
+  .sw .hex{font-size:10px;color:var(--ink300);font-family:ui-monospace,Menlo,monospace;margin-top:2px;}
+  .sw .use{font-size:10px;color:var(--ink500);margin-top:5px;line-height:1.5;}
+
+  /* ---------- 字体层级 ---------- */
+  .type-note{font-size:13px;color:#5F5C82;line-height:1.8;margin-bottom:14px;font-family:var(--serif);letter-spacing:.3px;}
+  .type-list{background:#fff;border-radius:18px;border:1px solid #EDEAF9;overflow:hidden;}
+  .type-row{
+    display:flex;align-items:baseline;gap:24px;padding:18px 24px;
+    border-bottom:1px solid var(--line);
+  }
+  .type-row:last-child{border-bottom:none;}
+  .type-tag{
+    flex:0 0 215px;font-size:11px;color:var(--ink300);font-weight:600;
+    letter-spacing:.5px;font-family:ui-monospace,Menlo,monospace;
+  }
+  .t-page{font-family:var(--serif);font-size:21px;font-weight:400;letter-spacing:1px;color:var(--ink900);}
+  .t-h1{font-size:16px;font-weight:700;color:var(--m900);letter-spacing:.3px;}
+  .t-h2{font-size:14px;font-weight:600;color:var(--ink900);}
+  .t-h3{font-size:13px;font-weight:500;color:var(--m800);}
+  .t-body{font-family:var(--serif);font-size:13.5px;font-weight:400;color:#4A4769;line-height:1.85;letter-spacing:.3px;}
+  .t-mini{font-family:var(--serif);font-size:12.5px;font-weight:400;color:#6B6890;}
+  .t-num{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--m900);letter-spacing:.5px;}
+
+  /* ---------- 组件区 ---------- */
+  .comp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;}
+  .panel{background:#fff;border-radius:18px;border:1px solid #EDEAF9;padding:20px;}
+  .panel h4{font-size:12px;font-weight:600;letter-spacing:1.5px;color:var(--ink300);
+    text-transform:uppercase;margin-bottom:16px;}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .tag{display:inline-block;padding:4px 11px;border-radius:999px;background:var(--m200);
+    color:var(--m900);font-size:12px;font-weight:600;}
+  .note{margin-top:14px;font-size:12px;color:var(--ink500);line-height:1.8;}
+  .note b{color:var(--m800);}
+
+  .ratio{display:flex;gap:10px;margin-top:16px;font-size:12px;color:var(--ink500);}
+  .ratio div{flex:1;background:var(--m100);border-radius:10px;padding:10px;text-align:center;}
+  .ratio strong{display:block;font-size:16px;color:var(--m800);font-family:var(--serif);}
+
+  /* ---------- 字体对比 ---------- */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .cmp-card{background:#fff;border-radius:18px;border:1px solid #EDEAF9;padding:22px 24px;}
+  .cmp-tag{font-size:11px;letter-spacing:1px;color:#9490B2;font-weight:600;margin-bottom:14px;}
+  .cmp-h{font-size:21px;color:#2A2846;margin-bottom:10px;letter-spacing:1px;}
+  .cmp-d{font-size:13.5px;color:#4C4A6E;line-height:1.9;margin-bottom:6px;}
+  .cmp-card.before .cmp-h,.cmp-card.before .cmp-d{font-family:var(--sans);}
+  .cmp-card.after .cmp-h{font-family:var(--serif);font-weight:400;font-size:22px;}
+  .cmp-card.after .cmp-d{font-family:var(--serif);color:#4A4769;letter-spacing:.3px;}
+
+  @media (max-width:900px){ .compare{grid-template-columns:1fr;} }
+
+  @media (max-width:900px){ .phones{justify-content:center;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="doc-head">
+    <div class="doc-kicker">Design System v2</div>
+    <div class="doc-title">雾紫主题 · 配色与字体规范</div>
+    <div class="doc-sub">
+      主题色 <code>#E7E3F6</code>（雾紫）由原绿色 <code>#09BF30</code> 两次迁移而来：先转青瓷，再整体旋转色相到 252°；字体改为内嵌「霞鹜文楷」+ 系统黑体的双层结构。
+      下方为按新规范渲染的真实效果（文楷已内嵌，可直接查看）。
+    </div>
+  </div>
+
+  <div class="section-label">页面效果预览</div>
+  <div class="phones">
+
+    <!-- 首页 -->
+    <div class="phone">
+      <div class="nav">
+        <div class="status"><span>9:41</span><span>▮▮▮ ⌁</span></div>
+        <div class="title">房产价值评估</div>
+      </div>
+      <div class="screen">
+        <div class="eyebrow">Home / Overview</div>
+        <div class="page-title">房产价值评估</div>
+        <div class="page-subtitle">用数据，做出更安心的置业决策</div>
+        <div class="badge-online"><span class="dot"></span>房产助手在线</div>
+
+        <div class="hero">
+          <div class="kicker">PROPERTY INSIGHT</div>
+          <div class="hero-title">看清房产价值<span>从这里开始</span></div>
+          <div class="hero-desc">整合市场行情、房屋信息与专业分析，帮助你全面了解房产</div>
+          <div class="btn-primary">查看评估报告 <span>›</span></div>
+        </div>
+
+        <div class="row">
+          <div class="row-icon"><div class="pin"></div></div>
+          <div>
+            <div class="row-title">广东省 深圳市 南山区</div>
+            <div class="row-desc">华润城 · 润府三期</div>
+          </div>
+          <div class="row-action">修改 ›</div>
+        </div>
+
+        <div class="sec-head">
+          <div>
+            <div class="sec-title">快捷工具</div>
+            <div class="sec-cap">房产评估所需工具，一站完成</div>
+          </div>
+          <div class="sec-count">04 <small>TOOLS</small></div>
+        </div>
+
+        <div class="grid">
+          <div class="tool">
+            <div class="tool-top"><div class="tool-ic ic-1">▤</div><div class="tool-arrow">↗</div></div>
+            <div class="tool-name">基本信息</div>
+            <div class="tool-desc">房屋概况</div>
+          </div>
+          <div class="tool">
+            <div class="tool-top"><div class="tool-ic ic-2">▥</div><div class="tool-arrow">↗</div></div>
+            <div class="tool-name">房源分析</div>
+            <div class="tool-desc">市场对比</div>
+          </div>
+          <div class="tool">
+            <div class="tool-top"><div class="tool-ic ic-3">✓</div><div class="tool-arrow">↗</div></div>
+            <div class="tool-name">评估结论</div>
+            <div class="tool-desc">价值判断</div>
+          </div>
+          <div class="tool">
+            <div class="tool-top"><div class="tool-ic ic-4">⌂</div><div class="tool-arrow">↗</div></div>
+            <div class="tool-name">按揭测算</div>
+            <div class="tool-desc">月供/利率</div>
+          </div>
+        </div>
+
+        <div class="strip">
+          <div>
+            <div class="strip-title">从基础信息到专业结论</div>
+            <div class="strip-desc">让每一项房产数据，都成为决策依据。</div>
+          </div>
+          <div class="strip-mark">01 <small>/ 04</small></div>
+        </div>
+
+        <div class="tabbar">
+          <div class="tab on"><span class="gl">⌂</span>首页</div>
+          <div class="tab"><span class="gl">▤</span>房源</div>
+          <div class="tab"><span class="gl">◈</span>指南</div>
+          <div class="tab"><span class="gl">☺</span>我的</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 表单页 -->
+    <div class="phone">
+      <div class="nav">
+        <div class="status"><span>9:41</span><span>▮▮▮ ⌁</span></div>
+        <div class="title">按揭测算</div>
+      </div>
+      <div class="screen">
+        <div class="eyebrow">Mortgage</div>
+        <div class="page-title">按揭测算</div>
+        <div class="page-subtitle">输入贷款参数，估算月供与总利息</div>
+
+        <div class="card">
+          <div class="card-title">贷款参数</div>
+          <div class="card-sub">默认按首套、30 年商贷计算</div>
+
+          <div class="chips">
+            <div class="chip on">商业贷款</div>
+            <div class="chip">公积金</div>
+            <div class="chip">组合贷</div>
+          </div>
+
+          <div class="field">
+            <label class="label">贷款金额（万元）</label>
+            <div class="input focus">300</div>
+          </div>
+          <div class="field">
+            <label class="label">贷款年限</label>
+            <div class="input">30 年</div>
+          </div>
+          <div class="field">
+            <label class="label">年利率（%）</label>
+            <div class="input">3.85</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">测算结果</div>
+          <div class="divider"></div>
+          <div class="kv"><span>等额本息月供</span><span class="big">¥ 14,062</span></div>
+          <div class="kv"><span>支付总利息</span><span>¥ 2,062,320</span></div>
+          <div class="kv"><span>还款总额</span><span>¥ 5,062,320</span></div>
+          <div class="divider"></div>
+          <div class="chips">
+            <div class="chip">月供收入比 42%</div>
+            <div class="chip">建议关注</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:18px;">
+          <div class="btn-primary" style="flex:1;justify-content:center;">保存测算结果</div>
+          <div class="btn-ghost" style="flex:0 0 auto;">重置</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-label">字体对比 · 改造前 / 改造后</div>
+  <div class="compare">
+    <div class="cmp-card before">
+      <div class="cmp-tag">改造前 · 系统黑体</div>
+      <div class="cmp-h">房产价值评估</div>
+      <div class="cmp-d">整合市场行情、房屋信息与专业分析，帮助你全面了解房产</div>
+      <div class="cmp-d">房产评估所需工具，一站完成</div>
+      <div class="cmp-d">房屋概况</div>
+      <div class="cmp-d">让每一项房产数据，都成为决策依据。</div>
+    </div>
+    <div class="cmp-card after">
+      <div class="cmp-tag">改造后 · 内嵌文楷</div>
+      <div class="cmp-h">房产价值评估</div>
+      <div class="cmp-d">整合市场行情、房屋信息与专业分析，帮助你全面了解房产</div>
+      <div class="cmp-d">房产评估所需工具，一站完成</div>
+      <div class="cmp-d">房屋概况</div>
+      <div class="cmp-d">让每一项房产数据，都成为决策依据。</div>
+    </div>
+  </div>
+
+  <div class="section-label">主题色板</div>
+  <div class="swatches">
+    <div class="sw"><div class="chip-color" style="background:#F6F5FC"></div><div class="meta"><div class="name">页面底色</div><div class="hex">#F6F5FC</div><div class="use">页面背景</div></div></div>
+    <div class="sw"><div class="chip-color" style="background:#EFECFA"></div><div class="meta"><div class="name">浅青 100</div><div class="hex">#EFECFA</div><div class="use">次级底 / hover</div></div></div>
+    <div class="sw"><div class="chip-color" style="background:#E7E3F6;border-bottom:1px solid #EDEAF9"></div><div class="meta"><div class="name">主题色 200</div><div class="hex">#E7E3F6</div><div class="use">导航栏 / 标签 / 图标底</div></div></div>
+    <div class="sw"><div class="chip-color" style="background:#D8D3EC"></div><div class="meta"><div class="name">青 300</div><div class="hex">#D8D3EC</div><div class="use">描边 / 按下态</div></div></div>
+    <div class="sw"><div class="chip-color" style="background:#C1BAD9"></div><div class="meta"><div class="name">青 400</div><div class="hex">#C1BAD9</div><div class="use">分割强调</div></div></div>
+    <div class="sw"><div class="chip-color" style="background:#A198C4"></div><div class="meta"><div class="name">青 500</div><div class="hex">#A198C4</div><div class="use">焦点边框</div></div></div>
+    <div class="sw"><div class="chip-color" style="background:#8378AC"></div><div class="meta"><div class="name">青 600</div><div class="hex">#8378AC</div><div class="use">状态点 / 进度</div></div></div>
+    <div class="sw"><div class="chip-color" style="background:#52467B"></div><div class="meta"><div class="name">深青 800</div><div class="hex">#52467B</div><div class="use">主按钮 / 强调文字</div></div></div>
+    <div class="sw"><div class="chip-color" style="background:#372C57"></div><div class="meta"><div class="name">墨青 900</div><div class="hex">#372C57</div><div class="use">标题 / 反白底</div></div></div>
+    <div class="sw"><div class="chip-color" style="background:#2A2846"></div><div class="meta"><div class="name">正文墨色</div><div class="hex">#2A2846</div><div class="use">替代纯黑，更柔和</div></div></div>
+  </div>
+
+  <div class="section-label">字体层级</div>
+  <div class="type-note">内嵌「霞鹜文楷 Screen」（SIL OFL 1.1），子集 1340 字 / 319 KB。标题与叙述文案走文楷，按钮、表单、数据标签走系统黑体 —— 阅读层与操作层分开，文字才有呼吸感。</div>
+  <div class="type-list">
+    <div class="type-row"><div class="type-tag">.page-title · 42rpx · 文楷</div><div class="t-page">房产价值评估</div></div>
+    <div class="type-row"><div class="type-tag">.h1-title · 32rpx · 黑体</div><div class="t-h1">快捷工具</div></div>
+    <div class="type-row"><div class="type-tag">.h2-title · 28rpx · 黑体</div><div class="t-h2">贷款参数</div></div>
+    <div class="type-row"><div class="type-tag">.h3-title · 26rpx · 黑体</div><div class="t-h3">商业贷款 · 首套</div></div>
+    <div class="type-row"><div class="type-tag">.body-text · 27rpx · 文楷</div><div class="t-body">整合市场行情、房屋信息与专业分析，帮助你全面了解房产的真实价值。</div></div>
+    <div class="type-row"><div class="type-tag">.mini-text · 25rpx · 文楷</div><div class="t-mini">数据更新时间 2026-10-22</div></div>
+    <div class="type-row"><div class="type-tag">.num-display · 50rpx · 文楷</div><div class="t-num">¥ 5,062,320</div></div>
+  </div>
+
+  <div class="section-label">组件</div>
+  <div class="comp-grid">
+    <div class="panel">
+      <h4>按钮</h4>
+      <div class="btn-row">
+        <div class="btn-primary">开始评估</div>
+        <div class="btn-ghost">重置</div>
+        <span class="tag">标签</span>
+        <span class="tag" style="background:#52467B;color:#fff">已选中</span>
+      </div>
+      <div class="note">主按钮用 <b>#52467B</b> 实底白字，对比度 ≈ 8.3:1；主题色 <b>#E7E3F6</b> 用于大面积铺底与选中态，避免浅底白字。</div>
+    </div>
+    <div class="panel">
+      <h4>对比度</h4>
+      <div class="ratio">
+        <div><strong>7.0:1</strong>白字 / 深青</div>
+        <div><strong>12.8:1</strong>墨字 / 浅青</div>
+        <div><strong>14.2:1</strong>墨字 / 白</div>
+      </div>
+      <div class="note">全部文字对比度 ≥ 4.5:1，符合 WCAG AA。原方案里「绿底白字」在浅色下最容易失守，这次一并修掉了。</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

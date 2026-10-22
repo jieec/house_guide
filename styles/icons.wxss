@@ -1,0 +1,252 @@
+/* ========================================
+   图标系统 - 纯 CSS SVG Base64
+   ======================================== */
+
+.css-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 28rpx;
+  color: white;
+  font-weight: 500;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* 基础信息 - 列表文档 */
+.css-icon-basic {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' fill='none' stroke='white' stroke-width='1.5'/%3E%3Cline x1='7' y1='9' x2='17' y2='9' stroke='white' stroke-width='1.5'/%3E%3Cline x1='7' y1='13' x2='17' y2='13' stroke='white' stroke-width='1.5'/%3E%3Cline x1='7' y1='17' x2='13' y2='17' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E");
+}
+
+/* 房源分析 - 柱状图 */
+.css-icon-analysis {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Crect x='3' y='14' width='3' height='7' fill='white'/%3E%3Crect x='8' y='9' width='3' height='12' fill='white'/%3E%3Crect x='13' y='5' width='3' height='16' fill='white'/%3E%3Crect x='18' y='10' width='3' height='11' fill='white'/%3E%3C/svg%3E");
+}
+
+/* 评估结论 - 对号勾选 */
+.css-icon-conclusion {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='12' r='10' stroke='white' stroke-width='1.5'/%3E%3Cpath d='M 8 12 L 10.5 14.5 L 16 8' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* 按揭测算 - 房屋 */
+.css-icon-mortgage {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M 3 10 L 12 3 L 21 10' fill='none' stroke='white' stroke-width='1.5'/%3E%3Crect x='4' y='10' width='16' height='11' rx='1' fill='none' stroke='white' stroke-width='1.5'/%3E%3Crect x='9' y='14' width='3' height='4' fill='none' stroke='white' stroke-width='1'/%3E%3Crect x='14' y='14' width='2' height='2' fill='white'/%3E%3Crect x='14' y='17' width='2' height='1' fill='white'/%3E%3C/svg%3E");
+}
+
+/* 位置 - 位置别针（描边风格，更轻） */
+.css-icon-location {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z' stroke='%2352467B' stroke-width='1.7' stroke-linejoin='round'/%3E%3Ccircle cx='12' cy='10' r='2.4' stroke='%2352467B' stroke-width='1.7'/%3E%3C/svg%3E");
+}
+
+/* ========================================
+   工具卡片图标背景
+   ======================================== */
+
+.tool-icon {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.tool-icon .css-icon {
+  font-size: 32rpx;
+  color: white;
+}
+
+/* 工具卡片图标颜色 */
+.tool-icon-0 {
+  background: linear-gradient(135deg, #695C93 0%, #372C57 100%);
+}
+
+.tool-icon-1 {
+  background: linear-gradient(135deg, #5F7EB8 0%, #4A5F96 100%);
+}
+
+.tool-icon-2 {
+  background: linear-gradient(135deg, #96688A 0%, #7A4E6C 100%);
+}
+
+.tool-icon-3 {
+  background: linear-gradient(135deg, #C0A055 0%, #A8743F 100%);
+}
+
+/* ========================================
+   线性图标（mask 方案，颜色跟随 currentColor）
+   用法：<view class="ic ic-search"></view>
+   ======================================== */
+
+.ic {
+  display: inline-block;
+  width: 32rpx;
+  height: 32rpx;
+  flex: 0 0 auto;
+  background-color: currentColor;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  vertical-align: middle;
+}
+
+.ic-search {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='16.5' y1='16.5' x2='21' y2='21'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='16.5' y1='16.5' x2='21' y2='21'/%3E%3C/svg%3E");
+}
+
+.ic-building {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 21h18'/%3E%3Cpath d='M5 21V7l7-4 7 4v14'/%3E%3Cpath d='M9 21v-5h6v5'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 21h18'/%3E%3Cpath d='M5 21V7l7-4 7 4v14'/%3E%3Cpath d='M9 21v-5h6v5'/%3E%3C/svg%3E");
+}
+
+.ic-trash {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h16'/%3E%3Cpath d='M9 7V4h6v3'/%3E%3Cpath d='M6 7l1 13h10l1-13'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h16'/%3E%3Cpath d='M9 7V4h6v3'/%3E%3Cpath d='M6 7l1 13h10l1-13'/%3E%3C/svg%3E");
+}
+
+.ic-info {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cline x1='12' y1='11' x2='12' y2='16'/%3E%3Ccircle cx='12' cy='8' r='0.9' fill='%23000' stroke='none'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cline x1='12' y1='11' x2='12' y2='16'/%3E%3Ccircle cx='12' cy='8' r='0.9' fill='%23000' stroke='none'/%3E%3C/svg%3E");
+}
+
+.ic-chart {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.9' stroke-linecap='round'%3E%3Cline x1='4' y1='20' x2='20' y2='20'/%3E%3Cline x1='7' y1='20' x2='7' y2='13'/%3E%3Cline x1='12' y1='20' x2='12' y2='8'/%3E%3Cline x1='17' y1='20' x2='17' y2='5'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.9' stroke-linecap='round'%3E%3Cline x1='4' y1='20' x2='20' y2='20'/%3E%3Cline x1='7' y1='20' x2='7' y2='13'/%3E%3Cline x1='12' y1='20' x2='12' y2='8'/%3E%3Cline x1='17' y1='20' x2='17' y2='5'/%3E%3C/svg%3E");
+}
+
+.ic-chevron {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* 右向箭头：用于「修改 ›」「查看详情 ›」等行进指示 */
+.ic-arrow-right {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E");
+}
+
+.ic-close {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cline x1='6' y1='6' x2='18' y2='18'/%3E%3Cline x1='18' y1='6' x2='6' y2='18'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cline x1='6' y1='6' x2='18' y2='18'/%3E%3Cline x1='18' y1='6' x2='6' y2='18'/%3E%3C/svg%3E");
+}
+
+.ic-check {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E");
+}
+
+.ic-phone {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4 5.2 2 2 0 0 1 6 3z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4 5.2 2 2 0 0 1 6 3z'/%3E%3C/svg%3E");
+}
+
+.ic-alert {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4l8.5 15H3.5z'/%3E%3Cline x1='12' y1='10' x2='12' y2='14'/%3E%3Ccircle cx='12' cy='16.6' r='0.9' fill='%23000' stroke='none'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4l8.5 15H3.5z'/%3E%3Cline x1='12' y1='10' x2='12' y2='14'/%3E%3Ccircle cx='12' cy='16.6' r='0.9' fill='%23000' stroke='none'/%3E%3C/svg%3E");
+}
+
+/* 位置别针 —— 定位 / 地址 */
+.ic-pin {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z'/%3E%3Ccircle cx='12' cy='10' r='2.4'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z'/%3E%3Ccircle cx='12' cy='10' r='2.4'/%3E%3C/svg%3E");
+}
+
+/* 房屋 —— 户型 / 房源 */
+.ic-home {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7.2 9 7.2'/%3E%3Cpath d='M5.6 9.6V21h12.8V9.6'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7.2 9 7.2'/%3E%3Cpath d='M5.6 9.6V21h12.8V9.6'/%3E%3C/svg%3E");
+}
+
+/* 卷尺 —— 面积 */
+.ic-ruler {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.5' y='8.5' width='19' height='7' rx='1.6'/%3E%3Cline x1='7' y1='8.5' x2='7' y2='12.2'/%3E%3Cline x1='12' y1='8.5' x2='12' y2='12.2'/%3E%3Cline x1='17' y1='8.5' x2='17' y2='12.2'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.5' y='8.5' width='19' height='7' rx='1.6'/%3E%3Cline x1='7' y1='8.5' x2='7' y2='12.2'/%3E%3Cline x1='12' y1='8.5' x2='12' y2='12.2'/%3E%3Cline x1='17' y1='8.5' x2='17' y2='12.2'/%3E%3C/svg%3E");
+}
+
+/* 台阶 —— 楼层 */
+.ic-stairs {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 21h4.5v-4.5H12V12h4.5V7.5H21'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 21h4.5v-4.5H12V12h4.5V7.5H21'/%3E%3C/svg%3E");
+}
+
+/* 指南针 —— 朝向 */
+.ic-compass {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.6'/%3E%3Cpath d='M15.6 8.4l-2.1 5.1-5.1 2.1 2.1-5.1z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.6'/%3E%3Cpath d='M15.6 8.4l-2.1 5.1-5.1 2.1 2.1-5.1z'/%3E%3C/svg%3E");
+}
+
+/* 硬币 —— 金额 / 价格 */
+.ic-coin {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.6'/%3E%3Cpath d='M12 7.4v9.2'/%3E%3Cpath d='M9.4 10.2h5.2'/%3E%3Cpath d='M9.4 13.2h5.2'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.6'/%3E%3Cpath d='M12 7.4v9.2'/%3E%3Cpath d='M9.4 10.2h5.2'/%3E%3Cpath d='M9.4 13.2h5.2'/%3E%3C/svg%3E");
+}
+
+/* 银行 —— 贷款 / 银行 */
+.ic-bank {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10l9-6 9 6'/%3E%3Cpath d='M5.4 10.4V19'/%3E%3Cpath d='M9.8 10.4V19'/%3E%3Cpath d='M14.2 10.4V19'/%3E%3Cpath d='M18.6 10.4V19'/%3E%3Cpath d='M3 20.4h18'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10l9-6 9 6'/%3E%3Cpath d='M5.4 10.4V19'/%3E%3Cpath d='M9.8 10.4V19'/%3E%3Cpath d='M14.2 10.4V19'/%3E%3Cpath d='M18.6 10.4V19'/%3E%3Cpath d='M3 20.4h18'/%3E%3C/svg%3E");
+}
+
+/* 文档 —— 报告 / 结论 */
+.ic-doc {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3.5h8l4 4V20.5H6z'/%3E%3Cpath d='M14 3.5V8h4'/%3E%3Cline x1='9' y1='12' x2='15' y2='12'/%3E%3Cline x1='9' y1='15.6' x2='13' y2='15.6'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3.5h8l4 4V20.5H6z'/%3E%3Cpath d='M14 3.5V8h4'/%3E%3Cline x1='9' y1='12' x2='15' y2='12'/%3E%3Cline x1='9' y1='15.6' x2='13' y2='15.6'/%3E%3C/svg%3E");
+}
+
+/* 公交 */
+.ic-bus {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='3.6' width='16' height='13.4' rx='2.6'/%3E%3Cpath d='M4 11.4h16'/%3E%3Ccircle cx='8' cy='19.2' r='1.6'/%3E%3Ccircle cx='16' cy='19.2' r='1.6'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='3.6' width='16' height='13.4' rx='2.6'/%3E%3Cpath d='M4 11.4h16'/%3E%3Ccircle cx='8' cy='19.2' r='1.6'/%3E%3Ccircle cx='16' cy='19.2' r='1.6'/%3E%3C/svg%3E");
+}
+
+/* 地铁 */
+.ic-subway {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5.6' y='3.4' width='12.8' height='13.6' rx='3.2'/%3E%3Cpath d='M5.6 11.2h12.8'/%3E%3Ccircle cx='9.2' cy='14' r='1.1'/%3E%3Ccircle cx='14.8' cy='14' r='1.1'/%3E%3Cpath d='M8.4 20.6L10 17'/%3E%3Cpath d='M15.6 20.6L14 17'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5.6' y='3.4' width='12.8' height='13.6' rx='3.2'/%3E%3Cpath d='M5.6 11.2h12.8'/%3E%3Ccircle cx='9.2' cy='14' r='1.1'/%3E%3Ccircle cx='14.8' cy='14' r='1.1'/%3E%3Cpath d='M8.4 20.6L10 17'/%3E%3Cpath d='M15.6 20.6L14 17'/%3E%3C/svg%3E");
+}
+
+/* 学校 */
+.ic-school {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.4L22 8.1l-10 4.7L2 8.1z'/%3E%3Cpath d='M6 10.4v5.3c0 1.8 2.7 3.1 6 3.1s6-1.3 6-3.1v-5.3'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.4L22 8.1l-10 4.7L2 8.1z'/%3E%3Cpath d='M6 10.4v5.3c0 1.8 2.7 3.1 6 3.1s6-1.3 6-3.1v-5.3'/%3E%3C/svg%3E");
+}
+
+/* 医院 */
+.ic-hospital {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='4' width='16' height='16' rx='3'/%3E%3Cpath d='M12 8v8'/%3E%3Cpath d='M8 12h8'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='4' width='16' height='16' rx='3'/%3E%3Cpath d='M12 8v8'/%3E%3Cpath d='M8 12h8'/%3E%3C/svg%3E");
+}
+
+/* 购物 */
+.ic-shop {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 8h14l-1.3 12.4H6.3z'/%3E%3Cpath d='M9 8V6.2a3 3 0 0 1 6 0V8'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 8h14l-1.3 12.4H6.3z'/%3E%3Cpath d='M9 8V6.2a3 3 0 0 1 6 0V8'/%3E%3C/svg%3E");
+}
+
+/* 餐饮 */
+.ic-food {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12h16a8 8 0 0 1-16 0z'/%3E%3Cpath d='M12 12V8.6'/%3E%3Cpath d='M3 20.4h18'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12h16a8 8 0 0 1-16 0z'/%3E%3Cpath d='M12 12V8.6'/%3E%3Cpath d='M3 20.4h18'/%3E%3C/svg%3E");
+}
+
+/* 景观 / 绿化 */
+.ic-tree {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2.8l6.2 7.4H5.8z'/%3E%3Cpath d='M12 9.4l7.4 8.2H4.6z'/%3E%3Cpath d='M12 17.6v3.6'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2.8l6.2 7.4H5.8z'/%3E%3Cpath d='M12 9.4l7.4 8.2H4.6z'/%3E%3Cpath d='M12 17.6v3.6'/%3E%3C/svg%3E");
+}
+
+/* 小尺寸变体 */
+.ic-sm {
+  width: 24rpx;
+  height: 24rpx;
+}

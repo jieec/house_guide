@@ -57,25 +57,16 @@ Page({
     loading: false,
     searchResults: [],
     selectedCommunity: null,
-    report: { basic: [], prices: [], advice: [], tools: [], competitors: [], traffic: [], schools: [], missing: [], deals: [], dealSummary: '' },
+    report: { basic: [], basicGroups: [], prices: [], advice: [], tools: [], competitors: [], traffic: [], schools: [], missing: [], deals: [], dealSummary: '' },
     dataStatus: '',
-    updatedAt: '',
-    showContent: false
+    updatedAt: ''
   },
 
   onShow() {
     const location = app.globalData.location || null
     const city = location && location.city ? String(location.city).replace(/市$/, '') : ''
     
-    // 触发入场动画
-    this.setData({ 
-      showContent: false,
-      location,
-      city
-    })
-    setTimeout(() => {
-      this.setData({ showContent: true })
-    }, 100)
+    this.setData({ location, city })
   },
   switchTab(e) { this.setData({ activeTab: Number(e.currentTarget.dataset.index) }) },
   toggleTool(e) {
@@ -350,12 +341,12 @@ Page({
     const deedTax = totalYuan ? totalYuan * deedRate : 0
     const policyText = policies.map(it => first(it.summary, it.purchase_limit, it.tax)).filter(Boolean).join('；')
     const priceItems = [
-      { label: '城市均价', amount: cityAvg, color: '#4d96ff', note: cityResult.count ? cityResult.count + '条城市样本' : '' },
-      { label: '小区均价', amount: communityAvg, color: '#00d4ff' },
-      { label: '楼盘近期平均成交价', labelLines: ['楼盘近期', '平均成交价'], amount: recentAvg, color: '#5ddb7a' },
-      { label: '楼盘近期法拍成交价', labelLines: ['楼盘近期', '法拍成交价'], amount: auctionAvg, color: '#ff9a6c' },
-      { label: '楼盘平均挂牌价', labelLines: ['楼盘平均', '挂牌价'], amount: listingAvg, color: '#f5c451' },
-      { label: '评估价格', amount: evaluation, color: '#b394ff', note: '小区均价×40%＋法拍成交价×60%' }
+      { label: '城市均价', amount: cityAvg, color: '#5B6E9E', note: cityResult.count ? cityResult.count + '条城市样本' : '' },
+      { label: '小区均价', amount: communityAvg, color: '#4A7889' },
+      { label: '楼盘近期平均成交价', labelLines: ['楼盘近期', '平均成交价'], amount: recentAvg, color: '#5B7F63' },
+      { label: '楼盘近期法拍成交价', labelLines: ['楼盘近期', '法拍成交价'], amount: auctionAvg, color: '#9C6055' },
+      { label: '楼盘平均挂牌价', labelLines: ['楼盘平均', '挂牌价'], amount: listingAvg, color: '#8A6A38' },
+      { label: '评估价格', amount: evaluation, color: '#7A5C93', note: '小区均价×40%＋法拍成交价×60%' }
     ]
     const priceChartMax = Math.ceil(Math.max(...priceItems.map(item => item.amount || 0), 0))
     const chartItems = priceItems.map(item => ({
@@ -366,29 +357,50 @@ Page({
       barWidth: item.amount > 0 && priceChartMax > 0 ? item.amount / priceChartMax * 100 : 0
     }))
 
+    // 价格区间与评估价偏离度：都由上面的取样值直接推导，不引入新数据源
+    const priceNums = priceItems.map(item => item.amount).filter(v => v > 0)
+    const priceRangeText = priceNums.length
+      ? Math.round(Math.min(...priceNums)) + ' – ' + Math.round(Math.max(...priceNums)) + ' 元/㎡'
+      : '暂无数据'
+    const evalDeviation = evaluation > 0 && listingAvg > 0
+      ? ((evaluation / listingAvg - 1) * 100).toFixed(1) + '%'
+      : '暂无数据'
+
+    // 按「概况 / 规模 / 市场」三簇排序，前端据此切成带小标题的分组
+    const basicRows = [
+      { label: '位置', value: show(location) }, { label: '小区名称', value: show(doc.community) },
+      { label: '房屋性质', value: show(first(bk.ownership, base.shipType, propertyType)) },
+      { label: '建成年代', value: show(first(bk.build_year, completion)) },
+      { label: '建筑类型', value: show(first(bk.build_type, base.buildType, props['建筑类型'])) },
+      { label: '开发商', value: show(first(bk.developer, base.developer, props['开发商'])) },
+      { label: '物业公司', value: show(first(bk.property_company, base.propertyCompany, props['物业公司'])) },
+      { label: '物业费', value: show(first(bk.property_fee, base.propertyMoney, props['物业费'])) },
+      { label: '户型分布', value: layoutText || '暂无数据' },
+      { label: '总户数 / 楼栋数', value: [bk.household_count, bk.building_count].filter(Boolean).join(' / ') || '暂无数据' },
+      { label: '容积率 / 绿化率', value: [first(bk.plot_ratio, base.plotRatio, props['容积率']), first(bk.greening_rate, base.greeningRatio, base.greenRate, props['绿化率'])].filter(Boolean).join(' / ') || '暂无数据' },
+      { label: '车位配比', value: show(base.parking) },
+      { label: '区域排名', value: show(areaRank) },
+      { label: '成交套数', value: show(sales.length, '套') },
+      { label: '贝壳参考均价', value: bk.avg_price ? bk.avg_price + ' 元/㎡' : '暂无数据' },
+      { label: '挂牌率', value: bk.listing_rate ? (bk.listing_rate * 100).toFixed(1) + '%（在售 ' + (bk.listing_count || 0) + ' 套）' : '暂无数据' }
+    ]
+    // 分组切片：8 / 4 / 4，与上面的书写顺序对应
+    const basicGroups = [
+      { title: '小区概况', rows: basicRows.slice(0, 8) },
+      { title: '规模指标', rows: basicRows.slice(8, 12) },
+      { title: '市场表现', rows: basicRows.slice(12) }
+    ]
+
     return {
-      basic: [
-        { label: '位置', value: show(location) }, { label: '小区名称', value: show(doc.community) },
-        { label: '户型分布', value: layoutText || '暂无数据' },
-        { label: '房屋性质', value: show(first(bk.ownership, base.shipType, propertyType)) },
-        { label: '建成年代', value: show(first(bk.build_year, completion)) },
-        { label: '建筑类型', value: show(first(bk.build_type, base.buildType, props['建筑类型'])) },
-        { label: '总户数 / 楼栋数', value: [bk.household_count, bk.building_count].filter(Boolean).join(' / ') || '暂无数据' },
-        { label: '区域排名', value: show(areaRank) },
-        { label: '成交套数', value: show(sales.length, '套') },
-        { label: '开发商', value: show(first(bk.developer, base.developer, props['开发商'])) },
-        { label: '物业公司', value: show(first(bk.property_company, base.propertyCompany, props['物业公司'])) },
-        { label: '物业费', value: show(first(bk.property_fee, base.propertyMoney, props['物业费'])) },
-        { label: '容积率 / 绿化率', value: [first(bk.plot_ratio, base.plotRatio, props['容积率']), first(bk.greening_rate, base.greeningRatio, base.greenRate, props['绿化率'])].filter(Boolean).join(' / ') || '暂无数据' },
-        { label: '车位配比', value: show(base.parking) },
-        { label: '贝壳参考均价', value: bk.avg_price ? bk.avg_price + ' 元/㎡' : '暂无数据' },
-        { label: '挂牌率', value: bk.listing_rate ? (bk.listing_rate * 100).toFixed(1) + '%（在售 ' + (bk.listing_count || 0) + ' 套）' : '暂无数据' }
-      ],
+      basic: basicRows,
+      basicGroups,
       priceChartMax,
       prices: chartItems,
       priceDetails: [
         { label: '楼盘平均租金', value: show(rentAvg ? rentAvg.toFixed(1) : '', '元/㎡/月') },
-        { label: '历史走势', value: trendText }
+        { label: '历史走势', value: trendText },
+        { label: '评估价折价率', value: evalDeviation, note: '评估价相对平均挂牌价的偏离幅度' },
+        { label: '价格区间', value: priceRangeText, note: '取六项取样价的最低值到最高值' }
       ],
       advice: this.buildAdvice({
         propertyType: propertyForRule, rentRatio, investmentLine, areaAvg, priceDiff,
@@ -645,7 +657,7 @@ Page({
         score: rentalScore,
         pct: 0,
         threshold: '租售比 ≥ 3% 为优质',
-        color: '#00d4ff',
+        color: '#4A7889',
         details: [
           { label: '年租售比', value: rentRatio > 0 ? rentRatio.toFixed(2) + '%' : '暂无数据' },
           { label: '在租套数', value: rentCount > 0 ? rentCount + ' 套' : '暂无数据' },
@@ -658,7 +670,7 @@ Page({
         score: salesScore,
         pct: 0,
         threshold: '差价率 > 15%',
-        color: '#23c343',
+        color: '#5B7F63',
         details: [
           { label: '评估价', value: evaluation > 0 ? Math.round(evaluation) + ' 元/㎡' : '暂无数据' },
           { label: '最低成交/法拍', value: lowestDeal > 0 ? Math.round(lowestDeal) + ' 元/㎡' : '暂无数据' },
@@ -672,7 +684,7 @@ Page({
         score: financeScore,
         pct: 0,
         threshold: '差价率 > 20% 且挂牌 < 5 套',
-        color: '#ff9a6c',
+        color: '#9C6055',
         details: [
           { label: '评估价', value: evaluation > 0 ? Math.round(evaluation) + ' 元/㎡' : '暂无数据' },
           { label: '差价率', value: discountRate > 0 ? discountRate.toFixed(1) + '%' : '暂无数据', highlight: discountRate >= 20 },
@@ -689,7 +701,7 @@ Page({
         score: rigidScore,
         pct: 0,
         threshold: '50-110㎡ + 学区 + 交通',
-        color: '#a78bfa',
+        color: '#7A5C93',
         details: [
           { label: '平均面积', value: areaAvg > 0 ? Math.round(areaAvg) + ' ㎡' : '暂无数据', highlight: areaAvg >= 50 && areaAvg <= 110 },
           { label: '学区配套', value: hasSchool ? '✓ 有学校' : '✗ 未找到学校' },
@@ -703,7 +715,7 @@ Page({
         score: improveScore,
         pct: 0,
         threshold: '≥ 125㎡ + 四房 + 景观',
-        color: '#fb923c',
+        color: '#8A6A38',
         details: [
           { label: '平均面积', value: areaAvg > 0 ? Math.round(areaAvg) + ' ㎡' : '暂无数据', highlight: areaAvg >= 125 },
           { label: '户型文本', value: houseTypeText || '暂无数据' },
@@ -717,7 +729,7 @@ Page({
         score: vacationScore,
         pct: 0,
         threshold: '海边/公园/景区/温泉等',
-        color: '#38bdf8',
+        color: '#4A7889',
         details: [
           { label: '景观关键词命中', value: vacationCount > 0 ? vacationCount + ' 个匹配' : '暂无匹配' },
           { label: '附近配套', value: poiScore > 0 ? poiScore + ' 项' : '暂无数据' },

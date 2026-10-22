@@ -1,54 +1,62 @@
 const app = getApp()
 
+// 1286 -> 1,286
+const thousands = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
 Page({
   data: {
     location: null,
+    hasLoc: false,
+    locTitle: '',
+    locDesc: '',
     total: 0,
-    records: [],
+    statText: '实时数据',
     quickModules: [
-      { key: 'basic', name: '基本信息', desc: '房屋概况', iconBg: 'linear-gradient(135deg, #8B5CF6 0%, #7C5CFC 100%)' },
-      { key: 'analysis', name: '房源分析', desc: '市场对比', iconBg: 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)' },
-      { key: 'conclusion', name: '评估结论', desc: '价值判断', iconBg: 'linear-gradient(135deg, #7C5CFC 0%, #6D4EED 100%)' },
-      { key: 'mortgage', name: '按揭测算', desc: '月供/利率', iconBg: 'linear-gradient(135deg, #8B5CF6 0%, #6D4EED 100%)' }
-    ],
-    showContent: false
+      { key: 'basic', name: '基本信息', desc: '房屋概况', iconBg: 'linear-gradient(135deg, #695C93 0%, #372C57 100%)' },
+      { key: 'analysis', name: '房源分析', desc: '市场对比', iconBg: 'linear-gradient(135deg, #5F7EB8 0%, #4A5F96 100%)' },
+      { key: 'conclusion', name: '评估结论', desc: '价值判断', iconBg: 'linear-gradient(135deg, #96688A 0%, #7A4E6C 100%)' },
+      { key: 'mortgage', name: '按揭测算', desc: '月供/利率', iconBg: 'linear-gradient(135deg, #C0A055 0%, #A8743F 100%)' }
+    ]
   },
+
   onShow() {
     const loc = app.globalData.location
+    const hasLoc = !!(loc && (loc.city || loc.province))
+
     this.setData({
       location: loc,
-      records: (wx.getStorageSync('records') || []).slice(0, 3),
-      showContent: false
+      hasLoc,
+      locTitle: hasLoc ? [loc.province, loc.city, loc.district].filter(Boolean).join(' ') : '',
+      locDesc: hasLoc ? [loc.estate || '未填写楼盘', loc.community].filter(Boolean).join(' · ') : ''
     })
+
     this.loadStats()
-    
-    // 触发入场动画
-    setTimeout(() => {
-      this.setData({ showContent: true })
-    }, 50)
   },
+
   loadStats() {
     if (!wx.cloud) return
     const db = wx.cloud.database()
     db.collection('houses').count()
-      .then(res => this.setData({ total: res.total }))
+      .then((res) => {
+        const total = res.total || 0
+        this.setData({
+          total,
+          statText: total > 0 ? '已收录 ' + thousands(total) + ' 套' : '实时数据'
+        })
+      })
       .catch(() => {})
   },
-  goHome() {},
+
   goLocation() {
     wx.navigateTo({ url: '/pages/location/location' })
   },
-  goHouses() {
-    wx.switchTab({ url: '/pages/houses/houses' })
-  },
+
   goModule(e) {
     const key = e.currentTarget.dataset.key
     wx.navigateTo({ url: '/pages/' + key + '/' + key })
   },
+
   goGuide() {
     wx.switchTab({ url: '/pages/guide/guide' })
-  },
-  goMine() {
-    wx.switchTab({ url: '/pages/mine/mine' })
   }
 })

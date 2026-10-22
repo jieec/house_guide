@@ -1,7 +1,15 @@
 <!-- 全局固定背景 -->
-<image class="global-fixed-bg" src="/images/整体背景.png" mode="aspectFill"></image>
+<image class="global-fixed-bg" src="/images/整体背景.jpg" mode="aspectFill"></image>
 
-<view class="card">
+<view class="page-heading animated">
+  <view class="heading-main">
+    <view class="eyebrow">FINANCE / LOAN</view>
+    <view class="page-title">融资建议</view>
+    <view class="page-subtitle">按评估价测算可贷额度，并匹配合适银行</view>
+  </view>
+</view>
+
+<view class="card animated" style="animation-delay: 0.05s">
   <view class="card-title">按揭测算</view>
   <view class="form-row">
     <view class="form-label">评估价(元/平)</view>
@@ -27,10 +35,10 @@
   </view>
 </view>
 
-<view class="card">
+<view class="card animated" style="animation-delay: 0.10s">
   <view class="card-title">建议银行</view>
   <picker class="form-input-wrap" range="{{bankTypes}}" value="{{bankTypeIndex}}" bindchange="onBankType">
-    <view>{{bankTypes[bankTypeIndex]}}<text class="picker-arrow">▾</text></view>
+    <view>{{bankTypes[bankTypeIndex]}}<view class="ic ic-chevron picker-arrow"></view></view>
   </picker>
   <view class="bank" wx:for="{{banks}}" wx:key="name">
     <view class="bank-info">

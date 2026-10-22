@@ -1,7 +1,18 @@
 <!-- 全局固定背景 -->
-<image class="global-fixed-bg" src="/images/整体背景.png" mode="aspectFill"></image>
+<image class="global-fixed-bg" src="/images/整体背景.jpg" mode="aspectFill"></image>
 
-<view class="card">
+<view class="page-heading animated">
+  <view class="heading-main">
+    <view class="eyebrow">STEP 01 / BASIC</view>
+    <view class="page-title">基本信息</view>
+    <view class="page-subtitle">输入小区名，自动抓取楼龄、容积率等公开数据</view>
+  </view>
+  <view class="heading-badge" wx:if="{{communityName}}">
+    <text class="status-dot"></text><text class="badge-value">{{communityName}}</text>
+  </view>
+</view>
+
+<view class="card animated" style="animation-delay: 0.05s">
   <view class="card-title">小区信息</view>
   <view class="card-sub">输入小区名自动抓取全部信息，你只需要填这一项</view>
   <view class="form-row">
@@ -9,7 +20,7 @@
     <view class="form-input city-view">{{city || '请先在首页设置定位'}}</view>
   </view>
   <view class="search-box">
-    <view class="search-icon">🔍</view>
+    <view class="search-icon"><view class="ic ic-search"></view></view>
     <input class="search-input" placeholder="输入小区名搜索，如: 华发新城" value="{{keyword}}" bindinput="onKeyword" />
   </view>
   <view class="search-tip" wx:if="{{searching}}">搜索中...</view>
@@ -18,12 +29,15 @@
     <view class="result-sub" wx:if="{{item.summary}}">{{item.summary}}</view>
   </view>
   <view class="auto-banner" wx:if="{{autoFilled}}">
-    ✅ 已自动填充「{{communityName}}」的全部信息<text class="auto-note" wx:if="{{fillNote}}">（{{fillNote}}）</text>
+    <view class="auto-banner-head">
+      <view class="ic ic-check"></view>
+      <text>已自动填充「{{communityName}}」的全部信息<text class="auto-note" wx:if="{{fillNote}}">（{{fillNote}}）</text></text>
+    </view>
     <view class="auto-note">下方字段可手动修正</view>
   </view>
 </view>
 
-<view class="card">
+<view class="card animated" style="animation-delay: 0.10s">
   <view class="card-title">区位信息</view>
   <view class="form-row">
     <view class="form-label">房产区域</view>
@@ -47,7 +61,7 @@
   </view>
 </view>
 
-<view class="card">
+<view class="card animated" style="animation-delay: 0.15s">
   <view class="card-title">价格信息(元/平)</view>
   <view class="form-row">
     <view class="form-label">平均价格</view>
@@ -71,7 +85,7 @@
   </view>
 </view>
 
-<view class="card">
+<view class="card animated" style="animation-delay: 0.20s">
   <view class="card-title">房屋属性</view>
   <view class="form-row">
     <view class="form-label">楼龄(年)</view>

@@ -14,6 +14,7 @@ App({
       this.globalData.location = loc
     }
   },
+  
   setLocation(loc) {
     this.globalData.location = loc
     wx.setStorageSync('location', loc)

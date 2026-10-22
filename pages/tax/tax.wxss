@@ -1,53 +1,29 @@
-/* 税费页面 - 柔和紫色风格 */
+/* 页面基础 */
 
 page {
-  background: url('/images/水中水獭.jpg') no-repeat center top / cover;
-  color: #2D2D3A;
+  background: #F6F5FC;
+  color: #2A2846;
   padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
   position: relative;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
-/* 背景装饰 - 六边形图案 */
-page::before {
-  content: '';
-  position: fixed;
-  top: -50rpx;
-  left: -50rpx;
-  width: 500rpx;
-  height: 500rpx;
-  background: 
-    linear-gradient(60deg, transparent 30%, rgba(139, 92, 246, 0.04) 30%, rgba(139, 92, 246, 0.04) 70%, transparent 70%),
-    linear-gradient(120deg, transparent 30%, rgba(124, 92, 252, 0.04) 30%, rgba(124, 92, 252, 0.04) 70%, transparent 70%);
-  background-size: 60rpx 100rpx;
-  z-index: -5;
-  opacity: 0.6;
-}
-
-page::after {
-  content: '';
-  position: fixed;
-  bottom: -100rpx;
-  right: -100rpx;
-  width: 500rpx;
-  height: 500rpx;
-  background: radial-gradient(circle, rgba(109, 78, 237, 0.1) 0%, transparent 70%);
-  border-radius: 50%;
-  z-index: -5;
-}
-
-/* 确保内容在装饰层之上 */
-.card, .btn-primary, .btn-ghost, canvas {
+.tax-layout {
+  min-height: 100vh;
   position: relative;
   z-index: 1;
 }
 
-/* ==================== 入场动画 ==================== */
+.tax-main {
+  padding: 24rpx;
+}
 
-@keyframes fadeInUp {
+/* ==================== 动画 ==================== */
+
+@keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(60rpx);
+    transform: translateY(16rpx);
   }
   to {
     opacity: 1;
@@ -55,10 +31,15 @@ page::after {
   }
 }
 
-@keyframes fadeInScale {
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
@@ -66,78 +47,243 @@ page::after {
   }
 }
 
+/* ==================== 区块 · type-tabs ==================== */
+
 .type-tabs {
-  animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s backwards;
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
 }
-
-.form-section {
-  animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
-}
-
-.form-section:nth-child(1) { animation-delay: 0.2s; }
-.form-section:nth-child(2) { animation-delay: 0.3s; }
-.form-section:nth-child(3) { animation-delay: 0.4s; }
-
-.result-panel {
-  animation: fadeInScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s backwards;
-}
-
-.tax-breakdown {
-  animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s backwards;
-}
-
-/* ==================== 点击效果 ==================== */
 
 .type-tab {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex: 1;
+  padding: 14rpx 16rpx;
+  background: #FFFFFF;
+  border: 2rpx solid #E8E5F5;
+  border-radius: 20rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #4C4A6E;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.type-tab.active {
+  background: #52467B;
+  border-color: #C1BAD9;
+  color: #FFFFFF;
+  box-shadow: 0 4rpx 12rpx rgba(82, 70, 123, 0.3);
 }
 
 .type-tab:active {
-  transform: scale(0.92) translateY(2rpx);
-  background: rgba(139, 92, 246, 0.1);
-  border-color: #8B5CF6;
+  transform: scale(0.96);
 }
 
+.form-row:active {
+  background: #E8E5F5;
+  transform: scale(0.98);
+}
+
+/* ==================== 区块 · toggle ==================== */
+
 .toggle {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx;
+  background: #F1EFFA;
+  border-radius: 20rpx;
+  margin-bottom: 12rpx;
+  transition: all 0.3s ease;
 }
 
 .toggle:active {
-  transform: scale(0.95);
-  box-shadow: 0rpx 4rpx 16rpx rgba(124, 92, 252, 0.3);
+  background: #E8E5F5;
+  transform: scale(0.98);
 }
+
+.toggle-label {
+  color: #2A2846;
+  font-size: 28rpx;
+  font-weight: 500;
+  flex: 1;
+}
+
+.toggle-switch {
+  width: 52rpx;
+  height: 32rpx;
+  background: #E8E5F5;
+  border-radius: 16rpx;
+  position: relative;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.toggle.active .toggle-switch {
+  background: #9A8FC6;
+}
+
+.toggle-dot {
+  width: 28rpx;
+  height: 28rpx;
+  background: #FFFFFF;
+  border-radius: 14rpx;
+  position: absolute;
+  top: 2rpx;
+  left: 2rpx;
+  transition: all 0.3s ease;
+}
+
+.toggle.active .toggle-dot {
+  left: 22rpx;
+}
+
+/* ==================== 结果分区 ==================== */
+
+/* ==================== 区块 · result-row ==================== */
 
 .result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #E8E5F5;
   transition: all 0.3s ease;
 }
 
-.result-row:active {
-  background: #F5F3FF;
-  transform: translateX(6rpx);
-  margin: 0 -12rpx;
-  padding-left: 16rpx;
-  padding-right: 16rpx;
+.result-row:last-child {
+  border-bottom: none;
+}
+
+/* ==================== 区块 · tax-breakdown ==================== */
+
+.tax-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.tax-item {
+  background: #F1EFFA;
+  border-radius: 20rpx;
+  padding: 16rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.tax-item:active {
+  background: #E8E5F5;
+  transform: translateX(4rpx);
+}
+
+.tax-item-left {
+  flex: 1;
+}
+
+.tax-item-title {
+  color: #2A2846;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.tax-item-desc {
+  color: #6C6A8E;
+  font-size: 24rpx;
+  margin-top: 4rpx;
+}
+
+.tax-item-value {
+  color: #52467B;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+/* ==================== 提示 ==================== */
+
+.tips {
+  background: rgba(82, 70, 123, 0.1);
+  border-left: 4rpx solid #C1BAD9;
   border-radius: 12rpx;
-}
-
-.form-picker {
+  padding: 16rpx;
+  margin: 16rpx 0;
+  font-size: 26rpx;
+  color: #52467B;
   transition: all 0.3s ease;
 }
 
-.form-picker:active {
-  background: #F5F3FF;
-  border-color: #8B5CF6;
-  transform: scale(0.99);
+.tips:active {
+  background: rgba(82, 70, 123, 0.15);
+  transform: translateX(4rpx);
 }
 
-.picker-arrow {
-  transition: all 0.3s ease;
-  display: inline-block;
+.tips.warning {
+  background: rgba(255, 152, 0, 0.1);
+  border-left-color: #C08A55;
+  color: #C08A55;
 }
 
-.form-picker:active .picker-arrow {
-  transform: scale(1.3) rotate(180deg);
-  color: #8B5CF6;
+.tips.error {
+  background: rgba(244, 67, 54, 0.1);
+  border-left-color: #A94D58;
+  color: #A94D58;
 }
 
-/* 通用样式继承自全局 app.wxss */
+/* ==================== 区块 · data-grid ==================== */
+
+.data-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12rpx;
+  margin: 16rpx 0;
+}
+
+.data-item {
+  background: #F1EFFA;
+  border-radius: 20rpx;
+  padding: 16rpx;
+  text-align: center;
+}
+
+.data-value {
+  color: #52467B;
+  font-size: 36rpx;
+  font-weight: 700;
+  margin-bottom: 8rpx;
+}
+
+.data-label {
+  color: #4C4A6E;
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+/* ==================== 空状态 ==================== */
+
+.empty-state {
+  text-align: center;
+  padding: 60rpx 24rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 16rpx;
+}
+
+.empty-title {
+  color: #2A2846;
+  font-size: 32rpx;
+  font-weight: 400;
+  margin-bottom: 8rpx;
+  font-family: var(--font-serif);
+  letter-spacing: 2rpx;
+}
+
+.empty-desc {
+  color: #6B6890;
+  font-size: 26rpx;
+  font-family: var(--font-serif);
+  line-height: 1.8;
+}

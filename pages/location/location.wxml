@@ -1,31 +1,40 @@
 <!-- 全局固定背景 -->
-<image class="global-fixed-bg" src="/images/整体背景.png" mode="aspectFill"></image>
+<image class="global-fixed-bg" src="/images/整体背景.jpg" mode="aspectFill"></image>
+
+<view class="page-heading animated">
+  <view class="heading-main">
+    <view class="eyebrow">LOCATION / SETUP</view>
+    <view class="page-title">选择定位</view>
+    <view class="page-subtitle">定位到省市区与小区，后续测算会自动带入</view>
+  </view>
+</view>
 
 <view class="locate-bar">
   <view class="locate-btn {{locating ? 'locating' : ''}}" bindtap="locateMe">
-    📍 {{locating ? '定位中...' : 'GPS自动定位'}}
+    <view class="ic ic-pin"></view>
+    <text>{{locating ? '定位中...' : 'GPS 自动定位'}}</text>
   </view>
   <view class="locate-hint">自动识别所在省市，识别后可再微调</view>
 </view>
 
-<view class="card">
+<view class="card animated" style="animation-delay: 0.05s">
   <view class="card-title">选择位置</view>
   <view class="form-row">
     <view class="form-label">省份</view>
     <picker class="form-input-wrap" range="{{provinces}}" value="{{pIndex}}" bindchange="onProvinceChange">
-      <view>{{provinces[pIndex]}}<text class="picker-arrow">▾</text></view>
+      <view>{{provinces[pIndex]}}<view class="ic ic-chevron picker-arrow"></view></view>
     </picker>
   </view>
   <view class="form-row">
     <view class="form-label">城市</view>
     <picker class="form-input-wrap" range="{{cities}}" value="{{cIndex}}" bindchange="onCityChange">
-      <view>{{cities[cIndex]}}<text class="picker-arrow">▾</text></view>
+      <view>{{cities[cIndex]}}<view class="ic ic-chevron picker-arrow"></view></view>
     </picker>
   </view>
   <view class="form-row" wx:if="{{districts.length}}">
     <view class="form-label">区/县</view>
     <picker class="form-input-wrap" range="{{districts}}" value="{{dIndex}}" bindchange="onDistrictChange">
-      <view>{{districts[dIndex]}}<text class="picker-arrow">▾</text></view>
+      <view>{{districts[dIndex]}}<view class="ic ic-chevron picker-arrow"></view></view>
     </picker>
   </view>
   <view class="form-row" wx:else>
@@ -34,7 +43,7 @@
   </view>
 </view>
 
-<view class="card">
+<view class="card animated" style="animation-delay: 0.10s">
   <view class="card-title">楼盘信息</view>
   <view class="form-row">
     <view class="form-label">楼盘名称</view>
@@ -50,7 +59,7 @@
   </view>
 </view>
 
-<view class="card" wx:if="{{provinces[pIndex] && cities[cIndex]}}">
+<view class="card animated" wx:if="{{provinces[pIndex] && cities[cIndex]}}" style="animation-delay: 0.15s">
   <view class="card-title">预览</view>
   <view class="preview">{{provinces[pIndex]}} {{cities[cIndex]}} {{districts.length ? districts[dIndex] : districtInput}}</view>
   <view class="preview-sub" wx:if="{{estate}}">{{estate}} · {{buildingCount}}栋{{community ? ' · ' + community : ''}}</view>

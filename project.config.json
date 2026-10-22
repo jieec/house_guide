@@ -63,6 +63,26 @@
       {
         "value": "images/微信图片*.png",
         "type": "file"
+      },
+      {
+        "value": "images/整体背景.png",
+        "type": "file"
+      },
+      {
+        "value": "fonts",
+        "type": "folder"
+      },
+      {
+        "value": "chinese_chars.txt",
+        "type": "file"
+      },
+      {
+        "value": "chinese_chars_count.txt",
+        "type": "file"
+      },
+      {
+        "value": "extract_chars.py",
+        "type": "file"
       }
     ],
     "include": []
