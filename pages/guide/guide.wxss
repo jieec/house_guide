@@ -351,7 +351,7 @@ page {
 
 .tab {
   flex: 0 0 auto;
-  padding: 14rpx 28rpx;
+  padding: 14rpx 22rpx;
   border-radius: 999rpx;
   background: #FFFFFF;
   border: 1rpx solid #EBE8F7;
@@ -1539,4 +1539,120 @@ page {
   font-family: var(--font-serif);
   font-size: 21rpx;
   letter-spacing: 0.3rpx;
+}
+
+/* 数据展示：雾紫指标卡、分组信息、成交时间轴。仅作用于报告页。 */
+.report-overview, .score-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 16rpx;
+  margin: 24rpx 0 12rpx;
+}
+.overview-primary, .value-spotlight {
+  background: linear-gradient(135deg, #EFECFA, #E7E3F6);
+  border: 1rpx solid #D8D3EC;
+  border-radius: 30rpx;
+  padding: 28rpx;
+  color: #372C57;
+}
+.overview-primary { display: flex; flex-direction: column; justify-content: center; }
+.overview-kicker, .metric-label {
+  font-family: var(--font-serif);
+  color: #5F5C82;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+.overview-number {
+  font-family: var(--font-serif);
+  font-size: 58rpx;
+  line-height: 1.2;
+  margin: 16rpx 0 8rpx;
+  word-break: break-all;
+  font-variant-numeric: tabular-nums;
+}
+.overview-unit { font-size: 22rpx; color: #695C93; }
+.overview-foot {
+  font-family: var(--font-serif);
+  font-size: 23rpx;
+  border-top: 1rpx solid #D8D3EC;
+  padding-top: 18rpx;
+  margin-top: 24rpx;
+}
+.overview-secondary { display: flex; flex-direction: column; gap: 16rpx; min-width: 0; }
+.overview-small {
+  flex: 1;
+  border: 1rpx solid #EBE8F7;
+  border-radius: 26rpx;
+  background: #FFFFFF;
+  padding: 22rpx;
+}
+.overview-small:last-child { background: #F0EDF8; }
+.metric-number { font-family: var(--font-serif); font-size: 36rpx; color: #372C57; line-height: 1.35; margin-top: 10rpx; word-break: break-all; }
+.metric-text { font-family: var(--font-serif); font-size: 27rpx; color: #372C57; line-height: 1.6; margin-top: 10rpx; overflow-wrap: break-word; }
+.fact-group { padding: 24rpx; }
+.fact-heading { display: flex; align-items: center; gap: 14rpx; font-size: 27rpx; font-weight: 600; margin-bottom: 20rpx; }
+.fact-index { display: inline-flex; align-items: center; justify-content: center; width: 44rpx; height: 44rpx; border-radius: 14rpx; background: #EFECFA; color: #8378AC; font-family: var(--font-serif); font-size: 24rpx; }
+.fact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12rpx; }
+.fact-item { padding: 20rpx; background: #F6F5FC; border-radius: 18rpx; min-width: 0; }
+.fact-item .data-label { max-width: none; font-size: 23rpx; }
+.fact-item .data-value { text-align: left; font-size: 28rpx; margin-top: 10rpx; font-weight: 500; }
+.fact-grid-profile .fact-item:nth-child(1), .fact-grid-profile .fact-item:nth-child(2), .fact-grid-profile .fact-item:nth-child(n+5) { grid-column: 1 / -1; }
+.deal-timeline { position: relative; margin-left: 10rpx; padding: 24rpx 0 24rpx 30rpx; border-left: 2rpx solid #E7E3F6; border-bottom: 0; }
+.deal-timeline::before { content: ''; position: absolute; left: -8rpx; top: 34rpx; width: 14rpx; height: 14rpx; background: #A198C4; border: 3rpx solid #EFECFA; border-radius: 50%; box-sizing: border-box; }
+.deal-date { font-size: 22rpx; color: #8378AC; margin-bottom: 8rpx; }
+.deal-amounts { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10rpx 22rpx; margin-top: 12rpx; }
+.deal-total { font-family: var(--font-serif); font-size: 32rpx; color: #52467B; }
+.deal-unit { font-size: 23rpx; color: #6C6A8E; }
+.amenity-card { padding: 26rpx; background: #FFFFFF; border: 1rpx solid #EBE8F7; border-radius: 28rpx; margin-bottom: 18rpx; }
+.amenity-heading { display: flex; align-items: center; gap: 18rpx; margin-bottom: 20rpx; }
+.amenity-icon { display: flex; align-items: center; justify-content: center; width: 68rpx; height: 68rpx; border-radius: 22rpx; background: #EFECFA; color: #695C93; }
+.amenity-title { font-size: 28rpx; font-weight: 600; }
+.amenity-caption { font-family: var(--font-serif); font-size: 23rpx; color: #6C6A8E; }
+.amenity-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12rpx; }
+.amenity-item { display: flex; align-items: baseline; gap: 10rpx; padding: 16rpx; border-radius: 16rpx; background: #F6F5FC; font-size: 24rpx; line-height: 1.65; overflow-wrap: anywhere; }
+.amenity-dot { flex: 0 0 8rpx; width: 8rpx; height: 8rpx; border-radius: 50%; background: #A198C4; }
+.competitor > view:first-child { min-width: 0; flex: 1; }
+.competitor-price { flex: 0 1 44%; text-align: right; overflow-wrap: anywhere; }
+.value-spotlight { margin-top: 24rpx; padding: 32rpx; }
+.value-spotlight .overview-number { font-size: 68rpx; }
+.value-formula { font-family: var(--font-serif); font-size: 23rpx; color: #695C93; }
+.value-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24rpx; margin-top: 28rpx; padding-top: 24rpx; border-top: 1rpx solid #D8D3EC; }
+.price-bar-track { background: #EFECFA; }
+.price-bar-fill { border-radius: 999rpx; }
+.price-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14rpx; }
+.price-card { display: block; background: #FFFFFF; padding: 24rpx; min-width: 0; }
+.price-card:nth-child(3), .price-card:last-child { grid-column: 1 / -1; }
+.price-card .price-value { text-align: left; margin-top: 14rpx; font-size: 30rpx; }
+.price-card:nth-child(1), .price-card:nth-child(3) { background: #EFECFA; }
+.price-value { overflow-wrap: anywhere; }
+.score-overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.score-tile { padding: 26rpx; background: #E7E3F6; border: 1rpx solid #D8D3EC; border-radius: 28rpx; }
+.score-tile:last-child { background: #F0EDF8; }
+.score-tile-number { font-family: var(--font-serif); font-size: 64rpx; color: #372C57; line-height: 1.25; margin: 16rpx 0; }
+.score-tile-number text { font-size: 24rpx; margin-left: 8rpx; color: #695C93; }
+.score-tile-level { font-size: 24rpx; color: #52467B; }
+.score-explainer { font-family: var(--font-serif); font-size: 23rpx; color: #6C6A8E; line-height: 1.7; margin: 0 0 20rpx; }
+.pie-section { gap: 18rpx; }
+.pie-donut { width: 168rpx; height: 168rpx; }
+.pie-hole { width: 120rpx; height: 120rpx; }
+.legend-item { flex-wrap: wrap; gap: 6rpx 10rpx; }
+.legend-right { width: 100%; padding-left: 24rpx; display: flex; align-items: baseline; justify-content: space-between; gap: 6rpx; text-align: left; }
+.legend-pct { font-size: 21rpx; }
+.cat-card-header { flex-wrap: wrap; gap: 10rpx; padding-bottom: 14rpx; }
+.cat-right { margin-left: auto; }
+.cat-desc-small { order: 5; flex: 0 0 100%; font-size: 23rpx; }
+.cat-pct { font-size: 21rpx; }
+.score-track { height: 8rpx; margin: 0 22rpx 20rpx; background: #E7E3F6; border-radius: 999rpx; overflow: hidden; }
+.score-fill { height: 100%; border-radius: inherit; }
+.tool-summary { flex-wrap: wrap; gap: 16rpx; }
+.tool-summary-body { flex: 1 1 100%; }
+.tool-result { width: 100%; justify-content: space-between; }
+.tool-value { font-size: 38rpx; overflow-wrap: anywhere; }
+.loan-result-head { display: block; }
+.loan-monthly { margin-top: 12rpx; text-align: left; font-size: 50rpx; overflow-wrap: anywhere; }
+.loan-result-item { border: 1rpx solid #EBE8F7; border-radius: 20rpx; padding: 20rpx; }
+.loan-result-item .part-name { font-size: 23rpx; }
+.loan-result-item .part-value { font-family: var(--font-serif); font-size: 28rpx; overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) {
+  .animated { animation: none; }
 }

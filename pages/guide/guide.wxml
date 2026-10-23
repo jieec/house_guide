@@ -41,7 +41,7 @@
     <image class="empty-house" src="../../images/house.png" mode="aspectFit"></image>
     <view class="empty-icon"><view class="ic ic-home"></view></view>
     <view class="empty-title">选择小区后自动生成分析</view>
-    <view class="empty-text">页面只读取后台爬取的数据，不需要用户逐项填写。</view>
+    <view class="empty-text">从小区概况、价格对比到购置建议，一次看清。</view>
   </view>
 
   <block wx:if="{{selectedCommunity || loading}}">
@@ -61,34 +61,48 @@
 
     <block wx:if="{{!loading}}">
       <view wx:if="{{activeTab === 0}}">
+        <view class="report-overview">
+          <view class="overview-primary">
+            <view class="overview-kicker">小区价格概览</view>
+            <view class="overview-number">{{report.prices[1].value}}</view>
+            <view class="overview-unit">小区均价 · 元/㎡</view>
+            <view class="overview-foot">{{report.priceDetails[1].value}}</view>
+          </view>
+          <view class="overview-secondary">
+            <view class="overview-small"><view class="metric-label">城市均价 · 元/㎡</view><view class="metric-number">{{report.prices[0].value}}</view></view>
+            <view class="overview-small"><view class="metric-label">楼盘平均租金</view><view class="metric-text">{{report.priceDetails[0].value}}</view></view>
+          </view>
+        </view>
         <view class="section-title animated" style="animation-delay: 0.15s;">楼盘信息</view>
-        <view class="data-card animated" style="animation-delay: 0.20s;">
-          <block wx:for="{{report.basicGroups}}" wx:for-item="group" wx:key="title">
-            <view class="data-group-title" wx:if="{{group.title}}">{{group.title}}</view>
-            <view class="data-row" wx:for="{{group.rows}}" wx:key="label">
+          <view class="data-card fact-group animated" wx:for="{{report.basicGroups}}" wx:for-item="group" wx:for-index="groupIndex" wx:key="title">
+            <view class="fact-heading"><text class="fact-index">0{{groupIndex + 1}}</text><text>{{group.title}}</text></view>
+            <view class="fact-grid {{groupIndex === 0 ? 'fact-grid-profile' : ''}}">
+            <view class="fact-item" wx:for="{{group.rows}}" wx:key="label">
               <view class="data-label">{{item.label}}</view>
               <view class="data-value {{item.value === '暂无数据' ? 'muted' : ''}}">{{item.value}}</view>
             </view>
-          </block>
-        </view>
+            </view>
+          </view>
         <block wx:if="{{report.deals.length}}">
           <view class="section-title">最近成交记录</view>
           <view class="data-card">
             <view class="deal-summary" wx:if="{{report.dealSummary}}">{{report.dealSummary}}</view>
-            <view class="deal-item" wx:for="{{report.deals}}" wx:key="title">
+            <view class="deal-item deal-timeline" wx:for="{{report.deals}}" wx:key="title">
+              <view class="deal-date">{{item.date || '日期待补充'}}</view>
               <view class="deal-title">{{item.title}}</view>
-              <view class="deal-meta">{{item.date}}<text wx:if="{{item.total}}"> · {{item.total}}</text><text wx:if="{{item.unit}}"> · {{item.unit}}</text></view>
+              <view class="deal-amounts"><text class="deal-total" wx:if="{{item.total}}">{{item.total}}</text><text class="deal-unit" wx:if="{{item.unit}}">{{item.unit}}</text></view>
             </view>
           </view>
         </block>
         <view class="section-title">位置配套</view>
-        <view class="data-card">
-          <view class="sub-title">交通</view>
-          <view class="tags" wx:if="{{report.traffic.length}}"><text class="tag" wx:for="{{report.traffic}}" wx:key="*this">{{item}}</text></view>
+        <view class="amenity-card">
+          <view class="amenity-heading"><view class="amenity-icon"><view class="ic ic-building"></view></view><view><view class="amenity-title">交通出行</view><view class="amenity-caption">周边交通配套</view></view></view>
+          <view class="amenity-list" wx:if="{{report.traffic.length}}"><view class="amenity-item" wx:for="{{report.traffic}}" wx:key="*this"><text class="amenity-dot"></text><text>{{item}}</text></view></view>
           <view class="no-data" wx:else>后台暂无交通配套数据</view>
-          <view class="divider"></view>
-          <view class="sub-title">教育</view>
-          <view class="tags" wx:if="{{report.schools.length}}"><text class="tag blue" wx:for="{{report.schools}}" wx:key="*this">{{item}}</text></view>
+        </view>
+        <view class="amenity-card">
+          <view class="amenity-heading"><view class="amenity-icon"><view class="ic ic-building"></view></view><view><view class="amenity-title">教育配套</view><view class="amenity-caption">周边学校信息</view></view></view>
+          <view class="amenity-list" wx:if="{{report.schools.length}}"><view class="amenity-item" wx:for="{{report.schools}}" wx:key="*this"><text class="amenity-dot"></text><text>{{item}}</text></view></view>
           <view class="no-data" wx:else>后台暂无教育配套数据</view>
         </view>
         <view class="section-title">竞品分析</view>
@@ -102,6 +116,12 @@
       </view>
 
       <view wx:if="{{activeTab === 1}}">
+        <view class="value-spotlight">
+          <view class="overview-kicker">评估价格 · 元/㎡</view>
+          <view class="overview-number">{{report.prices[5].value}}</view>
+          <view class="value-formula">{{report.prices[5].note}}</view>
+          <view class="value-pair"><view><view class="metric-label">平均挂牌价 · 元/㎡</view><view class="metric-number">{{report.prices[4].value}}</view></view><view><view class="metric-label">评估价折价率</view><view class="metric-number">{{report.priceDetails[2].value}}</view></view></view>
+        </view>
         <view class="section-title">价格全景</view>
         <view class="price-chart">
           <view class="price-chart-heading">
@@ -134,7 +154,12 @@
       </view>
 
       <view wx:if="{{activeTab === 2}}">
+        <view class="score-overview">
+          <view class="score-tile"><view class="metric-label">投资参考</view><view class="score-tile-number">{{report.advice.investment.totalScore}}<text>分</text></view><view class="score-tile-level">{{report.advice.investment.level}}</view></view>
+          <view class="score-tile"><view class="metric-label">自住参考</view><view class="score-tile-number">{{report.advice.selfuse.totalScore}}<text>分</text></view><view class="score-tile-level">{{report.advice.selfuse.level}}</view></view>
+        </view>
         <view class="section-title">自动购置建议</view>
+        <view class="score-explainer">综合分按现有权重计算；环图和进度条展示各分项分数在分项合计中的占比。</view>
 
         <!-- 维度一：投资 -->
         <view class="dimension-card">
@@ -168,7 +193,7 @@
                 </view>
                 <view class="legend-right">
                   <view class="legend-score" style="color:{{item.color}}">{{item.score}}分</view>
-                  <view class="legend-pct">{{item.pct}}%</view>
+                  <view class="legend-pct">分项占比 {{item.pct}}%</view>
                 </view>
               </view>
             </view>
@@ -187,10 +212,11 @@
                 <view class="cat-desc-small">{{item.desc}}</view>
                 <view class="cat-right">
                   <view class="cat-score" style="color:{{item.color}}">{{item.score}}分</view>
-                  <view class="cat-pct">{{item.pct}}%</view>
+                  <view class="cat-pct">分项占比 {{item.pct}}%</view>
                 </view>
                 <view class="cat-arrow {{expandedAdvice === 'inv-' + index ? 'is-open' : ''}}"><view class="ic ic-chevron"></view></view>
               </view>
+              <view class="score-track"><view class="score-fill" style="width: {{item.pct}}%; background: {{item.color}};"></view></view>
               <view class="cat-card-body" wx:if="{{expandedAdvice === 'inv-' + index}}">
                 <view class="cat-threshold">判断标准：{{item.threshold}}</view>
                 <view class="cat-detail-row" wx:for="{{item.details}}" wx:for-item="det" wx:key="label">
@@ -234,7 +260,7 @@
                 </view>
                 <view class="legend-right">
                   <view class="legend-score" style="color:{{item.color}}">{{item.score}}分</view>
-                  <view class="legend-pct">{{item.pct}}%</view>
+                  <view class="legend-pct">分项占比 {{item.pct}}%</view>
                 </view>
               </view>
             </view>
@@ -253,10 +279,11 @@
                 <view class="cat-desc-small">{{item.desc}}</view>
                 <view class="cat-right">
                   <view class="cat-score" style="color:{{item.color}}">{{item.score}}分</view>
-                  <view class="cat-pct">{{item.pct}}%</view>
+                  <view class="cat-pct">分项占比 {{item.pct}}%</view>
                 </view>
                 <view class="cat-arrow {{expandedAdvice === 'live-' + index ? 'is-open' : ''}}"><view class="ic ic-chevron"></view></view>
               </view>
+              <view class="score-track"><view class="score-fill" style="width: {{item.pct}}%; background: {{item.color}};"></view></view>
               <view class="cat-card-body" wx:if="{{expandedAdvice === 'live-' + index}}">
                 <view class="cat-threshold">判断标准：{{item.threshold}}</view>
                 <view class="cat-detail-row" wx:for="{{item.details}}" wx:for-item="det" wx:key="label">

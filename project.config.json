@@ -33,6 +33,14 @@
   "packOptions": {
     "ignore": [
       {
+        "value": "output",
+        "type": "folder"
+      },
+      {
+        "value": "tmp",
+        "type": "folder"
+      },
+      {
         "value": "auction_scraper",
         "type": "folder"
       },
