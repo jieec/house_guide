@@ -94,6 +94,19 @@
             </view>
           </view>
         </block>
+        <view class="section-title">AI 智能评估</view>
+        <view class="ai-card">
+          <view class="ai-head">
+            <view class="ai-title">DeepSeek 房产分析</view>
+            <view class="ai-subtitle">基于小区数据生成评估价与购房建议</view>
+          </view>
+          <button class="ai-btn" bindtap="askAI" loading="{{aiLoading}}" disabled="{{aiLoading}}">
+            {{aiLoading ? 'AI 正在分析…' : (aiAnswer ? '重新生成' : '生成评估与建议')}}
+          </button>
+          <view wx:if="{{aiAnswer}}" class="ai-answer">{{aiAnswer}}</view>
+          <view wx:if="{{aiError}}" class="ai-error">{{aiError}}</view>
+          <view wx:if="{{aiAnswer}}" class="ai-disclaimer">AI 生成内容仅供参考，不构成投资建议。</view>
+        </view>
         <view class="section-title">位置配套</view>
         <view class="amenity-card">
           <view class="amenity-heading"><view class="amenity-icon"><view class="ic ic-building"></view></view><view><view class="amenity-title">交通出行</view><view class="amenity-caption">周边交通配套</view></view></view>

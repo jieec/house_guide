@@ -59,7 +59,10 @@ Page({
     selectedCommunity: null,
     report: { basic: [], basicGroups: [], prices: [], advice: [], tools: [], competitors: [], traffic: [], schools: [], missing: [], deals: [], dealSummary: '' },
     dataStatus: '',
-    updatedAt: ''
+    updatedAt: '',
+    aiLoading: false,
+    aiAnswer: '',
+    aiError: ''
   },
 
   onShow() {
@@ -193,6 +196,40 @@ Page({
     this.loadReport(selected)
   },
   reloadReport() { if (this.data.selectedCommunity) this.loadReport(this.data.selectedCommunity) },
+
+  askAI() {
+    const doc = this.data.selectedCommunity
+    if (!doc) return wx.showToast({ title: '请先选择小区', icon: 'none' })
+    if (this.data.aiLoading) return
+    const report = this.data.report || {}
+    const context = {
+      community: doc.community,
+      city: doc.city,
+      district: doc.district,
+      evaluation: report.evaluation || 0,
+      marketValue: report.marketValue || 0,
+      incomeValue: report.incomeValue || 0,
+      capRate: report.capRate || 0,
+      listingAvg: report.listingAvg || 0,
+      rentAvg: report.rentAvg || 0,
+      basic: (report.basic || []).filter(x => x.value && x.value !== '暂无数据').map(x => ({ label: x.label, value: x.value })),
+      priceDetails: (report.priceDetails || []).map(x => ({ label: x.label, value: x.value }))
+    }
+    this.setData({ aiLoading: true, aiAnswer: '', aiError: '' })
+    wx.cloud.callFunction({
+      name: 'aiChat',
+      data: { communityId: doc._id, question: '请给出该小区的评估价与购房建议。', context }
+    }).then(res => {
+      const r = (res && res.result) || {}
+      if (r.ok) {
+        this.setData({ aiLoading: false, aiAnswer: r.content || '', aiError: '' })
+      } else {
+        this.setData({ aiLoading: false, aiError: r.error || 'AI 服务暂不可用' })
+      }
+    }).catch(err => {
+      this.setData({ aiLoading: false, aiError: '调用失败：' + (err.errMsg || err.message || '未知错误') })
+    })
+  },
 
   queryRentCount(db, city, community) {
     return db.collection('houses')
@@ -410,6 +447,12 @@ Page({
     return {
       basic: basicRows,
       basicGroups,
+      evaluation,
+      marketValue,
+      incomeValue,
+      capRate,
+      listingAvg,
+      rentAvg,
       priceChartMax,
       prices: chartItems,
       priceDetails: [

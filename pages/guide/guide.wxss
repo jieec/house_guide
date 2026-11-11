@@ -1656,3 +1656,42 @@ page {
 @media (prefers-reduced-motion: reduce) {
   .animated { animation: none; }
 }
+
+/* AI 智能评估 */
+.ai-card {
+  margin: 0 24rpx 24rpx;
+  padding: 32rpx;
+  background: linear-gradient(135deg, #F7F4FF 0%, #FFFFFF 65%);
+  border-radius: 32rpx;
+  box-shadow: 0rpx 8rpx 32rpx rgba(124, 92, 252, 0.10);
+}
+
+.ai-head { display: flex; flex-direction: column; }
+.ai-title { color: #2D2D3A; font-size: 32rpx; font-weight: 700; }
+.ai-subtitle { color: #8B8B9A; font-size: 24rpx; margin-top: 6rpx; }
+
+.ai-btn {
+  margin-top: 24rpx;
+  background: #7C5CFC;
+  color: #FFFFFF;
+  border-radius: 24rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  line-height: 84rpx;
+}
+.ai-btn[disabled] { opacity: 0.6; }
+
+.ai-answer {
+  margin-top: 24rpx;
+  padding: 24rpx;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: #2D2D3A;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.ai-error { margin-top: 20rpx; color: #C0392B; font-size: 24rpx; }
+.ai-disclaimer { margin-top: 16rpx; font-size: 22rpx; color: #B8B8C9; }
