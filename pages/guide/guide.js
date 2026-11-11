@@ -315,7 +315,23 @@ Page({
     const propertyForRule = propertyType || '住宅'
     const completion = first(base.completionTime, props['竣工时间'], props['建筑年代'], props['建成年代'])
     const age = completion ? new Date().getFullYear() - num(completion) : 0
-    const evaluation = communityAvg && auctionAvg ? communityAvg * 0.4 + auctionAvg * 0.6 : 0
+    // ===== 评估价：市场比较法 + 收益还原法（2026-11 校准）=====
+    // 市场比较法：可比价格加权（近期成交优先 > 贝壳参考均价 > 挂牌均价）
+    const comps = []
+    if (dealHistory.count >= 3 && recentAvg > 0) comps.push({ v: recentAvg, w: 1.0 })
+    if (bk.avg_price && num(bk.avg_price) > 0) comps.push({ v: num(bk.avg_price), w: 0.6 })
+    if (listingAvg > 0) comps.push({ v: listingAvg, w: 0.4 })
+    const marketValue = comps.length
+      ? comps.reduce((s, c) => s + c.v * c.w, 0) / comps.reduce((s, c) => s + c.w, 0)
+      : 0
+    // 收益还原法：年有效租金 ÷ 资本化率（住宅 2.0%，商业 4.5%；空置及费用率 5%）
+    const isCommercial = /商业|商铺|办公/.test(propertyForRule)
+    const capRate = isCommercial ? 0.045 : 0.02
+    const incomeValue = rentAvg > 0 ? rentAvg * 12 * 0.95 / capRate : 0
+    // 组合权重：有租金数据时 市场75% + 收益25%；无租金时纯市场比较
+    const evaluation = incomeValue > 0
+      ? marketValue * 0.75 + incomeValue * 0.25
+      : marketValue
     const history = first(price.history, doc.priceHistory, doc.history_prices, [])
     const traffic = poiNames([].concat(pois.subway || [], pois.bus || [], cats.station || []), 8)
     const schools = poiNames([].concat(pois.school || [], cats.school || []), 8)
@@ -346,7 +362,7 @@ Page({
       { label: '楼盘近期平均成交价', labelLines: ['楼盘近期', '平均成交价'], amount: recentAvg, color: '#5B7F63' },
       { label: '楼盘近期法拍成交价', labelLines: ['楼盘近期', '法拍成交价'], amount: auctionAvg, color: '#9C6055' },
       { label: '楼盘平均挂牌价', labelLines: ['楼盘平均', '挂牌价'], amount: listingAvg, color: '#8A6A38' },
-      { label: '评估价格', amount: evaluation, color: '#7A5C93', note: '小区均价×40%＋法拍成交价×60%' }
+      { label: '评估价格', amount: evaluation, color: '#7A5C93', note: incomeValue > 0 ? '市场比较法75%＋收益还原法25%' : '市场比较法（成交/贝壳均价/挂牌加权）' }
     ]
     const priceChartMax = Math.ceil(Math.max(...priceItems.map(item => item.amount || 0), 0))
     const chartItems = priceItems.map(item => ({
@@ -398,9 +414,16 @@ Page({
       prices: chartItems,
       priceDetails: [
         { label: '楼盘平均租金', value: show(rentAvg ? rentAvg.toFixed(1) : '', '元/㎡/月') },
+        { label: '市场比较法估值', value: show(marketValue ? Math.round(marketValue) : '', '元/㎡'), note: '近期成交、贝壳均价、挂牌价加权' },
+        { label: '收益还原法估值', value: incomeValue ? Math.round(incomeValue) + ' 元/㎡' : '暂无租金数据', note: (isCommercial ? '年租金×95% ÷ 4.5%' : '年租金×95% ÷ 2.0%') + '（资本化率校准）' },
+        ...(doc.reference && doc.reference.beian_price ? [{
+          label: '备案价参考（工抵房源）',
+          value: Math.round(num(doc.reference.beian_price)) + ' 元/㎡',
+          note: '工抵价 ' + (doc.reference.gongdi_price ? Math.round(num(doc.reference.gongdi_price)) + ' 元/㎡（备案价×' + Math.round(num(doc.reference.discount) * 100) + '%）' : '暂无')
+        }] : []),
         { label: '历史走势', value: trendText },
         { label: '评估价折价率', value: evalDeviation, note: '评估价相对平均挂牌价的偏离幅度' },
-        { label: '价格区间', value: priceRangeText, note: '取六项取样价的最低值到最高值' }
+        { label: '价格区间', value: priceRangeText, note: '取各项取样价的最低值到最高值' }
       ],
       advice: this.buildAdvice({
         propertyType: propertyForRule, rentRatio, investmentLine, areaAvg, priceDiff,
