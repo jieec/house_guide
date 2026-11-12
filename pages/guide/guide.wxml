@@ -94,7 +94,7 @@
             </view>
           </view>
         </block>
-        <view class="section-title">AI 智能评估</view>
+        <view class="section-title">房产智能专家</view>
         <view class="ai-card">
           <view class="ai-head">
             <view class="ai-title">DeepSeek 房产分析</view>

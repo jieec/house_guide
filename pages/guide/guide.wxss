@@ -1657,7 +1657,7 @@ page {
   .animated { animation: none; }
 }
 
-/* AI 智能评估 */
+/* 房产智能专家 */
 .ai-card {
   margin: 0 24rpx 24rpx;
   padding: 32rpx;
