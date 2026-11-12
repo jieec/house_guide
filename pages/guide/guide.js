@@ -352,12 +352,19 @@ Page({
     const propertyForRule = propertyType || '住宅'
     const completion = first(base.completionTime, props['竣工时间'], props['建筑年代'], props['建成年代'])
     const age = completion ? new Date().getFullYear() - num(completion) : 0
-    // ===== 评估价：市场比较法 + 收益还原法（2026-11 校准）=====
-    // 市场比较法：可比价格加权（近期成交优先 > 贝壳参考均价 > 挂牌均价）
+    // ===== 评估价：市场比较法 + 收益还原法（2026-11 校准 v2）=====
+    // 市场比较法：有备案价时 0.4贝壳+0.2挂牌+0.4备案；无备案时 0.7贝壳+0.3挂牌
+    const beianRef = num((doc.reference || {}).beian_price)
     const comps = []
     if (dealHistory.count >= 3 && recentAvg > 0) comps.push({ v: recentAvg, w: 1.0 })
-    if (bk.avg_price && num(bk.avg_price) > 0) comps.push({ v: num(bk.avg_price), w: 0.6 })
-    if (listingAvg > 0) comps.push({ v: listingAvg, w: 0.4 })
+    if (beianRef > 0) {
+      if (communityAvg > 0) comps.push({ v: communityAvg, w: 0.4 })
+      if (listingAvg > 0) comps.push({ v: listingAvg, w: 0.2 })
+      comps.push({ v: beianRef, w: 0.4 })
+    } else {
+      if (communityAvg > 0) comps.push({ v: communityAvg, w: 0.7 })
+      if (listingAvg > 0) comps.push({ v: listingAvg, w: 0.3 })
+    }
     const marketValue = comps.length
       ? comps.reduce((s, c) => s + c.v * c.w, 0) / comps.reduce((s, c) => s + c.w, 0)
       : 0
@@ -365,10 +372,9 @@ Page({
     const isCommercial = /商业|商铺|办公/.test(propertyForRule)
     const capRate = isCommercial ? 0.045 : 0.02
     const incomeValue = rentAvg > 0 ? rentAvg * 12 * 0.95 / capRate : 0
-    // 组合权重：有租金数据时 市场75% + 收益25%；无租金时纯市场比较
-    const evaluation = incomeValue > 0
-      ? marketValue * 0.75 + incomeValue * 0.25
-      : marketValue
+    // 收益法异常保护：偏离市场法 ±30% 以上视为租金样本失真，弃用
+    const incomeReliable = incomeValue > 0 && marketValue > 0 && incomeValue >= marketValue * 0.7 && incomeValue <= marketValue * 1.5
+    const evaluation = incomeReliable ? marketValue * 0.8 + incomeValue * 0.2 : marketValue
     const history = first(price.history, doc.priceHistory, doc.history_prices, [])
     const traffic = poiNames([].concat(pois.subway || [], pois.bus || [], cats.station || []), 8)
     const schools = poiNames([].concat(pois.school || [], cats.school || []), 8)
@@ -399,7 +405,7 @@ Page({
       { label: '楼盘近期平均成交价', labelLines: ['楼盘近期', '平均成交价'], amount: recentAvg, color: '#5B7F63' },
       { label: '楼盘近期法拍成交价', labelLines: ['楼盘近期', '法拍成交价'], amount: auctionAvg, color: '#9C6055' },
       { label: '楼盘平均挂牌价', labelLines: ['楼盘平均', '挂牌价'], amount: listingAvg, color: '#8A6A38' },
-      { label: '评估价格', amount: evaluation, color: '#7A5C93', note: incomeValue > 0 ? '市场比较法75%＋收益还原法25%' : '市场比较法（成交/贝壳均价/挂牌加权）' }
+      { label: '评估价格', amount: evaluation, color: '#7A5C93', note: incomeReliable ? '市场比较法80%＋收益还原法20%' : (beianRef > 0 ? '贝壳/挂牌/备案价加权（市场比较法）' : '市场比较法（成交/贝壳均价/挂牌加权）') }
     ]
     const priceChartMax = Math.ceil(Math.max(...priceItems.map(item => item.amount || 0), 0))
     const chartItems = priceItems.map(item => ({
