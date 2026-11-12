@@ -136,7 +136,7 @@ exports.main = async (event) => {
     '评估价相对挂牌价：' + fmt(context.evalDeviation),
     '评估价与工抵参考价差距：' + fmt(context.evalVsGongdiText) + (context.evalVsGongdiText ? '（正数=评估价高于工抵价，即折扣空间）' : ''),
     '市场比较法估值：' + fmt(context.marketValue, ' 元/㎡'),
-    '收益还原法估值：' + fmt(context.incomeValue, ' 元/㎡'),
+    '收益还原法估值：' + fmt(context.incomeValue, ' 元/㎡') + (ref.beian_price ? '（仅参考，未计入有备案价项目的评估价）' : ''),
     '贝壳参考均价：' + fmt(bk.avg_price, ' 元/㎡'),
     '近期成交均价：' + fmt(deals.avg_unit_price, ' 元/㎡') + '（' + fmt(deals.count, ' 笔') + '，最近 ' + fmt(deals.latest_date) + '）',
     '挂牌均价：' + fmt(price.listingPrice || context.listingAvg, ' 元/㎡'),
