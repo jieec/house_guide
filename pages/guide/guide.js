@@ -213,6 +213,7 @@ Page({
       gongdiValue: report.gongdiValue || 0,
       gongdiRate: report.gongdiRate || 0,
       evalVsGongdiText: report.evalVsGongdiText || '',
+      evalDeviation: report.evalDeviation || '',
       listingAvg: report.listingAvg || 0,
       rentAvg: report.rentAvg || 0,
       basic: (report.basic || []).filter(x => x.value && x.value !== '暂无数据').map(x => ({ label: x.label, value: x.value })),
@@ -221,7 +222,7 @@ Page({
     this.setData({ aiLoading: true, aiAnswer: '', aiError: '' })
     wx.cloud.callFunction({
       name: 'aiChat',
-      data: { communityId: doc._id, question: '请给出该小区的评估价与购房建议。', context }
+      data: { communityId: doc._id, question: '请先给出这个小区的系统评估价，再给出明确的购房建议。', context }
     }).then(res => {
       const r = (res && res.result) || {}
       if (r.ok) {
