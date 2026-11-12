@@ -116,6 +116,7 @@ exports.main = async (event) => {
     '租金：' + fmt(rentals.avg_unit_rent || price.rentPerSqm || context.rentAvg, ' 元/㎡/月'),
     '挂牌率：' + (bk.listing_rate ? (Number(bk.listing_rate) * 100).toFixed(1) + '%' : '暂无数据'),
     '备案价参考：' + (ref.beian_price ? fmt(ref.beian_price, ' 元/㎡') + '（工抵价 ' + fmt(ref.gongdi_price, ' 元/㎡') + '，' + fmt(ref.units, ' 套') + '）' : '暂无'),
+    '工抵参考价（备案价×折扣）：' + (context.gongdiValue ? fmt(context.gongdiValue, ' 元/㎡') + '（折扣 ' + (context.gongdiRate ? (Number(context.gongdiRate) * 100).toFixed(1) + '%' : '暂缺') + '）' : '暂无'),
     basicRows.length ? '小区档案：' + basicRows.map(x => x.label + '=' + x.value).join('；') : '',
     priceRows.length ? '价格指标：' + priceRows.map(x => x.label + '=' + x.value).join('；') : ''
   ].filter(Boolean).join('\n')

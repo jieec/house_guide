@@ -183,7 +183,7 @@ function buildPages(ctx, data) {
         text(it.label, M + 18, y + 14, 17, C.muted)
         text(it.value, M + 470, y + 11, 24, C.deep, false, true)
         rect(M + 18, y + 50, CW - 36, 12, C.tint, 6)
-        if (max && it.amount > 0) rect(M + 18, y + 50, (CW - 36) * it.amount / max, 12, it.label === '评估价格' ? C.purple : '#A198C4', 6)
+        if (max && it.amount > 0) rect(M + 18, y + 50, (CW - 36) * it.amount / max, 12, it.label === '评估价格' ? C.purple : (it.label === '工抵参考价' ? '#A06A4A' : '#A198C4'), 6)
         multiline(note, M + 18, y + 72, 14, C.muted)
         y += h + 12
       }

@@ -1616,6 +1616,9 @@ page {
 .value-spotlight { margin-top: 24rpx; padding: 32rpx; }
 .value-spotlight .overview-number { font-size: 68rpx; }
 .value-formula { font-family: var(--font-serif); font-size: 23rpx; color: #695C93; }
+.value-compare { margin-top: 18rpx; padding: 18rpx 22rpx; border-radius: 18rpx; background: #FBF3ED; border: 1rpx solid #EBD9CB; }
+.value-compare-main { font-family: var(--font-serif); font-size: 28rpx; color: #8A5A3B; }
+.value-compare-sub { margin-top: 6rpx; font-size: 23rpx; color: #9C7A62; }
 .value-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24rpx; margin-top: 28rpx; padding-top: 24rpx; border-top: 1rpx solid #D8D3EC; }
 .price-bar-track { background: #EFECFA; }
 .price-bar-fill { border-radius: 999rpx; }

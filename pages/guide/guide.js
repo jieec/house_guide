@@ -210,6 +210,9 @@ Page({
       marketValue: report.marketValue || 0,
       incomeValue: report.incomeValue || 0,
       capRate: report.capRate || 0,
+      gongdiValue: report.gongdiValue || 0,
+      gongdiRate: report.gongdiRate || 0,
+      evalVsGongdiText: report.evalVsGongdiText || '',
       listingAvg: report.listingAvg || 0,
       rentAvg: report.rentAvg || 0,
       basic: (report.basic || []).filter(x => x.value && x.value !== '暂无数据').map(x => ({ label: x.label, value: x.value })),
@@ -355,7 +358,13 @@ Page({
     // ===== 评估价：市场比较法 + 收益还原法（2026-11 拟合校准 v3）=====
     // 拟合结果：有备案价时 贝壳35% + 挂牌15% + 备案50%（收益法权重 0，租金样本不足）
     // 无备案价时 贝壳70% + 挂牌30%，收益法20%（带异常保护）
-    const beianRef = num((doc.reference || {}).beian_price)
+    const reference = doc.reference || {}
+    const beianRef = num(reference.beian_price)
+    const gongdiRef = num(reference.gongdi_price)
+    const discountRef = num(reference.discount) || (beianRef > 0 && gongdiRef > 0 ? gongdiRef / beianRef : 0)
+    const gongdiRate = discountRef > 0 ? discountRef : 0.902
+    const gongdiValue = beianRef > 0 ? Math.round(beianRef * gongdiRate) : 0
+    const gongdiRatePct = Math.round(gongdiRate * 1000) / 10
     const comps = []
     if (dealHistory.count >= 3 && recentAvg > 0) comps.push({ v: recentAvg, w: 1.0 })
     if (beianRef > 0) {
@@ -376,6 +385,11 @@ Page({
     // 有备案价的项目收益法不参与（拟合权重为0）；普通小区保留20%并做异常保护
     const incomeReliable = beianRef <= 0 && incomeValue > 0 && marketValue > 0 && incomeValue >= marketValue * 0.7 && incomeValue <= marketValue * 1.5
     const evaluation = incomeReliable ? marketValue * 0.8 + incomeValue * 0.2 : marketValue
+    // 市场评估价与工抵参考价的偏离：正数=评估高于工抵（即工抵折扣空间）
+    const evalVsGongdi = gongdiValue > 0 && evaluation > 0 ? (evaluation / gongdiValue - 1) * 100 : 0
+    const evalVsGongdiText = gongdiValue > 0 && evaluation > 0
+      ? (evalVsGongdi >= 0 ? '+' : '') + evalVsGongdi.toFixed(1) + '%'
+      : ''
     const history = first(price.history, doc.priceHistory, doc.history_prices, [])
     const traffic = poiNames([].concat(pois.subway || [], pois.bus || [], cats.station || []), 8)
     const schools = poiNames([].concat(pois.school || [], cats.school || []), 8)
@@ -406,7 +420,8 @@ Page({
       { label: '楼盘近期平均成交价', labelLines: ['楼盘近期', '平均成交价'], amount: recentAvg, color: '#5B7F63' },
       { label: '楼盘近期法拍成交价', labelLines: ['楼盘近期', '法拍成交价'], amount: auctionAvg, color: '#9C6055' },
       { label: '楼盘平均挂牌价', labelLines: ['楼盘平均', '挂牌价'], amount: listingAvg, color: '#8A6A38' },
-      { label: '评估价格', amount: evaluation, color: '#7A5C93', note: beianRef > 0 ? '贝壳35%＋挂牌15%＋备案50%（拟合校准）' : (incomeReliable ? '市场比较法80%＋收益还原法20%' : '市场比较法（成交/贝壳均价/挂牌加权）') }
+      { label: '评估价格', amount: evaluation, color: '#7A5C93', note: beianRef > 0 ? '贝壳35%＋挂牌15%＋备案50%（拟合校准）' : (incomeReliable ? '市场比较法80%＋收益还原法20%' : '市场比较法（成交/贝壳均价/挂牌加权）') },
+      ...(gongdiValue > 0 ? [{ label: '工抵参考价', labelLines: ['工抵参考价'], amount: gongdiValue, color: '#A06A4A', note: '备案价×' + gongdiRatePct + '%（华发工抵实测折扣）' }] : [])
     ]
     const priceChartMax = Math.ceil(Math.max(...priceItems.map(item => item.amount || 0), 0))
     const chartItems = priceItems.map(item => ({
@@ -460,20 +475,35 @@ Page({
       capRate,
       listingAvg,
       rentAvg,
+      evalDeviation,
+      gongdiValue,
+      gongdiRate,
+      gongdiRatePct,
+      evalVsGongdi,
+      evalVsGongdiText,
       priceChartMax,
       prices: chartItems,
       priceDetails: [
         { label: '楼盘平均租金', value: show(rentAvg ? rentAvg.toFixed(1) : '', '元/㎡/月') },
-        { label: '市场比较法估值', value: show(marketValue ? Math.round(marketValue) : '', '元/㎡'), note: '近期成交、贝壳均价、挂牌价加权' },
+        { label: '市场比较法估值', value: show(marketValue ? Math.round(marketValue) : '', '元/㎡'), note: beianRef > 0 ? '贝壳35%＋挂牌15%＋备案50%（拟合权重）' : '近期成交、贝壳均价、挂牌价加权' },
         { label: '收益还原法估值', value: incomeValue ? Math.round(incomeValue) + ' 元/㎡' : '暂无租金数据', note: (isCommercial ? '年租金×95% ÷ 4.5%' : '年租金×95% ÷ 2.0%') + '（资本化率校准）' },
-        ...(doc.reference && doc.reference.beian_price ? [{
+        ...(beianRef > 0 ? [{
           label: '备案价参考（工抵房源）',
-          value: Math.round(num(doc.reference.beian_price)) + ' 元/㎡',
-          note: '工抵价 ' + (doc.reference.gongdi_price ? Math.round(num(doc.reference.gongdi_price)) + ' 元/㎡（备案价×' + Math.round(num(doc.reference.discount) * 100) + '%）' : '暂无')
+          value: Math.round(beianRef) + ' 元/㎡',
+          note: '华发工抵房源备案价'
         }] : []),
         { label: '历史走势', value: trendText },
         { label: '评估价折价率', value: evalDeviation, note: '评估价相对平均挂牌价的偏离幅度' },
-        { label: '价格区间', value: priceRangeText, note: '取各项取样价的最低值到最高值' }
+        { label: '价格区间', value: priceRangeText, note: '取各项取样价的最低值到最高值' },
+        ...(gongdiValue > 0 ? [{
+          label: '工抵参考价（备案价×折扣）',
+          value: gongdiValue + ' 元/㎡',
+          note: '备案价 ' + Math.round(beianRef) + ' × ' + gongdiRatePct + '%（华发工抵实测折扣）'
+        }, {
+          label: '评估价较工抵参考价',
+          value: evalVsGongdiText,
+          note: evalVsGongdi >= 0 ? '市场评估高于工抵参考价，差额即工抵折扣空间' : '市场评估低于工抵参考价，需谨慎'
+        }] : [])
       ],
       advice: this.buildAdvice({
         propertyType: propertyForRule, rentRatio, investmentLine, areaAvg, priceDiff,

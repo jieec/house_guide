@@ -133,7 +133,11 @@
           <view class="overview-kicker">评估价格 · 元/㎡</view>
           <view class="overview-number">{{report.prices[5].value}}</view>
           <view class="value-formula">{{report.prices[5].note}}</view>
-          <view class="value-pair"><view><view class="metric-label">平均挂牌价 · 元/㎡</view><view class="metric-number">{{report.prices[4].value}}</view></view><view><view class="metric-label">评估价折价率</view><view class="metric-number">{{report.priceDetails[2].value}}</view></view></view>
+          <view class="value-compare" wx:if="{{report.gongdiValue > 0}}">
+            <view class="value-compare-main">工抵参考价 {{report.gongdiValue}} 元/㎡</view>
+            <view class="value-compare-sub">评估价较工抵 {{report.evalVsGongdiText}} · 备案价×{{report.gongdiRatePct}}%</view>
+          </view>
+          <view class="value-pair"><view><view class="metric-label">平均挂牌价 · 元/㎡</view><view class="metric-number">{{report.prices[4].value}}</view></view><view><view class="metric-label">评估价折价率</view><view class="metric-number">{{report.evalDeviation}}</view></view></view>
         </view>
         <view class="section-title">价格全景</view>
         <view class="price-chart">
