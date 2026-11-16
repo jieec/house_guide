@@ -9,6 +9,12 @@ function avg(arr) {
   const list = arr.filter(v => Number.isFinite(v) && v > 0)
   return list.length ? list.reduce((s, v) => s + v, 0) / list.length : 0
 }
+function percentile(arr, q) {
+  if (!arr.length) return 0
+  const pos = (arr.length - 1) * q
+  const lo = Math.floor(pos), hi = Math.min(lo + 1, arr.length - 1)
+  return arr[lo] + (arr[hi] - arr[lo]) * (pos - lo)
+}
 function first() {
   for (let i = 0; i < arguments.length; i++) {
     if (arguments[i] !== undefined && arguments[i] !== null && arguments[i] !== '') return arguments[i]
@@ -345,7 +351,7 @@ Page({
       return rent && area ? rent / area : 0
     }).filter(Boolean)
     const communityAvg = num(first(price.price, doc.ajk_avg_price, bk.avg_price, avg(salePrices)))
-    const recentAvg = num(first(price.recentDealPrice, price.dealPrice, dealHistory.avg_unit_price, avg(dealPrices)))
+    const recentAvg = num(first(dealHistory.avg_unit_price, price.recentDealPrice, price.dealPrice, avg(dealPrices)))
     const listingAvg = num(first(price.listingPrice, avg(salePrices)))
     const rentAvg = num(first(price.rentPerSqm, price.rent, avg(rentsSqm)))
     const auctionAvg = num(first(price.auctionPrice, doc.auction_avg_price, avg(auctionDeals.map(it => num(it.unit_price)))))
@@ -356,9 +362,11 @@ Page({
     const propertyForRule = propertyType || '住宅'
     const completion = first(base.completionTime, props['竣工时间'], props['建筑年代'], props['建成年代'])
     const age = completion ? new Date().getFullYear() - num(completion) : 0
-    // ===== 评估价：市场比较法 + 收益还原法（2026-11 拟合校准 v3）=====
-    // 拟合结果：有备案价时 贝壳35% + 挂牌15% + 备案50%（收益法权重 0，租金样本不足）
-    // 无备案价时 贝壳70% + 挂牌30%，收益法20%（带异常保护）
+    // ===== 评估价：近期成交优先 + 挂牌低价辅助（2026-11 校准 v4）=====
+    // 成交≥3笔：成交80% + 挂牌P25×95% 20%
+    // 成交1-2笔：成交50% + 挂牌P25×95% 50%
+    // 无成交：挂牌P25×95%；无挂牌：贝壳均价×85%（兜底）
+    // 备案价只做上限，不参与加权；收益法仅展示，不参与评估
     const reference = doc.reference || {}
     const beianRef = num(reference.beian_price)
     const gongdiRef = num(reference.gongdi_price)
@@ -366,26 +374,26 @@ Page({
     const gongdiRate = discountRef > 0 ? discountRef : 0.902
     const gongdiValue = beianRef > 0 ? Math.round(beianRef * gongdiRate) : 0
     const gongdiRatePct = Math.round(gongdiRate * 1000) / 10
-    const comps = []
-    if (dealHistory.count >= 3 && recentAvg > 0) comps.push({ v: recentAvg, w: 1.0 })
-    if (beianRef > 0) {
-      if (communityAvg > 0) comps.push({ v: communityAvg, w: 0.35 })
-      if (listingAvg > 0) comps.push({ v: listingAvg, w: 0.15 })
-      comps.push({ v: beianRef, w: 0.5 })
-    } else {
-      if (communityAvg > 0) comps.push({ v: communityAvg, w: 0.7 })
-      if (listingAvg > 0) comps.push({ v: listingAvg, w: 0.3 })
+    const sortedSalePrices = salePrices.slice().sort((a, b) => a - b)
+    const listingLow = percentile(sortedSalePrices, 0.25)
+    const dealCount = Number(dealHistory.count) || 0
+    let marketValue = 0
+    if (dealCount >= 3 && recentAvg > 0) {
+      marketValue = recentAvg * 0.8 + listingLow * 0.95 * 0.2
+    } else if (dealCount >= 1 && recentAvg > 0) {
+      marketValue = recentAvg * 0.5 + listingLow * 0.95 * 0.5
+    } else if (listingLow > 0) {
+      marketValue = listingLow * 0.95
+    } else if (communityAvg > 0) {
+      marketValue = communityAvg * 0.85
     }
-    const marketValue = comps.length
-      ? comps.reduce((s, c) => s + c.v * c.w, 0) / comps.reduce((s, c) => s + c.w, 0)
-      : 0
+    // 备案价只做上限，不参与加权
+    const cappedByBeian = beianRef > 0 && marketValue > beianRef
+    const evaluation = cappedByBeian ? beianRef : marketValue
     // 收益还原法：年有效租金 ÷ 资本化率（住宅 2.0%，商业 4.5%；空置及费用率 5%）
     const isCommercial = /商业|商铺|办公/.test(propertyForRule)
     const capRate = isCommercial ? 0.045 : 0.02
     const incomeValue = rentAvg > 0 ? rentAvg * 12 * 0.95 / capRate : 0
-    // 有备案价的项目收益法不参与（拟合权重为0）；普通小区保留20%并做异常保护
-    const incomeReliable = beianRef <= 0 && incomeValue > 0 && marketValue > 0 && incomeValue >= marketValue * 0.7 && incomeValue <= marketValue * 1.5
-    const evaluation = incomeReliable ? marketValue * 0.8 + incomeValue * 0.2 : marketValue
     // 市场评估价与工抵参考价的偏离：正数=评估高于工抵（即工抵折扣空间）
     const evalVsGongdi = gongdiValue > 0 && evaluation > 0 ? (evaluation / gongdiValue - 1) * 100 : 0
     const evalVsGongdiText = gongdiValue > 0 && evaluation > 0
@@ -421,7 +429,7 @@ Page({
       { label: '楼盘近期平均成交价', labelLines: ['楼盘近期', '平均成交价'], amount: recentAvg, color: '#5B7F63' },
       { label: '楼盘近期法拍成交价', labelLines: ['楼盘近期', '法拍成交价'], amount: auctionAvg, color: '#9C6055' },
       { label: '楼盘平均挂牌价', labelLines: ['楼盘平均', '挂牌价'], amount: listingAvg, color: '#8A6A38' },
-      { label: '评估价格', amount: evaluation, color: '#7A5C93', note: beianRef > 0 ? '贝壳35%＋挂牌15%＋备案50%（拟合校准）' : (incomeReliable ? '市场比较法80%＋收益还原法20%' : '市场比较法（成交/贝壳均价/挂牌加权）') },
+      { label: '评估价格', amount: evaluation, color: '#7A5C93', note: cappedByBeian ? '备案价上限校准' : (dealCount >= 3 ? '近期成交80%＋挂牌低价20%' : (dealCount >= 1 ? '近期成交50%＋挂牌低价50%' : (listingLow > 0 ? '挂牌低价×95%（无成交）' : '贝壳均价×85%（样本不足）'))) },
       ...(gongdiValue > 0 ? [{ label: '工抵参考价', labelLines: ['工抵参考价'], amount: gongdiValue, color: '#A06A4A', note: '备案价×' + gongdiRatePct + '%（华发工抵实测折扣）' }] : [])
     ]
     const priceChartMax = Math.ceil(Math.max(...priceItems.map(item => item.amount || 0), 0))
@@ -486,8 +494,8 @@ Page({
       prices: chartItems,
       priceDetails: [
         { label: '楼盘平均租金', value: show(rentAvg ? rentAvg.toFixed(1) : '', '元/㎡/月') },
-        { label: '市场比较法估值', value: show(marketValue ? Math.round(marketValue) : '', '元/㎡'), note: beianRef > 0 ? '贝壳35%＋挂牌15%＋备案50%（拟合权重）' : '近期成交、贝壳均价、挂牌价加权' },
-        { label: '收益还原法估值', value: incomeValue ? Math.round(incomeValue) + ' 元/㎡' : '暂无租金数据', note: (isCommercial ? '年租金×95% ÷ 4.5%' : '年租金×95% ÷ 2.0%') + '（资本化率校准）' },
+        { label: '市场比较法估值', value: show(marketValue ? Math.round(marketValue) : '', '元/㎡'), note: dealCount >= 3 ? '近期成交80%＋挂牌P25×95% 20%' : (dealCount >= 1 ? '近期成交50%＋挂牌P25×95% 50%' : (listingLow > 0 ? '挂牌P25×95%' : '贝壳均价×85%（样本不足）')) },
+        { label: '收益还原法估值', value: incomeValue ? Math.round(incomeValue) + ' 元/㎡' : '暂无租金数据', note: (isCommercial ? '年租金×95% ÷ 4.5%' : '年租金×95% ÷ 2.0%') + '，仅参考，不参与评估价' },
         ...(beianRef > 0 ? [{
           label: '备案价参考（工抵房源）',
           value: Math.round(beianRef) + ' 元/㎡',
