@@ -136,7 +136,7 @@ exports.main = async (event) => {
     '小区：' + communityName + '（' + [doc && doc.city, doc && doc.district].filter(Boolean).join(' ') + '）',
     '系统综合评估价：' + fmt(context.evaluation, ' 元/㎡') + '（回答必须使用这个数字）',
     '评估价相对挂牌价：' + fmt(context.evalDeviation),
-    '评估价与工抵参考价差距：' + fmt(context.evalVsGongdiText) + (context.evalVsGongdiText ? '（正数=评估价高于工抵价；负数=工抵价高于评估价，说明工抵不便宜）' : ''),
+    '评估价与工抵价对比：评估价 ' + fmt(context.evaluation, ' 元/㎡') + '，工抵价 ' + fmt(context.gongdiValue, ' 元/㎡') + '；评估价较工抵价 ' + fmt(context.evalVsGongdiText) + '，工抵价较评估价 ' + fmt(context.gongdiVsEvalText) + '。',
     '市场比较法估值：' + fmt(context.marketValue, ' 元/㎡'),
     '收益还原法估值：' + fmt(context.incomeValue, ' 元/㎡') + '（仅参考，不参与评估价）',
     '评估方法：近期成交优先；成交≥3笔按成交80%+挂牌低价20%，1-2笔按50%+50%，无成交按挂牌低价×95%；备案价仅作上限，不参与加权。',

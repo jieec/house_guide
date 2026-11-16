@@ -220,6 +220,7 @@ Page({
       gongdiRate: report.gongdiRate || 0,
       evalVsGongdiText: report.evalVsGongdiText || '',
       evalDeviation: report.evalDeviation || '',
+      gongdiVsEvalText: report.gongdiVsEvalText || '',
       listingAvg: report.listingAvg || 0,
       rentAvg: report.rentAvg || 0,
       basic: (report.basic || []).filter(x => x.value && x.value !== '暂无数据').map(x => ({ label: x.label, value: x.value })),
@@ -399,6 +400,10 @@ Page({
     const evalVsGongdiText = gongdiValue > 0 && evaluation > 0
       ? (evalVsGongdi >= 0 ? '+' : '') + evalVsGongdi.toFixed(1) + '%'
       : ''
+    const gongdiVsEval = gongdiValue > 0 && evaluation > 0 ? (gongdiValue / evaluation - 1) * 100 : 0
+    const gongdiVsEvalText = gongdiValue > 0 && evaluation > 0
+      ? (gongdiVsEval >= 0 ? '+' : '') + gongdiVsEval.toFixed(1) + '%'
+      : ''
     const history = first(price.history, doc.priceHistory, doc.history_prices, [])
     const traffic = poiNames([].concat(pois.subway || [], pois.bus || [], cats.station || []), 8)
     const schools = poiNames([].concat(pois.school || [], cats.school || []), 8)
@@ -490,6 +495,8 @@ Page({
       gongdiRatePct,
       evalVsGongdi,
       evalVsGongdiText,
+      gongdiVsEval,
+      gongdiVsEvalText,
       priceChartMax,
       prices: chartItems,
       priceDetails: [
