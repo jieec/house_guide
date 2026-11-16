@@ -518,7 +518,7 @@ Page({
         }, {
           label: '评估价较工抵参考价',
           value: evalVsGongdiText,
-          note: evalVsGongdi >= 0 ? '市场评估高于工抵参考价，差额即工抵折扣空间' : '市场评估低于工抵参考价，需谨慎'
+          note: evalVsGongdi >= 0 ? '市场评估高于工抵参考价，差额即工抵折扣空间' : '市场评估低于工抵参考价，工抵价较评估价高 ' + gongdiVsEvalText
         }] : [])
       ],
       advice: this.buildAdvice({
