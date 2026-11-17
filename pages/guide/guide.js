@@ -33,13 +33,31 @@ function parseDist(d) {
   if (s.indexOf('公里') >= 0 || /km/i.test(s)) n *= 1000
   return String(Math.round(n))
 }
+const LOCAL_POI = /珠海|橫琴|横琴|香洲|斗門|斗门|金灣|金湾|拱北|湾仔|南屏|前山|吉大|翠微|新香洲|唐家|白蕉|平沙|三灶|紅旗|红旗|乾務|乾务|梅华|梅華|獅山|狮山|吉蓮|吉莲|九洲|九州|海濱|海滨|情侶|情侣|港珠澳大橋|港珠澳大桥|十字門|十字门|湾仔北|粵澳深度合作區|粤澳深度合作区|橫琴粵澳|横琴粤澳/
+const LOCAL_POI_WHITELIST = /澳门回归纪念公园|澳門回歸紀念公園|旺角百货|旺角百貨/
+const FOREIGN_POI = /澳门|澳門|香港|氹仔|路环|路環|妈阁|媽閣|葡京|黑沙|新界|九龙|港岛|离岛|氹仔线|新马路|大三巴|新八佰伴|八佰伴|信德堡|Circle\s*Square|威尼斯人|巴黎人|官也街|塔石|望厦|筷子基|高士德|水坑尾|贾伯乐|沙梨头|河边新街|下环|风顺堂|花王堂|大堂区|望德堂|圣安多尼堂|路氹|金鐘|金钟|中環|中环|銅鑼灣|铜锣湾|尖沙咀|旺角|深水埗|將軍澳|将军澳|太古廣場|太古广场|鰂魚涌|鲗鱼涌|九龍塘|九龙塘|紅磡|红磡|土瓜灣|土瓜湾|觀塘|观塘|黃大仙|黄大仙|鑽石山|钻石山|荔枝角|長沙灣|长沙湾|東涌|东涌|迪士尼|灣仔|萬茂臺|万茂台/i
+const TRAD_POI = /[學聖諾廣碼馬區園場圖醫銀東陽記紀會車產業務財觀覽購買賣點頭發結維綜絡統網經線級紙紅細組織讓與門間開關長們應際條華約龍羅理鐘臺萬灣]/
+function isLocalPoi(it) {
+  if (!it) return false
+  const text = [it.name, it.title, it.info, it.address, it.city, it.district, it.province].filter(Boolean).join(' ')
+  if (!text) return false
+  if (LOCAL_POI_WHITELIST.test(text) || LOCAL_POI.test(text)) return true
+  if (FOREIGN_POI.test(text)) return false
+  if (TRAD_POI.test(text)) return false
+  if (it.city && String(it.city).indexOf('珠海') < 0) return false
+  if (it.province && String(it.province).indexOf('广东') < 0) return false
+  return true
+}
 function poiNames(items, limit) {
-  return (items || []).slice(0, limit || 6).map(it => {
+  const out = [], seen = new Set()
+  ;(items || []).filter(isLocalPoi).forEach(it => {
     const name = it.name || it.title || ''
-    if (!name) return ''
+    if (!name || seen.has(name)) return
+    seen.add(name)
     const d = parseDist(it.dist)
-    return name + (d && d !== '0' ? ' · ' + d + '米' : '')
-  }).filter(Boolean)
+    out.push(name + (d && d !== '0' ? ' · ' + d + '米' : ''))
+  })
+  return out.slice(0, limit || 6)
 }
 
 Page({
@@ -407,7 +425,7 @@ Page({
     const history = first(price.history, doc.priceHistory, doc.history_prices, [])
     const traffic = poiNames([].concat(pois.subway || [], pois.bus || [], cats.station || []), 8)
     const schools = poiNames([].concat(pois.school || [], cats.school || []), 8)
-    const hospitals = poiNames(pois.hospital || [], 5)
+    const hospitals = poiNames([].concat(pois.hospital || [], cats.hospital || []), 5)
     const nearCompetitors = (doc.nearComms || []).slice(0, 8).map(it => ({
       name: it.name || it.community || '周边小区', value: show(first(it.price, it.avgPrice), '元/㎡'), meta: parseDist(it.dist) ? parseDist(it.dist) + '米' : ''
     }))
