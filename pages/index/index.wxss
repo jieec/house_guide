@@ -428,3 +428,9 @@ page {
   color: #9490B2;
   margin-top: 4rpx;
 }
+/* Explicit opt-in demo; it never replaces the live data path. */
+.demo-entry { margin: 24rpx 0 32rpx; padding: 26rpx; background: #fffaf0; border: 1rpx solid #e8d8b8; border-radius: 24rpx; }
+.demo-entry-title { color: #755127; font-size: 29rpx; font-weight: 600; }
+.demo-entry-copy { color: #78694e; font-size: 24rpx; line-height: 1.7; margin: 10rpx 0 18rpx; }
+.demo-entry-actions { display: flex; flex-wrap: wrap; gap: 14rpx; }
+.demo-entry-actions button { flex: 1; min-width: 240rpx; margin: 0; padding: 0 16rpx; font-size: 24rpx; background: #fff; color: #695c93; border: 1rpx solid #d8d3ec; border-radius: 14rpx; }

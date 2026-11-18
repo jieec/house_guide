@@ -58,5 +58,12 @@ Page({
 
   goGuide() {
     wx.switchTab({ url: '/pages/guide/guide' })
+  },
+  goDemo() {
+    wx.navigateTo({ url: '/pages/houses/analyze/analyze?demo=1' })
+  },
+  goGuideDemo() {
+    app.globalData.valuationDemo = true
+    wx.switchTab({ url: '/pages/guide/guide' })
   }
 })

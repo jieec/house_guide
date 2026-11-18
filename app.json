@@ -1,5 +1,8 @@
 {
   "pages": ["pages/index/index", "pages/houses/houses", "pages/houses/community/community", "pages/houses/detail/detail", "pages/houses/analyze/analyze", "pages/guide/guide", "pages/mine/mine", "pages/location/location", "pages/basic/basic", "pages/analysis/analysis", "pages/conclusion/conclusion", "pages/finance/finance", "pages/risk/risk", "pages/tax/tax", "pages/mortgage/mortgage"],
+  "usingComponents": {
+    "valuation-panel": "/components/valuation-panel/index"
+  },
   "window": {
     "navigationBarBackgroundColor": "#E7E3F6",
     "navigationBarTitleText": "房产评估",

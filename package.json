@@ -1,0 +1,13 @@
+{
+  "name": "house-guide",
+  "private": true,
+  "scripts": {
+    "build:aichat:deploy": "node scripts/build-aichat-deploy.cjs",
+    "test": "node --test tests/*.test.js cloudfunctions/aiChat/test/*.test.js",
+    "test:frontend": "node --test tests/*.test.js",
+    "test:backend": "node --test cloudfunctions/aiChat/test/*.test.js"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

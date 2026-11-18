@@ -10,8 +10,10 @@ const output = path.join(root, 'output/pdf'), temp = path.join(root, 'tmp/pdfs')
 fs.mkdirSync(output, { recursive: true }); fs.mkdirSync(temp, { recursive: true })
 const fontSource = fs.readFileSync(path.join(root, 'styles/fonts.wxss'), 'utf8').match(/base64,([^"')]+)/)[1]
 GlobalFonts.register(Buffer.from(fontSource, 'base64'), 'WenKai')
-GlobalFonts.registerFromPath('C:/Windows/Fonts/msyh.ttc', 'Microsoft YaHei')
-GlobalFonts.registerFromPath('C:/Windows/Fonts/simkai.ttf', 'KaiTi')
+GlobalFonts.register(Buffer.from(fontSource, 'base64'), 'Microsoft YaHei')
+for (const [fontPath, family] of [['C:/Windows/Fonts/msyh.ttc', 'Microsoft YaHei'], ['C:/Windows/Fonts/simkai.ttf', 'KaiTi']]) {
+  if (fs.existsSync(fontPath)) GlobalFonts.registerFromPath(fontPath, family)
+}
 // Reuse the clearly labeled local sample fixture, without rebuilding HTML.
 const fixture = { module: { exports: {} }, require: createRequire(__filename), __dirname, console, setTimeout, clearTimeout }
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'build-guide-preview.cjs'), 'utf8').split('const source =')[0] + '\nmodule.exports = {page, doc, report, missingReport}', fixture)
@@ -19,6 +21,9 @@ const { page, doc, report, missingReport } = fixture.module.exports
 global.wx = { getStorageSync: () => ({}) }
 const exporter = require('../utils/report-export.js'), layout = require('../utils/report-layout.js'), pdf = require('../utils/pdf.js')
 const samplePage = { data: { ...page.data, report, selectedCommunity: doc, updatedAt: '示例数据', } }
+// This fixture exercises the legacy four-section report path, not a pending
+// structured valuation inherited from the current guide page defaults.
+delete samplePage.data.valuationReport
 const data = exporter.collect(samplePage)
 data.title = '云栖花园 · 演示报告'
 data.subtitle = '示例城市 / 示例区域 · 所有数值仅用于排版演示'

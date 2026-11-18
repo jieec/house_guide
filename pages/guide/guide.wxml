@@ -7,12 +7,28 @@
       <view>
         <view class="eyebrow">GUIDE / REPORT</view>
         <view class="page-title">小区报告</view>
-        <view class="page-subtitle">自动生成基本信息、价值分析与购置建议</view>
+        <view class="page-subtitle">小区参考单价与配套分析，不代表具体单套房估值</view>
       </view>
     </view>
 
     <view class="bg-orb orb-1"></view>
     <view class="bg-orb orb-2"></view>
+
+    <view class="demo-entry" wx:if="{{!demoMode}}">
+      <view class="demo-entry-copy">尚未连接云环境时，可使用虚构房产体验完整报告。</view>
+      <button class="demo-entry-button" bindtap="enterDemo">查看本地演示</button>
+    </view>
+    <view class="demo-banner" wx:else>
+      <view class="demo-banner-title">本地演示 · 全部数据为虚构样例</view>
+      <view class="demo-banner-copy">未访问云数据库或真实模型，不作为购房依据。</view>
+      <picker class="demo-scenario-picker" range="{{demoScenarios}}" range-key="label" value="{{demoScenarioIndex}}" bindchange="onDemoScenarioChange">
+        <view>演示场景：{{demoScenarios[demoScenarioIndex].label}} ▾</view>
+      </picker>
+      <view class="demo-banner-actions">
+        <button class="demo-secondary-button" bindtap="goSingleDemo">查看单套房演示</button>
+        <button class="demo-secondary-button" bindtap="exitDemo">退出演示</button>
+      </view>
+    </view>
 
     <view class="query-card animated" style="animation-delay: 0.05s;">
     <view class="query-title">选择位置和小区</view>
@@ -52,6 +68,10 @@
       </view>
       <view class="reload" bindtap="reloadReport">刷新</view>
     </view>
+    <block wx:if="{{!loading}}">
+      <valuation-panel report="{{valuationReport}}" loading="{{valuationLoading}}" error="{{valuationError}}" bind:retry="runValuation" />
+      <button class="valuation-generate-button" bindtap="runValuation" loading="{{valuationLoading}}" disabled="{{valuationLoading}}">{{valuationLoading ? '正在生成小区评估…' : (valuationReport && valuationReport.status === 'processing' ? '查询评估进度' : (valuationReport ? '重新生成小区评估' : '生成小区评估'))}}</button>
+    </block>
     <scroll-view class="tabs animated" style="animation-delay: 0.10s;" scroll-x enhanced show-scrollbar="{{false}}">
       <view class="tabs-inner">
         <view class="tab {{activeTab === index ? 'active' : ''}}" wx:for="{{tabs}}" wx:key="*this" data-index="{{index}}" bindtap="switchTab">{{item}}</view>
@@ -64,13 +84,13 @@
         <view class="report-overview">
           <view class="overview-primary">
             <view class="overview-kicker">小区价格概览</view>
-            <view class="overview-number">{{report.prices[1].value}}</view>
+            <view class="overview-number">{{report.communityAverageDisplay}}</view>
             <view class="overview-unit">小区均价 · 元/㎡</view>
-            <view class="overview-foot">{{report.priceDetails[1].value}}</view>
+            <view class="overview-foot">{{report.evaluationNote}}</view>
           </view>
           <view class="overview-secondary">
-            <view class="overview-small"><view class="metric-label">城市均价 · 元/㎡</view><view class="metric-number">{{report.prices[0].value}}</view></view>
-            <view class="overview-small"><view class="metric-label">楼盘平均租金</view><view class="metric-text">{{report.priceDetails[0].value}}</view></view>
+            <view class="overview-small"><view class="metric-label">城市均价 · 元/㎡</view><view class="metric-number">{{report.cityAverageDisplay}}</view></view>
+            <view class="overview-small"><view class="metric-label">楼盘平均租金</view><view class="metric-text">{{report.rentAverageDisplay}}</view></view>
           </view>
         </view>
         <view class="section-title animated" style="animation-delay: 0.15s;">楼盘信息</view>
@@ -94,19 +114,6 @@
             </view>
           </view>
         </block>
-        <view class="section-title">房产智能专家</view>
-        <view class="ai-card">
-          <view class="ai-head">
-            <view class="ai-title">DeepSeek 房产分析</view>
-            <view class="ai-subtitle">基于小区数据生成评估价与购房建议</view>
-          </view>
-          <button class="ai-btn" bindtap="askAI" loading="{{aiLoading}}" disabled="{{aiLoading}}">
-            {{aiLoading ? 'AI 正在分析…' : (aiAnswer ? '重新生成' : '生成评估与建议')}}
-          </button>
-          <view wx:if="{{aiAnswer}}" class="ai-answer">{{aiAnswer}}</view>
-          <view wx:if="{{aiError}}" class="ai-error">{{aiError}}</view>
-          <view wx:if="{{aiAnswer}}" class="ai-disclaimer">AI 生成内容仅供参考，不构成投资建议。</view>
-        </view>
         <view class="section-title">位置配套</view>
         <view class="amenity-card">
           <view class="amenity-heading"><view class="amenity-icon"><view class="ic ic-building"></view></view><view><view class="amenity-title">交通出行</view><view class="amenity-caption">周边交通配套</view></view></view>
@@ -130,14 +137,14 @@
 
       <view wx:if="{{activeTab === 1}}">
         <view class="value-spotlight">
-          <view class="overview-kicker">评估价格 · 元/㎡</view>
-          <view class="overview-number">{{report.prices[5].value}}</view>
-          <view class="value-formula">{{report.prices[5].note}}</view>
-          <view class="value-compare" wx:if="{{report.gongdiValue > 0}}">
+          <view class="overview-kicker">{{valuationReport ? '当前采用价格' : '公式参考价格'}} · 元/㎡</view>
+          <view class="overview-number">{{report.evaluationDisplay}}</view>
+          <view class="value-formula">{{report.evaluationNote}}</view>
+          <view class="value-compare" wx:if="{{report.gongdiValue > 0 && report.evaluation > 0}}">
             <view class="value-compare-main">工抵参考价 {{report.gongdiValue}} 元/㎡</view>
             <view class="value-compare-sub">评估价较工抵 {{report.evalVsGongdiText}} · 备案价×{{report.gongdiRatePct}}%</view>
           </view>
-          <view class="value-pair"><view><view class="metric-label">平均挂牌价 · 元/㎡</view><view class="metric-number">{{report.prices[4].value}}</view></view><view><view class="metric-label">评估价折价率</view><view class="metric-number">{{report.evalDeviation}}</view></view></view>
+          <view class="value-pair"><view><view class="metric-label">平均挂牌价 · 元/㎡</view><view class="metric-number">{{report.listingAverageDisplay}}</view></view><view><view class="metric-label">评估价折价率</view><view class="metric-number">{{report.evalDeviation}}</view></view></view>
         </view>
         <view class="section-title">价格全景</view>
         <view class="price-chart">
@@ -145,7 +152,7 @@
             <text class="price-chart-title">价格对比</text>
             <text class="price-chart-unit">单位：元/㎡</text>
           </view>
-          <view class="price-bar-row" wx:for="{{report.prices}}" wx:key="label">
+          <view class="price-bar-row" wx:for="{{report.prices}}" wx:key="key">
             <view class="price-bar-label"><text wx:for="{{item.labelLines}}" wx:for-item="labelLine" wx:key="*this">{{labelLine}}</text></view>
             <view class="price-bar-body">
               <text class="price-bar-value {{!item.hasData ? 'muted' : ''}}">{{item.value}}</text>
@@ -405,9 +412,10 @@
   </block>
 
   <view class="report-export-area" wx:if="{{selectedCommunity && !loading}}">
-    <view class="report-export-title">已汇总四个分析部分</view>
-    <view class="report-export-subtitle">基本信息 · 价值分析 · 购置建议 · 工具使用</view>
-    <button class="report-export-button" bindtap="exportPdf">生成 PDF 报告</button>
+    <view class="report-export-title">导出当前小区评估快照</view>
+    <view class="report-export-subtitle">{{valuationReport ? '报告编号：' + valuationReport.valuationId : '先生成结构化评估，再导出与页面一致的结果。'}}</view>
+    <view class="report-export-subtitle" wx:if="{{demoMode}}">PDF 将标明本地演示数据。</view>
+    <button class="report-export-button" bindtap="exportPdf" disabled="{{!valuationExportable || valuationLoading || valuationDirty || valuationError}}">生成 PDF 报告</button>
   </view>
   <canvas id="pdfCanvas" type="2d" class="pdf-canvas"></canvas>
 </view>

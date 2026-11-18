@@ -20,8 +20,110 @@ function lineItems(items) {
   }))
 }
 
+const READY_STATUSES = ['model_estimate', 'needs_review', 'rule_only', 'insufficient_data']
+const STATUS_LABELS = { model_estimate: '模型估价已采用', needs_review: '模型候选待复核', rule_only: '公式参考结果', insufficient_data: '数据不足，无法估价' }
+const SOURCE_LABELS = { model: '模型估价', rule: '公式基准参考' }
+const ATTRIBUTE_LABELS = { floor: '所在楼层', totalFloors: '总楼层', rooms: '户型', orientation: '朝向', decoration: '装修', elevator: '电梯', buildYear: '建成年份', occupancy: '占用情况', deliveryStatus: '交付条件' }
+const MISSING_LABELS = { areaSqm: '单套面积', floor: '所在楼层', totalFloors: '总楼层', rooms: '户型', orientation: '朝向', decoration: '装修', propertyType: '房屋性质', occupancy: '占用情况', deliveryStatus: '交付条件', saleDeals: '真实成交样本', marketPriceReference: '市场价格参考' }
+const EVIDENCE_LABELS = { sale_deal: '二手房成交', auction_deal: '法拍成交', listing: '挂牌参考', rent: '租赁参考', community_reference: '小区均价参考', filing_reference: '备案价参考' }
+
+function positive(v) { return typeof v === 'number' && Number.isFinite(v) && v > 0 }
+function amount(v, unit) { return positive(v) ? String(Math.round(v * 100) / 100) + (unit || '') : '暂无数据' }
+function snapshot(v) { return JSON.parse(JSON.stringify(v)) }
+function string(v) { return typeof v === 'string' && v.trim() ? v.trim() : '' }
+function labels(items) { return (items || []).map(key => MISSING_LABELS[key] || String(key)) }
+function displayTime(v) {
+  const time = new Date(v)
+  return v && Number.isFinite(time.getTime()) ? new Date(time.getTime() + 8 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ') + '（北京时间）' : '未记录'
+}
+
+// Structured reports deliberately bypass legacy form storage. Every exported
+// number and statement comes from one frozen valuation result, not a prior house.
+function collectValuation(d) {
+  const r = snapshot(d.valuationReport)
+  if (!READY_STATUSES.includes(r.status)) throw new Error('评估尚未完成，暂不能导出')
+  const target = r.target || {}, candidate = r.modelEstimate || null
+  const house = target.type === 'house', demo = r.isDemo === true || d.demoMode === true
+  const statusLabel = STATUS_LABELS[r.status]
+  const sourceLabel = SOURCE_LABELS[r.effectiveSource] || '暂无采用价格'
+  const missing = labels(r.missingFields)
+  const basic = [
+    { label: '评估对象', value: house ? '单套房产' : '小区参考' },
+    { label: '小区名称', value: target.name || '未提供' },
+    { label: '位置', value: [target.city, target.district].filter(Boolean).join(' ') || '未提供' },
+    { label: '房产编号', value: target.id || '未提供' },
+    { label: '房屋性质', value: target.propertyType || '待核实' },
+    { label: house ? '单套面积' : '面积说明', value: house ? amount(target.areaSqm, ' ㎡') : '小区参考估价不计算单套总价', note: target.overrides && target.overrides.areaSqm ? '来源：人工补录' : '' }
+  ]
+  Object.keys(ATTRIBUTE_LABELS).forEach(key => {
+    const v = (target.attributes || {})[key]
+    if (v !== undefined && v !== null && v !== '') basic.push({ label: ATTRIBUTE_LABELS[key], value: typeof v === 'boolean' ? (v ? '有' : '无') : String(v), note: target.overrides && target.overrides[key] ? '来源：人工补录' : '' })
+  })
+  const chart = [
+    { key: 'baseline', label: '公式基准价', amount: r.baselineUnitPrice, note: '服务器公式计算的参考价格' },
+    { key: 'model', label: r.status === 'needs_review' ? '模型候选价（待复核）' : '模型候选价', amount: r.modelUnitPrice, note: r.status === 'needs_review' ? '候选结果尚未采用，不能替代当前采用价' : '通过结构校验的模型候选价格' },
+    { key: 'effective', label: '当前采用价', amount: r.effectiveUnitPrice, note: sourceLabel }
+  ].map(item => ({ ...item, amount: positive(item.amount) ? item.amount : null, value: positive(item.amount) ? String(Math.round(item.amount * 100) / 100) : '暂无数据' }))
+  const prices = chart.map(item => ({ label: item.label, value: amount(item.amount, ' 元/㎡'), note: item.note, emphasis: item.key === 'effective' }))
+  prices.push({ label: '采用总价', value: house ? amount(r.totalPriceYuan, ' 元') : '不适用（小区参考估价）', note: house ? '采用单价 × 评估快照中的单套面积' : '', emphasis: true })
+  if (house && r.status === 'needs_review' && candidate) prices.push({ label: '候选总价（待复核）', value: positive(target.areaSqm) ? amount(candidate.totalPriceYuan, ' 元') : '暂无数据', note: '服务器保存的候选总价，尚未采纳', warning: true })
+  if (positive(target.listingUnitPrice)) prices.push({ label: '目标挂牌价', value: amount(target.listingUnitPrice, ' 元/㎡'), note: '目标报价只用于对照，不作为独立成交证据' })
+  if (r.priceRange) prices.push({ label: '采用参考区间', value: amount(r.priceRange.low) + ' - ' + amount(r.priceRange.high, ' 元/㎡'), note: '参考区间不等于统计置信区间' })
+  if (r.status === 'needs_review' && candidate && candidate.priceRange) prices.push({ label: '候选参考区间（待复核）', value: amount(candidate.priceRange.low) + ' - ' + amount(candidate.priceRange.high, ' 元/㎡'), warning: true, note: '仅供复核，未作为当前采用区间' })
+  if (r.fallbackReason) prices.push({ label: '回退原因', value: String(r.fallbackReason), warning: true })
+  ;(r.reviewReasons || []).forEach(reason => prices.push({ label: '复核事项', value: String(reason), warning: true }))
+
+  const advice = []
+  if (r.status === 'model_estimate') {
+    advice.push({ label: '估价摘要', value: r.summary || candidate && candidate.summary || '未提供' },
+      { label: '买方建议', value: r.buyerAdvice || candidate && candidate.buyerAdvice || '未提供' },
+      { label: '卖方及银行处置意见', value: r.disposalAdvice || candidate && candidate.disposalAdvice || '未提供' })
+  } else if (r.status === 'needs_review' && candidate) {
+    advice.push({ label: '候选意见说明', value: '以下模型候选意见尚待人工复核，未作为已采用结论。', warning: true },
+      { label: '候选摘要（待复核）', value: candidate.summary || '未提供' },
+      { label: '候选买方建议（待复核）', value: candidate.buyerAdvice || '未提供' },
+      { label: '候选处置意见（待复核）', value: candidate.disposalAdvice || '未提供' })
+  } else advice.push({ label: '意见状态', value: r.status === 'rule_only' ? '模型意见未采用；当前仅提供公式参考结果。' : '关键数据不足，暂不生成价格与处置结论。', warning: true })
+  ;(candidate && candidate.adjustments || []).forEach(item => advice.push({ label: '价格修正 · ' + (item.factor || '因素'), value: String(item.description || ''), note: '引用证据：' + (item.evidenceIds || []).join('、'), detail: true }))
+
+  const evidence = (r.evidence || []).map((item, index) => ({
+    label: String(index + 1).padStart(2, '0') + ' ' + (EVIDENCE_LABELS[item.kind] || '市场参考'),
+    value: [amount(item.unitPrice, item.kind === 'rent' ? ' 元/㎡/月' : ' 元/㎡'), positive(item.areaSqm) ? amount(item.areaSqm, ' ㎡') : '', item.date || '日期待核实'].filter(Boolean).join('；'),
+    note: ['证据编号：' + (item.id || '未提供'), '来源：' + (item.source || '未注明'), item.url ? '链接：' + item.url : ''].filter(Boolean).join('\n'), detail: true
+  }))
+  if (!evidence.length) evidence.push({ label: '市场证据', value: '当前没有可用的价格证据', warning: true })
+  ;(r.knowledgeUsed || []).forEach(item => evidence.push({ label: '知识参考', value: item.title || item.id || '未注明', note: [item.version ? '版本：' + item.version : '', item.sourceUrl || '来源待核实'].filter(Boolean).join('\n'), detail: true }))
+  const meta = [
+    { label: '报告编号', value: r.valuationId || '未提供' },
+    { label: '结果生成时间', value: displayTime(r.generatedAt) },
+    { label: '数据模式', value: demo ? '演示数据，仅用于功能验证，不代表真实房产' : '云端评估结果' },
+    { label: '估价状态及来源', value: statusLabel + '；' + sourceLabel },
+    { label: '模型配置', value: '供应商：' + String((r.versions || {}).provider || '未记录') + '\n模型：' + String((r.versions || {}).model || '未记录') },
+    { label: '流程版本', value: ['prompt', 'rule', 'config', 'knowledge'].map(key => ({ prompt: '提示词', rule: '基准规则', config: '配置', knowledge: '知识' }[key]) + '：' + String((r.versions || {})[key] || '未记录')).join('\n') },
+    ...missing.map(field => ({ label: '待核实信息', value: field, warning: true })),
+    ...(r.warnings || []).map(warning => ({ label: '数据提示', value: String(warning), warning: true }))
+  ]
+  return {
+    valuationId: r.valuationId || '', isDemo: demo,
+    demoLabel: demo ? '演示数据 · 仅用于功能验证' : '',
+    reportKind: house ? '单套房估价报告' : '小区参考估价报告',
+    title: target.name || (house ? '单套房产' : '小区参考'), subtitle: [target.city, target.district, house ? '单套房产估价' : '小区参考估价'].filter(Boolean).join(' · '),
+    generatedAt: displayTime(r.generatedAt), updatedAt: r.dataQuality && r.dataQuality.asOfDate || '未记录',
+    chart, missing, adviceVisual: null, valuationSnapshot: r,
+    valuationSummary: { status: statusLabel, source: sourceLabel, unitPrice: amount(r.effectiveUnitPrice), totalPrice: house ? amount(r.totalPriceYuan, ' 元') : '小区参考，不计算总价' },
+    sections: [
+      { number: '01', title: '评估对象', items: lineItems(basic) },
+      { number: '02', title: '估价结果', items: lineItems(prices) },
+      { number: '03', title: '评估与处置意见', items: lineItems(advice) },
+      { number: '04', title: '市场证据与知识依据', items: lineItems(evidence) },
+      { number: '05', title: '报告信息与待核实事项', items: lineItems(meta) }
+    ]
+  }
+}
+
 function collect(page) {
   const d = page.data || {}
+  if (d.valuationReport) return collectValuation(d)
   const savedBasic = wx.getStorageSync('basic') || {}
   const savedAnalysis = wx.getStorageSync('analysis') || {}
   const savedConclusion = wx.getStorageSync('conclusion') || {}
@@ -239,17 +341,26 @@ async function exportReport(page) {
   wx.showLoading({ title: '正在排版报告' })
   let paths = []
   try {
-    const data = collect(page)
+    const current = page.data || {}
+    if (Object.prototype.hasOwnProperty.call(current, 'valuationReport')) {
+      if (current.valuationLoading) throw new Error('评估正在生成，请完成后再导出')
+      if (current.valuationDirty) throw new Error('房产信息已修改，请重新评估后导出')
+      if (current.valuationError) throw new Error('当前评估失败，请重新生成后导出')
+      if (!current.valuationReport || !READY_STATUSES.includes(current.valuationReport.status)) throw new Error('请先生成完整评估结果')
+    }
+    const data = collect({ data: snapshot(current) })
     paths = await draw(page, data)
     const result = await pdf.generate(paths)
     wx.hideLoading()
     await new Promise((resolve, reject) => wx.openDocument({ filePath: result.path, fileType: 'pdf', showMenu: true, success: resolve, fail: reject }))
+    return { ok: true, path: result.path, valuationId: data.valuationId || '' }
   } catch (err) {
     wx.hideLoading()
     wx.showToast({ title: err.message || err.errMsg || '报告生成失败', icon: 'none' })
+    return { ok: false, error: err.message || err.errMsg || '报告生成失败' }
   } finally {
     paths.forEach(path => wx.getFileSystemManager().unlink({ filePath: path, fail() {} }))
     page._exportingReport = false
   }
 }
-module.exports = { exportReport, collect }
+module.exports = { exportReport, collect, collectValuation }

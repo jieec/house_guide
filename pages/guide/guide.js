@@ -1,5 +1,14 @@
 const app = getApp()
 const reportExport = require('../../utils/report-export.js')
+const valuationClient = require('../../utils/valuation-client.js')
+const valuationResult = require('../../utils/valuation-result.js')
+
+function emptyReport() {
+  return { basic: [], basicGroups: [], prices: [], advice: [], tools: [], competitors: [], traffic: [], schools: [], missing: [], deals: [], dealSummary: '' }
+}
+function readyValuation(report) {
+  return valuationResult.canExportValuation ? valuationResult.canExportValuation(report) : !!(report && ['model_estimate', 'needs_review', 'rule_only', 'insufficient_data'].includes(report.status))
+}
 
 function num(v) {
   const n = parseFloat(String(v == null ? '' : v).replace(/[^\d.-]/g, ''))
@@ -57,19 +66,75 @@ Page({
     loading: false,
     searchResults: [],
     selectedCommunity: null,
-    report: { basic: [], basicGroups: [], prices: [], advice: [], tools: [], competitors: [], traffic: [], schools: [], missing: [], deals: [], dealSummary: '' },
+    report: emptyReport(),
     dataStatus: '',
     updatedAt: '',
-    aiLoading: false,
-    aiAnswer: '',
-    aiError: ''
+    valuationReport: null,
+    valuationLoading: false,
+    valuationError: '',
+    valuationDirty: false,
+    valuationExportable: false,
+    demoMode: false,
+    demoScenario: 'normal',
+    demoScenarioIndex: 0,
+    demoScenarios: valuationClient.SCENARIOS || []
   },
 
   onShow() {
+    this._disposed = false
+    if (app.globalData.valuationDemo) {
+      const entry = app.globalData.valuationDemo
+      delete app.globalData.valuationDemo
+      return this.enterDemo(entry && entry.scenario ? entry.scenario : 'normal')
+    }
+    if (this.data.demoMode) return
     const location = app.globalData.location || null
     const city = location && location.city ? String(location.city).replace(/市$/, '') : ''
-    
+    if (this.data.city && city !== this.data.city) this.clearSelection()
     this.setData({ location, city })
+  },
+  onUnload() {
+    this._disposed = true
+    this._loadSeq = (this._loadSeq || 0) + 1
+    this._valuationSeq = (this._valuationSeq || 0) + 1
+    this._searchSeq = (this._searchSeq || 0) + 1
+    this._retryRequest = null
+    this._pendingValuationId = null
+  },
+  invalidateValuation() {
+    this._valuationSeq = (this._valuationSeq || 0) + 1
+    this._pendingValuationId = null
+    this._retryRequest = null
+    this.setData({ valuationReport: null, valuationLoading: false, valuationError: '', valuationDirty: true, valuationExportable: false })
+  },
+  clearSelection() {
+    this._loadSeq = (this._loadSeq || 0) + 1
+    this._searchSeq = (this._searchSeq || 0) + 1
+    this._reportFacts = null
+    this.invalidateValuation()
+    this.setData({ selectedCommunity: null, report: emptyReport(), searchResults: [], searching: false, loading: false, dataStatus: '', updatedAt: '' })
+  },
+  enterDemo(eventOrScenario) {
+    const requested = typeof eventOrScenario === 'string' ? eventOrScenario : 'normal'
+    const options = valuationClient.SCENARIOS || []
+    const index = options.findIndex(item => item.key === requested)
+    const scenario = index >= 0 ? requested : 'normal'
+    this.clearSelection()
+    const doc = valuationClient.getDemoCommunity(scenario)
+    this.setData({ demoMode: true, demoScenario: scenario, demoScenarioIndex: Math.max(0, index), location: doc, city: doc.city || '演示城市', keyword: doc.community, selectedCommunity: doc, activeTab: 0 })
+    return this.loadReport(doc)
+  },
+  exitDemo() {
+    this.clearSelection()
+    const location = app.globalData.location || null
+    this.setData({ demoMode: false, demoScenario: 'normal', demoScenarioIndex: 0, keyword: '', location, city: location && location.city ? String(location.city).replace(/市$/, '') : '' })
+  },
+  onDemoScenarioChange(e) {
+    const option = (valuationClient.SCENARIOS || [])[Number(e.detail.value)]
+    if (this.data.demoMode && option) return this.enterDemo(option.key)
+  },
+  goSingleDemo() {
+    wx.navigateTo({ url: '/pages/houses/analyze/analyze?demo=1&scenario=' + encodeURIComponent(this.data.demoScenario) })
   },
   switchTab(e) { this.setData({ activeTab: Number(e.currentTarget.dataset.index) }) },
   toggleTool(e) {
@@ -167,23 +232,38 @@ Page({
     const key = e.currentTarget.dataset.key
     this.setData({ expandedAdvice: this.data.expandedAdvice === key ? '' : key })
   },
-  goLocation() { wx.navigateTo({ url: '/pages/location/location' }) },
+  goLocation() {
+    if (this.data.demoMode) return wx.showToast({ title: '请先退出本地演示再修改位置', icon: 'none' })
+    wx.navigateTo({ url: '/pages/location/location' })
+  },
 
   onKeyword(e) {
     const keyword = String(e.detail.value || '').trim()
+    this.clearSelection()
     this.setData({ keyword })
-    if (!keyword) return this.setData({ searchResults: [] })
+    const seq = this._searchSeq
+    if (!keyword) return
+    if (this.data.demoMode) {
+      const doc = valuationClient.getDemoCommunity(this.data.demoScenario)
+      const matches = doc.community.indexOf(keyword) >= 0 ? [{ ...doc, displayAddress: '本地演示数据，不代表真实房产' }] : []
+      return this.setData({ searchResults: matches })
+    }
     if (!this.data.city) return wx.showToast({ title: '请先选择位置', icon: 'none' })
+    if (!wx.cloud) return wx.showToast({ title: '云服务不可用', icon: 'none' })
     const db = wx.cloud.database()
     this.setData({ searching: true })
-    db.collection('communities')
+    return db.collection('communities')
       .where({ city: this.data.city, community: db.RegExp({ regexp: keyword, options: 'i' }) })
       .limit(12).get()
-      .then(res => this.setData({
-        searchResults: (res.data || []).map(item => ({ ...item, displayAddress: [item.city, item.district, item.base && item.base.address].filter(Boolean).join(' ') })),
-        searching: false
-      }))
+      .then(res => {
+        if (this._disposed || seq !== this._searchSeq) return
+        this.setData({
+          searchResults: (res.data || []).map(item => ({ ...item, displayAddress: [item.city, item.district, item.base && item.base.address].filter(Boolean).join(' ') })),
+          searching: false
+        })
+      })
       .catch(() => {
+        if (this._disposed || seq !== this._searchSeq) return
         this.setData({ searchResults: [], searching: false })
         wx.showToast({ title: '小区查询失败', icon: 'none' })
       })
@@ -193,46 +273,61 @@ Page({
     const selected = this.data.searchResults[Number(e.currentTarget.dataset.index)]
     if (!selected) return
     this.setData({ keyword: selected.community || '', searchResults: [], selectedCommunity: selected, activeTab: 0 })
-    this.loadReport(selected)
+    return this.loadReport(selected)
   },
-  reloadReport() { if (this.data.selectedCommunity) this.loadReport(this.data.selectedCommunity) },
+  reloadReport() { if (this.data.selectedCommunity) return this.loadReport(this.data.selectedCommunity) },
 
-  askAI() {
+  askAI() { return this.runValuation() },
+  async runValuation() {
     const doc = this.data.selectedCommunity
-    if (!doc) return wx.showToast({ title: '请先选择小区', icon: 'none' })
-    if (this.data.aiLoading) return
-    const report = this.data.report || {}
-    const context = {
-      community: doc.community,
-      city: doc.city,
-      district: doc.district,
-      evaluation: report.evaluation || 0,
-      marketValue: report.marketValue || 0,
-      incomeValue: report.incomeValue || 0,
-      capRate: report.capRate || 0,
-      gongdiValue: report.gongdiValue || 0,
-      gongdiRate: report.gongdiRate || 0,
-      evalVsGongdiText: report.evalVsGongdiText || '',
-      evalDeviation: report.evalDeviation || '',
-      listingAvg: report.listingAvg || 0,
-      rentAvg: report.rentAvg || 0,
-      basic: (report.basic || []).filter(x => x.value && x.value !== '暂无数据').map(x => ({ label: x.label, value: x.value })),
-      priceDetails: (report.priceDetails || []).map(x => ({ label: x.label, value: x.value }))
-    }
-    this.setData({ aiLoading: true, aiAnswer: '', aiError: '' })
-    wx.cloud.callFunction({
-      name: 'aiChat',
-      data: { communityId: doc._id, question: '请先给出这个小区的系统评估价，再给出明确的购房建议。', context }
-    }).then(res => {
-      const r = (res && res.result) || {}
-      if (r.ok) {
-        this.setData({ aiLoading: false, aiAnswer: r.content || '', aiError: '' })
-      } else {
-        this.setData({ aiLoading: false, aiError: r.error || 'AI 服务暂不可用' })
+    if (!doc || !this._reportFacts || this.data.loading) return
+    if (this.data.valuationLoading) return
+    const seq = this._valuationSeq = (this._valuationSeq || 0) + 1
+    const targetId = doc._id
+    const demo = this.data.demoMode
+    const scenario = this.data.demoScenario
+    const pendingId = this._pendingValuationId
+    const request = this._retryRequest || (!pendingId ? { targetType: 'community', communityId: targetId, requestId: valuationClient.newRequestId() } : null)
+    if (request) this._retryRequest = request
+    this.setData({ valuationLoading: true, valuationReport: null, valuationError: '', valuationDirty: true, valuationExportable: false })
+    this.rebuildReport()
+    try {
+      const options = { demo, scenario }
+      const result = pendingId
+        ? await valuationClient.getEvaluation(pendingId, options)
+        : await valuationClient.createEvaluation(request, options)
+      if (!this.isCurrentValuation(seq, targetId, demo, scenario)) return
+      if (!result || (!['processing', 'failed'].includes(result.status) && (!result.target || result.target.type !== 'community' || result.target.id !== targetId))) throw new Error('估价结果与当前小区不匹配')
+      const snapshot = JSON.parse(JSON.stringify(result))
+      const ready = readyValuation(snapshot)
+      this._retryRequest = null
+      this._pendingValuationId = snapshot.status === 'processing' ? snapshot.valuationId : null
+      this.rebuildReport(snapshot)
+      this.setData({ valuationReport: snapshot, valuationLoading: false, valuationDirty: !ready, valuationExportable: ready,
+        valuationError: snapshot.status === 'failed' ? '评估未完成，请重新生成。' : '' })
+    } catch (error) {
+      if (!this.isCurrentValuation(seq, targetId, demo, scenario)) return
+      // A timed-out request can still be running in the cloud. Reuse its request
+      // identity (or existing report ID) rather than create another model call.
+      if (!error || !['CLIENT_TIMEOUT', 'CLOUD_REQUEST_FAILED'].includes(error.code)) {
+        this._retryRequest = null
+        this._pendingValuationId = null
       }
-    }).catch(err => {
-      this.setData({ aiLoading: false, aiError: '调用失败：' + (err.errMsg || err.message || '未知错误') })
-    })
+      this.rebuildReport()
+      this.setData({ valuationReport: null, valuationLoading: false, valuationDirty: true, valuationExportable: false,
+        valuationError: error.message || error.errMsg || '评估请求失败，请检查云环境后重试。' })
+    }
+  },
+  isCurrentValuation(seq, targetId, demo, scenario) {
+    return !this._disposed && seq === this._valuationSeq && this.data.selectedCommunity && this.data.selectedCommunity._id === targetId && this.data.demoMode === demo && this.data.demoScenario === scenario
+  },
+  rebuildReport(valuation) {
+    const facts = this._reportFacts
+    if (!facts) return
+    const market = facts.market
+    const report = this.buildReport(facts.doc, market, market.cityResult || {}, market.policies || [], market.competitorStats || [], valuation)
+    this.setData({ report })
+    return report
   },
 
   queryRentCount(db, city, community) {
@@ -253,36 +348,47 @@ Page({
       .limit(10).get().then(r => r.data || []).catch(() => [])
   },
 
-  loadReport(doc) {
+  async loadReport(doc) {
+    this.invalidateValuation()
+    this._reportFacts = null
+    const seq = this._loadSeq = (this._loadSeq || 0) + 1
+    const demo = this.data.demoMode
+    const scenario = this.data.demoScenario
     const city = String(doc.city || this.data.city || '').replace(/市$/, '')
-    const db = wx.cloud.database()
-    this.setData({ loading: true, dataStatus: '正在读取后台数据…' })
-    Promise.all([
-      db.collection('houses').where({ city, community: doc.community, category: '二手房' }).limit(200).get().then(r => r.data || []).catch(() => []),
-      db.collection('houses').where({ city, community: doc.community, category: '租房' }).limit(100).get().then(r => r.data || []).catch(() => []),
-      this.queryCityAverage(db, city),
-      db.collection('policies').where(db.command.or([{ city }, { city: '全国' }])).limit(5).get().then(r => r.data || []).catch(() => []),
-      this.queryCompetitors(db, city, doc.district, doc.community),
-      this.queryAuctionDeals(db, city, doc.community)
-    ]).then(([sales, rents, cityResult, policies, competitorStats, auctionDeals]) => {
-      const report = this.buildReport(doc, { sales, rents, auctionDeals }, cityResult, policies, competitorStats)
+    this.setData({ loading: true, report: emptyReport(), dataStatus: demo ? '正在读取本地演示数据…' : '正在读取后台数据…' })
+    try {
+      let market
+      if (demo) market = valuationClient.getDemoMarket(scenario)
+      else {
+        if (!wx.cloud) throw new Error('云服务不可用')
+        const db = wx.cloud.database()
+        const [sales, rents, cityResult, policies, competitorStats, auctionDeals] = await Promise.all([
+          db.collection('houses').where({ city, community: doc.community, category: '二手房' }).limit(200).get().then(r => r.data || []),
+          db.collection('houses').where({ city, community: doc.community, category: '租房' }).limit(100).get().then(r => r.data || []),
+          this.queryCityAverage(db, city),
+          db.collection('policies').where(db.command.or([{ city }, { city: '全国' }])).limit(5).get().then(r => r.data || []),
+          this.queryCompetitors(db, city, doc.district, doc.community),
+          this.queryAuctionDeals(db, city, doc.community)
+        ])
+        market = { sales, rents, cityResult, policies, competitorStats, auctionDeals }
+      }
+      if (this._disposed || seq !== this._loadSeq || demo !== this.data.demoMode || !this.data.selectedCommunity || this.data.selectedCommunity._id !== doc._id) return
+      this._reportFacts = { doc: JSON.parse(JSON.stringify(doc)), market }
+      const report = this.rebuildReport()
       const updated = first(doc.updatedAt, doc.updated_at, doc.crawledAt, doc.crawled_at, doc.created_at)
       const taxTool = report.tools.find(tool => tool.label === '交易税费参考')
       const taxTotal = (taxTool && taxTool.parts || []).find(part => part.name === '计税总价')
       const loanTotalPrice = taxTotal ? num(taxTotal.value) / 10000 : 0
       const loanForm = loanTotalPrice && !this.data.loanForm.totalPrice ? { ...this.data.loanForm, totalPrice: String(loanTotalPrice) } : this.data.loanForm
-      this.setData({
-        report,
-        loanForm,
-        loanResult: loanTotalPrice ? this.calculateLoanResult(loanForm) : this.data.loanResult,
-        loading: false,
-        dataStatus: report.missing.length ? '已生成，后台有 ' + report.missing.length + ' 项数据缺失' : '后台数据完整',
-        updatedAt: updated ? String(updated).slice(0, 10) : '未记录'
-      })
-    }).catch(err => {
-      console.log('[guide.loadReport]', err)
-      this.setData({ loading: false, dataStatus: '后台数据读取失败' })
-    })
+      this.setData({ loanForm, loanResult: this.calculateLoanResult(loanForm), loading: false,
+        dataStatus: demo ? '本地演示数据 · 不代表真实房产' : (report.missing.length ? '已生成，后台有 ' + report.missing.length + ' 项数据缺失' : '后台数据完整'),
+        updatedAt: updated ? String(updated).slice(0, 10) : '未记录' })
+      if (demo) return this.runValuation()
+    } catch (error) {
+      if (this._disposed || seq !== this._loadSeq || demo !== this.data.demoMode) return
+      this._reportFacts = null
+      this.setData({ loading: false, report: emptyReport(), dataStatus: demo ? '本地演示数据读取失败' : '后台数据读取失败', valuationError: error.message || '数据读取失败', valuationExportable: false })
+    }
   },
 
   queryCityAverage(db, city) {
@@ -310,10 +416,13 @@ Page({
   },
 
   exportPdf() {
-    reportExport.exportReport(this)
+    if (this.data.loading || this.data.valuationLoading || this.data.valuationDirty || this.data.valuationError || !readyValuation(this.data.valuationReport)) {
+      return wx.showToast({ title: '请先完成当前小区评估', icon: 'none' })
+    }
+    return reportExport.exportReport(this)
   },
 
-  buildReport(doc, { sales, rents, auctionDeals }, cityResult, policies, competitorStats) {
+  buildReport(doc, { sales = [], rents = [], auctionDeals = [] }, cityResult = {}, policies = [], competitorStats = [], valuation) {
     const houses = [...sales, ...rents]
     const dbQuery = null
     const base = doc.base || {}, price = doc.price || {}, props = doc.ajk_props || {}
@@ -385,7 +494,18 @@ Page({
     const incomeValue = rentAvg > 0 ? rentAvg * 12 * 0.95 / capRate : 0
     // 有备案价的项目收益法不参与（拟合权重为0）；普通小区保留20%并做异常保护
     const incomeReliable = beianRef <= 0 && incomeValue > 0 && marketValue > 0 && incomeValue >= marketValue * 0.7 && incomeValue <= marketValue * 1.5
-    const evaluation = incomeReliable ? marketValue * 0.8 + incomeValue * 0.2 : marketValue
+    const localBaseline = incomeReliable ? marketValue * 0.8 + incomeValue * 0.2 : marketValue
+    const hasValuation = valuation !== undefined && valuation !== null
+    const evaluation = hasValuation
+      ? (typeof valuation.effectiveUnitPrice === 'number' && Number.isFinite(valuation.effectiveUnitPrice) && valuation.effectiveUnitPrice > 0 ? valuation.effectiveUnitPrice : null)
+      : (localBaseline > 0 ? localBaseline : null)
+    const evaluationNote = hasValuation
+      ? (evaluation === null ? '数据不足，暂无采用价' : valuation.effectiveSource === 'model' ? '已采用结构化模型评估' : '公式参考价 · 模型未采用或待复核')
+      : '本地公式参考，尚未生成结构化评估'
+    const evaluationDisplay = evaluation === null ? '—' : String(Math.round(evaluation))
+    const serverBaseline = hasValuation && valuation.baseline || {}
+    const reportedMarketValue = hasValuation ? (typeof serverBaseline.marketValue === 'number' && serverBaseline.marketValue > 0 ? serverBaseline.marketValue : null) : marketValue
+    const reportedIncomeValue = hasValuation ? (typeof serverBaseline.incomeValue === 'number' && serverBaseline.incomeValue > 0 ? serverBaseline.incomeValue : null) : incomeValue
     // 市场评估价与工抵参考价的偏离：正数=评估高于工抵（即工抵折扣空间）
     const evalVsGongdi = gongdiValue > 0 && evaluation > 0 ? (evaluation / gongdiValue - 1) * 100 : 0
     const evalVsGongdiText = gongdiValue > 0 && evaluation > 0
@@ -416,13 +536,13 @@ Page({
     const deedTax = totalYuan ? totalYuan * deedRate : 0
     const policyText = policies.map(it => first(it.summary, it.purchase_limit, it.tax)).filter(Boolean).join('；')
     const priceItems = [
-      { label: '城市均价', amount: cityAvg, color: '#5B6E9E', note: cityResult.count ? cityResult.count + '条城市样本' : '' },
-      { label: '小区均价', amount: communityAvg, color: '#4A7889' },
-      { label: '楼盘近期平均成交价', labelLines: ['楼盘近期', '平均成交价'], amount: recentAvg, color: '#5B7F63' },
-      { label: '楼盘近期法拍成交价', labelLines: ['楼盘近期', '法拍成交价'], amount: auctionAvg, color: '#9C6055' },
-      { label: '楼盘平均挂牌价', labelLines: ['楼盘平均', '挂牌价'], amount: listingAvg, color: '#8A6A38' },
-      { label: '评估价格', amount: evaluation, color: '#7A5C93', note: beianRef > 0 ? '贝壳35%＋挂牌15%＋备案50%（拟合校准）' : (incomeReliable ? '市场比较法80%＋收益还原法20%' : '市场比较法（成交/贝壳均价/挂牌加权）') },
-      ...(gongdiValue > 0 ? [{ label: '工抵参考价', labelLines: ['工抵参考价'], amount: gongdiValue, color: '#A06A4A', note: '备案价×' + gongdiRatePct + '%（华发工抵实测折扣）' }] : [])
+      { key: 'city_average', label: '城市均价', amount: cityAvg, color: '#5B6E9E', note: cityResult.count ? cityResult.count + '条城市样本' : '' },
+      { key: 'community_average', label: '小区均价', amount: communityAvg, color: '#4A7889' },
+      { key: 'recent_deal', label: '楼盘近期平均成交价', labelLines: ['楼盘近期', '平均成交价'], amount: recentAvg, color: '#5B7F63' },
+      { key: 'auction_deal', label: '楼盘近期法拍成交价', labelLines: ['楼盘近期', '法拍成交价'], amount: auctionAvg, color: '#9C6055' },
+      { key: 'listing_average', label: '楼盘平均挂牌价', labelLines: ['楼盘平均', '挂牌价'], amount: listingAvg, color: '#8A6A38' },
+      { key: 'evaluation', label: '评估价格', amount: evaluation, color: '#7A5C93', note: evaluationNote },
+      ...(gongdiValue > 0 ? [{ key: 'gongdi_reference', label: '工抵参考价', labelLines: ['工抵参考价'], amount: gongdiValue, color: '#A06A4A', note: '备案价×' + gongdiRatePct + '%（华发工抵实测折扣）' }] : [])
     ]
     const priceChartMax = Math.ceil(Math.max(...priceItems.map(item => item.amount || 0), 0))
     const chartItems = priceItems.map(item => ({
@@ -471,9 +591,17 @@ Page({
       basic: basicRows,
       basicGroups,
       evaluation,
-      marketValue,
-      incomeValue,
-      capRate,
+      evaluationDisplay,
+      evaluationNote,
+      evaluationSource: hasValuation ? valuation.effectiveSource : 'local_rule',
+      valuationId: hasValuation ? valuation.valuationId : '',
+      communityAverageDisplay: communityAvg > 0 ? String(Math.round(communityAvg)) : '—',
+      cityAverageDisplay: cityAvg > 0 ? String(Math.round(cityAvg)) : '—',
+      listingAverageDisplay: listingAvg > 0 ? String(Math.round(listingAvg)) : '—',
+      rentAverageDisplay: rentAvg > 0 ? rentAvg.toFixed(1) + ' 元/㎡/月' : '暂无数据',
+      marketValue: reportedMarketValue,
+      incomeValue: reportedIncomeValue,
+      capRate: hasValuation ? serverBaseline.capRate || null : capRate,
       listingAvg,
       rentAvg,
       evalDeviation,
@@ -486,8 +614,9 @@ Page({
       prices: chartItems,
       priceDetails: [
         { label: '楼盘平均租金', value: show(rentAvg ? rentAvg.toFixed(1) : '', '元/㎡/月') },
-        { label: '市场比较法估值', value: show(marketValue ? Math.round(marketValue) : '', '元/㎡'), note: beianRef > 0 ? '贝壳35%＋挂牌15%＋备案50%（拟合权重）' : '近期成交、贝壳均价、挂牌价加权' },
-        { label: '收益还原法估值', value: incomeValue ? Math.round(incomeValue) + ' 元/㎡' : '暂无租金数据', note: (isCommercial ? '年租金×95% ÷ 4.5%' : '年租金×95% ÷ 2.0%') + '（资本化率校准）' },
+        ...(hasValuation ? [{ label: '后端公式基准价', value: show(valuation.baselineUnitPrice > 0 ? Math.round(valuation.baselineUnitPrice) : '', '元/㎡'), note: '与当前报告编号绑定的基准参考' }] : []),
+        { label: '市场比较法估值', value: show(reportedMarketValue ? Math.round(reportedMarketValue) : '', '元/㎡'), note: hasValuation ? '后端返回的方法明细；未提供时不使用页面旧公式补齐' : '页面公式参考：近期成交、贝壳均价、挂牌价加权' },
+        { label: '收益还原法估值', value: reportedIncomeValue ? Math.round(reportedIncomeValue) + ' 元/㎡' : '暂无方法明细', note: hasValuation ? '采用后端返回的收益法明细' : (isCommercial ? '年租金×95% ÷ 4.5%' : '年租金×95% ÷ 2.0%') },
         ...(beianRef > 0 ? [{
           label: '备案价参考（工抵房源）',
           value: Math.round(beianRef) + ' 元/㎡',
@@ -495,7 +624,7 @@ Page({
         }] : []),
         { label: '历史走势', value: trendText },
         { label: '评估价折价率', value: evalDeviation, note: '评估价相对平均挂牌价的偏离幅度' },
-        { label: '价格区间', value: priceRangeText, note: '取各项取样价的最低值到最高值' },
+        { label: '取样价格跨度', value: priceRangeText, note: '各项参考价格的最低值到最高值，不是模型估价区间' },
         ...(gongdiValue > 0 ? [{
           label: '工抵参考价（备案价×折扣）',
           value: gongdiValue + ' 元/㎡',

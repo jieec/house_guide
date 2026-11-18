@@ -31,6 +31,7 @@ function buildPages(ctx, data) {
     page = { commands: [], section: sectionName }; pages.push(page)
     rect(0, 0, W, H, C.pale, 0)
     text('购房指南  /  PROPERTY INSIGHT', M, 26, 12, C.muted)
+    if (data.isDemo) text('演示数据 · 仅用于功能验证', W - M - 230, 25, 15, C.warning, true)
     rect(M, 54, CW, 1, C.line, 0)
     y = 80
     if (sectionName) {
@@ -46,6 +47,12 @@ function buildPages(ctx, data) {
     rect(M, y, CW, ls.length * 27 + 16, C.lavender, 10)
     multiline(ls, M + 18, y + 8, 18, C.purple, true)
     y += ls.length * 27 + 28
+  }
+  function rowHeight(item) {
+    const label = lines(item.label || '项目', 156, 16)
+    const vals = lines(item.value, CW - 220, item.emphasis ? 20 : 17, !!item.emphasis)
+    const notes = item.note ? lines(item.note, CW - 220, 14) : []
+    return Math.max(label.length, vals.length + notes.length, 1) * 27 + 34
   }
   function row(item) {
     if (!item || item.value === undefined || item.value === null) return
@@ -81,6 +88,16 @@ function buildPages(ctx, data) {
     text(title, x + 20, yy + 18, 16, C.muted)
     text(score === '' || score == null ? '—' : score + ' 分', x + 20, yy + 48, 44, C.deep, false, true)
     multiline(ls, x + 20, yy + 112, 16, C.purple)
+  }
+  function valuationCard(x, yy, width, title, display, note) {
+    const vals = lines(display, width - 36, 32, false, true)
+    const notes = lines(note, width - 36, 15)
+    const h = 62 + vals.length * 48 + notes.length * 22.5
+    rect(x, yy, width, h, C.tint, 20)
+    text(title, x + 18, yy + 16, 16, C.muted)
+    let cy = multiline(vals, x + 18, yy + 48, 32, C.deep, false, true) + 8
+    multiline(notes, x + 18, cy, 15, C.purple)
+    return h
   }
   function infoCards(items) {
     for (let i = 0; i < items.length;) {
@@ -129,8 +146,8 @@ function buildPages(ctx, data) {
   // Cover: compact enough to include a useful overview, not an empty title page.
   newPage()
   rect(M, 82, CW, 8, C.purple, 4)
-  text('购房决策参考', M, 119, 18, C.muted)
-  text('房产评估报告', M, 160, 48, C.deep, false, true)
+  text(data.isDemo ? '演示样张 · 不代表真实房产' : '购房决策参考', M, 119, 18, C.muted)
+  text(data.reportKind || '房产评估报告', M, 160, 44, C.deep, false, true)
   const titleLines = lines(data.title || '房产评估报告', CW, 30, false, true)
   y = multiline(titleLines.slice(0, 4), M, 234, 30, C.purple, false, true) + 16
   // Full property name is repeated as a wrapping row if it exceeds the cover.
@@ -138,10 +155,17 @@ function buildPages(ctx, data) {
   text('数据更新  ' + (data.updatedAt || '未提供'), M, y, 14, C.muted); y += 24
   text('生成日期  ' + (data.generatedAt || new Date().toISOString().slice(0, 10)), M, y, 14, C.muted); y += 40
   const summary = data.summary || {}
-  ensure(180)
-  scoreCard(M, y, (CW - 18) / 2, '投资参考', summary.investmentScore, summary.investmentLevel)
-  scoreCard(M + (CW + 18) / 2, y, (CW - 18) / 2, '自住参考', summary.selfuseScore, summary.selfuseLevel)
-  y += 180
+  ensure(210)
+  if (data.valuationSummary) {
+    const summary = data.valuationSummary, w = (CW - 18) / 2
+    const left = valuationCard(M, y, w, '当前采用单价 · 元/㎡', summary.unitPrice, summary.source)
+    const right = valuationCard(M + w + 18, y, w, '采用总价', summary.totalPrice, summary.status)
+    y += Math.max(left, right) + 24
+  } else {
+    scoreCard(M, y, (CW - 18) / 2, '投资参考', summary.investmentScore, summary.investmentLevel)
+    scoreCard(M + (CW + 18) / 2, y, (CW - 18) / 2, '自住参考', summary.selfuseScore, summary.selfuseLevel)
+    y += 180
+  }
   const highlights = (data.chart || []).filter(it => ['小区均价', '评估价格', '城市均价'].includes(it.label))
   if (highlights.length) {
     ensure(120)
@@ -183,11 +207,15 @@ function buildPages(ctx, data) {
         text(it.label, M + 18, y + 14, 17, C.muted)
         text(it.value, M + 470, y + 11, 24, C.deep, false, true)
         rect(M + 18, y + 50, CW - 36, 12, C.tint, 6)
-        if (max && it.amount > 0) rect(M + 18, y + 50, (CW - 36) * it.amount / max, 12, it.label === '评估价格' ? C.purple : (it.label === '工抵参考价' ? '#A06A4A' : '#A198C4'), 6)
+        if (max && it.amount > 0) rect(M + 18, y + 50, (CW - 36) * it.amount / max, 12, it.key === 'effective' || it.label === '评估价格' ? C.purple : (it.label === '工抵参考价' ? '#A06A4A' : '#A198C4'), 6)
         multiline(note, M + 18, y + 72, 14, C.muted)
         y += h + 12
       }
       items = items.slice(data.chart.length)
+      // Keep short structured price details together instead of leaving only a
+      // review warning on a continuation page after the chart.
+      const detailHeight = 55 + items.reduce((total, item) => total + rowHeight(item), 0)
+      if (data.valuationSnapshot && detailHeight <= BOTTOM - 142 && y + detailHeight > BOTTOM) newPage(true)
       group('价格明细')
     }
     for (const item of items) {
@@ -204,7 +232,7 @@ function buildPages(ctx, data) {
   row({label: '使用边界', value: '本报告根据当前保存信息与后台数据生成，仅供筛选、估值和预算参考。产权、交易、学区、贷款、税费及现场状况应以正式文件、银行审批和现场核验结果为准。'})
   pages.forEach((p, i) => {
     p.commands.push({type:'rect', x:M, y:1009, w:CW, h:1, fill:C.line, radius:0})
-    p.commands.push({type:'text', text:'购房指南 · ' + (i ? p.section : '报告概览'), x:M, y:1022, size:12, color:C.muted})
+    p.commands.push({type:'text', text:(data.isDemo ? '演示数据 · ' : '购房指南 · ') + (i ? p.section : '报告概览'), x:M, y:1022, size:12, color:data.isDemo ? C.warning : C.muted})
     p.commands.push({type:'text', text:String(i + 1).padStart(2, '0') + ' / ' + String(pages.length).padStart(2, '0'), x:W - M - 60, y:1022, size:12, color:C.muted})
   })
   return pages

@@ -13,6 +13,7 @@ $RECYCLE.BIN/
 # Node.js
 node_modules/
 tmp/pdfs/
+tmp/deploy/
 auction_scraper/.venv/
 auction_scraper/output/
 auction_scraper/__pycache__/

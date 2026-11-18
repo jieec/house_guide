@@ -1,14 +1,24 @@
 <!-- 全局固定背景 -->
 <image class="global-fixed-bg" src="/images/整体背景.jpg" mode="aspectFill"></image>
 
-<view wx:if="{{loading}}" class="load-tip">加载中...</view>
+<view class="analysis-main">
+  <view class="demo-strip" wx:if="{{demoMode}}">
+    <view class="demo-title">本地演示 · 全部为模拟数据</view>
+    <view class="demo-copy">用于验证估价、页面和 PDF 流程，不代表真实房产或在线模型结果。</view>
+    <picker range="{{demoScenarios}}" range-key="label" value="{{demoScenarioIndex}}" bindchange="onDemoScenario" disabled="{{exportingReport}}">
+      <view class="demo-picker">测试场景：{{demoScenarios[demoScenarioIndex].label}} <text>切换</text></view>
+    </picker>
+    <button class="demo-link" bindtap="goGuideDemo" disabled="{{exportingReport}}">查看小区报告演示</button>
+  </view>
+
+<view wx:if="{{loading}}" class="load-tip">正在读取房源…</view>
 
 <block wx:elif="{{item}}">
   <view class="a-hero animated" style="animation-delay: 0.05s">
     <view class="a-city">{{item.city}} · {{item.community || item.district || ''}}</view>
     <view class="a-title">{{item.title}}</view>
     <view class="a-price" wx:if="{{saleTotal}}">{{saleTotal}}万<text class="a-unit2" wx:if="{{salePer}}"> · {{salePer}}元/㎡</text></view>
-    <view class="a-meta" wx:if="{{item.rooms || area}}">{{item.rooms}} {{area}}㎡ {{item.orientation}}</view>
+    <view class="a-meta">{{item.rooms}} <text wx:if="{{area}}">{{area}}㎡</text><text wx:else>面积待核实</text> {{item.orientation}}</view>
   </view>
 
   <block wx:if="{{isRent}}">
@@ -17,7 +27,7 @@
       <view class="card-sub">当前为租房房源：租金单价 {{rentPerSqm}} 元/平/月</view>
       <view class="form-row">
         <view class="form-label">房价(元/平)</view>
-        <input class="form-input" type="digit" placeholder="输入房价计算租售比" value="{{pricePerSqm}}" data-field="pricePerSqm" bindinput="onInput" />
+        <input class="form-input" type="digit" placeholder="输入房价计算租售比" value="{{pricePerSqm}}" data-field="pricePerSqm" bindinput="onInput" disabled="{{exportingReport}}" />
       </view>
       <view class="btn-ghost" bindtap="calcRentRatio">计算租售比</view>
       <view class="result" wx:if="{{rentRatioResult}}">
@@ -34,50 +44,56 @@
   </block>
 
   <block wx:else>
+    <view class="valuation-actions">
+      <view class="valuation-actions-title">单套房估价</view>
+      <view class="valuation-actions-copy">基准价、模型候选价和采用价分别展示，待复核结果保留公式参考价。</view>
+      <button class="valuation-button" bindtap="runValuation" loading="{{valuationLoading}}" disabled="{{valuationLoading || exportingReport}}">{{valuationLoading ? '正在生成估价…' : (valuationReport ? '重新生成估价' : '生成估价报告')}}</button>
+    </view>
+    <valuation-panel report="{{valuationReport}}" loading="{{valuationLoading}}" error="{{valuationError}}" bind:retry="runValuation" />
     <view class="card animated" style="animation-delay: 0.15s">
       <view class="card-title">分析参数</view>
-      <view class="card-sub">已自动填入房源数据，只需确认或微调</view>
+      <view class="card-sub">房源数据用于预算测算；修改面积或目的后，需要重新生成估价报告。</view>
       <view class="form-row">
         <view class="form-label">购房目的</view>
-        <picker class="form-input-wrap" range="{{purposes}}" value="{{purposeIndex}}" bindchange="onPurpose">
+        <picker class="form-input-wrap" range="{{purposes}}" value="{{purposeIndex}}" bindchange="onPurpose" disabled="{{exportingReport}}">
           <view>{{purposes[purposeIndex]}}<view class="ic ic-chevron picker-arrow"></view></view>
         </picker>
       </view>
       <view class="form-row">
         <view class="form-label">销售价(元/平)</view>
-        <input class="form-input" type="digit" placeholder="房源挂牌单价" value="{{salePer}}" data-field="salePer" bindinput="onInput" />
+        <input class="form-input" type="digit" placeholder="房源挂牌单价" value="{{salePer}}" data-field="salePer" bindinput="onInput" disabled="{{exportingReport}}" />
       </view>
       <view class="form-row">
         <view class="form-label">评估价(元/平)</view>
-        <input class="form-input" type="digit" placeholder="可参考世联/贝壳评估" value="{{evalPer}}" data-field="evalPer" bindinput="onInput" />
+        <view class="form-readonly">{{evalPer || '待生成'}}<text class="readonly-note">采用价随报告更新</text></view>
       </view>
       <view class="form-row">
-        <view class="form-label">面积(平)</view>
-        <input class="form-input" type="digit" value="{{area}}" data-field="area" bindinput="onInput" />
+        <view class="form-label">单套面积(㎡)</view>
+        <input class="form-input" type="digit" placeholder="缺失时请人工核实补录" value="{{area}}" data-field="area" bindinput="onInput" disabled="{{exportingReport}}" />
       </view>
       <view class="form-row">
         <view class="form-label">本人年龄</view>
-        <input class="form-input" type="number" value="{{age}}" data-field="age" bindinput="onInput" />
+        <input class="form-input" type="number" value="{{age}}" data-field="age" bindinput="onInput" disabled="{{exportingReport}}" />
       </view>
       <view class="form-row">
         <view class="form-label">利率(%)</view>
-        <input class="form-input" type="digit" value="{{rate}}" data-field="rate" bindinput="onInput" />
+        <input class="form-input" type="digit" value="{{rate}}" data-field="rate" bindinput="onInput" disabled="{{exportingReport}}" />
       </view>
       <view class="form-row">
         <view class="form-label">是否首套</view>
-        <picker class="form-input-wrap" range="{{suiteType}}" value="{{suiteIndex}}" bindchange="onSuite">
+        <picker class="form-input-wrap" range="{{suiteType}}" value="{{suiteIndex}}" bindchange="onSuite" disabled="{exportingReport}">
           <view>{{suiteType[suiteIndex]}}<view class="ic ic-chevron picker-arrow"></view></view>
         </picker>
       </view>
       <view class="form-row">
         <view class="form-label">是否满2年</view>
-        <picker class="form-input-wrap" range="{{fullTwo}}" value="{{fullTwoIndex}}" bindchange="onFullTwo">
+        <picker class="form-input-wrap" range="{{fullTwo}}" value="{{fullTwoIndex}}" bindchange="onFullTwo" disabled="{exportingReport}">
           <view>{{fullTwo[fullTwoIndex]}}<view class="ic ic-chevron picker-arrow"></view></view>
         </picker>
       </view>
       <view class="form-row">
         <view class="form-label">满五唯一</view>
-        <picker class="form-input-wrap" range="{{fullFive}}" value="{{fullFiveIndex}}" bindchange="onFullFive">
+        <picker class="form-input-wrap" range="{{fullFive}}" value="{{fullFiveIndex}}" bindchange="onFullFive" disabled="{exportingReport}">
           <view>{{fullFive[fullFiveIndex]}}<view class="ic ic-chevron picker-arrow"></view></view>
         </picker>
       </view>
@@ -87,7 +103,7 @@
 
     <view class="card animated" wx:if="{{gap}}" style="animation-delay: 0.20s">
       <view class="card-title">性价比测算</view>
-      <view class="card-sub">(销售价 - 评估价) × 面积 × 85折</view>
+      <view class="card-sub">（采用评估价 − 销售价）× 报告面积 × 85%，正值表示挂牌低于采用价</view>
       <view class="result">
         <view class="result-line">
           <view class="result-label">测算差额</view>
@@ -101,10 +117,10 @@
     </view>
 
     <view class="card animated" wx:if="{{loanAmount}}" style="animation-delay: 0.25s">
-      <view class="card-title">融资建议</view>
+      <view class="card-title">融资预算示例</view>
       <view class="result">
         <view class="result-line">
-          <view class="result-label">可贷金额(评估价×85%)</view>
+          <view class="result-label">示例贷款额(采用总价×85%)</view>
           <view class="result-num">{{loanAmount}} 元</view>
         </view>
         <view class="result-line">
@@ -140,7 +156,7 @@
     </view>
 
     <view class="card animated" wx:if="{{totalTax}}" style="animation-delay: 0.35s">
-      <view class="card-title">税费测算</view>
+      <view class="card-title">税费示例测算</view>
       <view class="result">
         <view class="result-line">
           <view class="result-label">契税</view>
@@ -167,3 +183,15 @@
     </view>
   </block>
 </block>
+
+<view wx:if="{{!loading && loadError}}" class="load-error">
+  <view>{{loadError}}</view>
+  <button class="valuation-button" bindtap="loadCurrentHouse">重新读取房源</button>
+</view>
+<view wx:if="{{item && !isRent}}" class="single-report-export">
+  <view class="export-heading">导出当前估价报告</view>
+  <view class="export-description">估价结果、依据和建议与当前页面保持一致。{{demoMode ? 'PDF 将标注演示数据。' : ''}}</view>
+  <button class="valuation-button" bindtap="exportPdf" loading="{{exportingReport}}" disabled="{{!canExport || valuationLoading || valuationDirty || valuationError || exportingReport}}">{{exportingReport ? '正在生成 PDF…' : '生成 PDF 报告'}}</button>
+</view>
+<canvas type="2d" id="pdfCanvas" class="single-pdf-canvas"></canvas>
+</view>

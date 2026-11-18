@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "金融分析"
+  "navigationBarTitleText": "单套房产估价",
+  "usingComponents": {
+    "valuation-panel": "/components/valuation-panel/index"
+  }
 }

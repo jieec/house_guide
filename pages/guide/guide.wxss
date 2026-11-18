@@ -1698,3 +1698,25 @@ page {
 
 .ai-error { margin-top: 20rpx; color: #C0392B; font-size: 24rpx; }
 .ai-disclaimer { margin-top: 16rpx; font-size: 22rpx; color: #B8B8C9; }
+
+/* Explicit local demo controls use the existing lavender palette. */
+.demo-entry,
+.demo-banner {
+  margin-bottom: 24rpx;
+  padding: 24rpx;
+  border: 1rpx solid #D8D3EC;
+  border-radius: 24rpx;
+  background: #FFFFFF;
+}
+.demo-banner { background: #EFECFA; }
+.demo-banner-title { color: #52467B; font-weight: 700; font-size: 28rpx; }
+.demo-entry-copy,
+.demo-banner-copy { color: #6C6A8E; font-size: 24rpx; line-height: 1.7; }
+.demo-scenario-picker { margin-top: 20rpx; padding: 16rpx 20rpx; border: 1rpx solid #C1BAD9; border-radius: 16rpx; color: #372C57; background: white; }
+.demo-entry-button,
+.valuation-generate-button { margin-top: 18rpx; margin-bottom: 24rpx; border-radius: 18rpx; background: #52467B; color: white; font-size: 27rpx; }
+.demo-entry-button { margin-bottom: 0; }
+.demo-banner-actions { display: flex; gap: 16rpx; margin-top: 18rpx; }
+.demo-secondary-button { flex: 1; margin: 0; padding: 0 12rpx; border: 1rpx solid #C1BAD9; border-radius: 16rpx; background: white; color: #52467B; font-size: 24rpx; }
+.valuation-generate-button[disabled],
+.report-export-button[disabled] { background: #D8D3EC; color: #6C6A8E; }

@@ -1,0 +1,35 @@
+<view class="valuation-panel">
+  <view wx:if="{{loading}}" class="valuation-state">正在生成估价，请稍候…</view>
+  <view wx:elif="{{error}}" class="valuation-state valuation-error">
+    <view>估价未完成</view><view class="valuation-copy">{{error}}</view>
+    <button class="valuation-retry" bindtap="retry">重新尝试</button>
+  </view>
+  <block wx:elif="{{view}}">
+    <view wx:if="{{view.isDemo}}" class="valuation-demo">{{view.demoLabel}}</view>
+    <view class="valuation-heading"><text>{{view.title}}</text><text class="valuation-status">{{view.statusLabel}}</text></view>
+    <view class="valuation-primary">
+      <view class="valuation-label">当前采用单价 · 元/㎡</view><view class="valuation-number">{{view.effectivePrice}}</view>
+      <view class="valuation-copy">{{view.sourceLabel}} · {{view.areaLabel}}</view>
+      <view class="valuation-total" wx:if="{{view.hasTotal}}">评估总价 <text class="valuation-total-number">{{view.totalPrice}}</text> 万元</view>
+    </view>
+    <view class="valuation-prices">
+      <view><view class="valuation-label">公式基准价 · 元/㎡</view><view class="valuation-secondary">{{view.baselinePrice}}</view></view>
+      <view wx:if="{{view.hasCandidate}}"><view class="valuation-label">模型候选价 · 元/㎡</view><view class="valuation-secondary">{{view.candidatePrice}}</view></view>
+    </view>
+    <view class="valuation-copy" wx:if="{{view.rangeLabel}}">参考区间 {{view.rangeLabel}}（非统计置信区间）</view>
+    <view class="valuation-copy valuation-review" wx:if="{{view.candidateRangeLabel}}">待复核候选区间 {{view.candidateRangeLabel}}</view>
+    <view class="valuation-review" wx:for="{{view.reviewReasons}}" wx:key="*this">{{item}}</view>
+    <view class="valuation-review" wx:if="{{view.fallbackLabel}}">{{view.fallbackLabel}}</view>
+    <view class="valuation-subheading" wx:if="{{view.summary || view.buyerAdvice || view.disposalAdvice}}">{{view.adviceLabel}}</view>
+    <view class="valuation-copy" wx:if="{{view.summary}}">{{view.summary}}</view>
+    <view wx:if="{{view.buyerAdvice}}"><view class="valuation-label">买方建议</view><view class="valuation-copy">{{view.buyerAdvice}}</view></view>
+    <view wx:if="{{view.disposalAdvice}}"><view class="valuation-label">卖方 / 银行处置意见</view><view class="valuation-copy">{{view.disposalAdvice}}</view></view>
+    <view class="valuation-subheading" wx:if="{{view.evidence.length}}">价格依据</view>
+    <view class="valuation-evidence" wx:for="{{view.evidence}}" wx:key="id">
+      <view>{{item.kindLabel}} · {{item.priceLabel}} {{item.unitLabel}}</view><view class="valuation-copy">{{item.dateLabel}} · {{item.sourceLabel}}</view>
+    </view>
+    <view wx:if="{{view.missingFields.length}}"><view class="valuation-subheading">待补充信息</view><view class="valuation-copy" wx:for="{{view.missingFields}}" wx:key="*this">{{item}}</view></view>
+    <view class="valuation-meta">报告编号 {{view.valuationId}}</view><view class="valuation-meta">{{view.generatedAt}}</view>
+  </block>
+  <view wx:else class="valuation-state">生成估价后，可查看价格依据和处置建议。</view>
+</view>

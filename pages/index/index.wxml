@@ -52,6 +52,12 @@
       </view>
     </view>
 
+    <view class="demo-entry">
+      <view class="demo-entry-title">本地演示</view>
+      <view class="demo-entry-copy">使用虚构房源验证估价与 PDF，演示估价不调用云端或大模型。</view>
+      <view class="demo-entry-actions"><button bindtap="goDemo">单套房估价演示</button><button bindtap="goGuideDemo">小区报告演示</button></view>
+    </view>
+
     <!-- ============ 快捷工具 ============ -->
     <view class="section-heading animated" style="animation-delay: .14s">
       <view>

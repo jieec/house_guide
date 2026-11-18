@@ -1,8 +1,11 @@
 {
   "name": "aiChat",
   "version": "1.0.0",
-  "description": "DeepSeek 房产评估助手",
+  "description": "房产结构化估价与 AI 解读接口",
   "main": "index.js",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
   "dependencies": {
     "wx-server-sdk": "~2.6.3"
   }

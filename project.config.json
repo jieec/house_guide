@@ -33,6 +33,14 @@
   "packOptions": {
     "ignore": [
       {
+        "value": "tests",
+        "type": "folder"
+      },
+      {
+        "value": "scripts",
+        "type": "folder"
+      },
+      {
         "value": "output",
         "type": "folder"
       },

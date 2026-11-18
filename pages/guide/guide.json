@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "房产分析报告"
+  "navigationBarTitleText": "房产分析报告",
+  "usingComponents": {
+    "valuation-panel": "/components/valuation-panel/index"
+  }
 }
