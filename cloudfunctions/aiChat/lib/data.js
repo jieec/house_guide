@@ -63,6 +63,13 @@ function propertyClass(value) {
   return null
 }
 function average(values) { return values.length ? values.reduce((sum, n) => sum + n, 0) / values.length : null }
+function firstQuartile(values) {
+  if (!values.length) return null
+  const sorted = values.slice().sort((a, b) => a - b)
+  const index = (sorted.length - 1) / 4
+  const lower = Math.floor(index)
+  return sorted[lower] + (sorted[Math.ceil(index)] - sorted[lower]) * (index - lower)
+}
 function safeUrl(value) {
   try {
     const url = new URL(text(value, 2048))
@@ -117,8 +124,11 @@ async function readHouses(db, community, warnings) {
   return result
 }
 
+function tradeStatuses(row) {
+  return [row.transactionStatus, row.transaction_status, row.status, row.trade_status, row.auction_status].map(value => text(value).toLowerCase()).filter(Boolean)
+}
 function isSold(row) {
-  const statuses = [row.transactionStatus, row.transaction_status, row.status, row.trade_status, row.auction_status].map(value => text(value).toLowerCase()).filter(Boolean)
+  const statuses = tradeStatuses(row)
   return !statuses.some(status => UNSOLD.has(status)) && statuses.some(status => SOLD.has(status))
 }
 function isAuction(row) {
@@ -272,15 +282,18 @@ async function loadValuationData(db, request, now = new Date()) {
   })
   // These arrays explicitly represent closed transactions, unlike generic house
   // listings. Generic unit_price is valid only inside these transaction arrays.
+  const dealSummary = community.deals || {}
+  const recentRows = Array.isArray(dealSummary.recent) ? dealSummary.recent : []
   const embedded = [
-    { rows: community.deals && community.deals.recent, origin: 'communities.deals.recent' },
+    { rows: recentRows, origin: 'communities.deals.recent' },
     { rows: price.dealRecords, origin: 'communities.price.dealRecords' }
   ]
   embedded.forEach(group => (Array.isArray(group.rows) ? group.rows : []).slice(0, 100).forEach((row, index) => {
+    if (!row || typeof row !== 'object') return
     const rowClass = propertyClass(row.propertyType || row.property_type)
     if (targetClass && rowClass && targetClass !== rowClass) return
     if (!useCommunitySummary && !rowClass) return
-    if ([row.status, row.trade_status].some(status => UNSOLD.has(text(status).toLowerCase()))) return
+    if (tradeStatuses(row).some(status => UNSOLD.has(status))) return
     add(isAuction(row) ? 'auction_deal' : 'sale_deal', dealUnitPrice(row, true), row, group.origin, row.date || row.deal_date, index)
   }))
   const communityAvg = useCommunitySummary ? firstNumber([price.price, community.ajk_avg_price, beike.avg_price]) : null
@@ -301,13 +314,37 @@ async function loadValuationData(db, request, now = new Date()) {
   const finalEvidence = selected.slice(0, MAX_EVIDENCE)
   const byKind = kind => finalEvidence.filter(item => item.kind === kind).map(item => item.unitPrice)
   const sales = byKind('sale_deal'), auctionDeals = byKind('auction_deal'), listings = byKind('listing'), rents = byKind('rent')
+  // The prompt shows a bounded set of examples. Compute P25 from every eligible
+  // listing in the bounded database read, without substituting the listing mean.
+  const listingSamples = (perKind.get('listing') || []).map(item => item.unitPrice)
+  const summaryCount = number(dealSummary.count)
+  const summaryUnitPrice = number(dealSummary.avg_unit_price)
+  const summaryDate = isoDate(dealSummary.latest_date)
+  // The upstream transaction feed provides its own aggregate. It can cover
+  // more deals than the available examples, but it does not create evidence IDs.
+  const summaryHasExcludedRows = recentRows.some(row => {
+    if (!row || typeof row !== 'object') return true
+    const date = isoDate(row.date || row.deal_date)
+    const rowClass = propertyClass(row.propertyType || row.property_type)
+    return isAuction(row) || tradeStatuses(row).some(status => UNSOLD.has(status)) ||
+      (date && date > today) || (targetClass && rowClass && targetClass !== rowClass) ||
+      (house && (text(row._id) || text(row.id)) === targetId)
+  })
+  const useDealSummary = useCommunitySummary && Number.isSafeInteger(summaryCount) && summaryCount > 0 &&
+    summaryUnitPrice !== null && (!summaryDate || summaryDate <= today) && !summaryHasExcludedRows &&
+    !isAuction(dealSummary) && !/法拍|拍卖|auction/i.test(text(dealSummary.source))
+  if (summaryDate && summaryDate > today) warnings.push('已排除日期晚于评估日的成交汇总')
   const acceptedCommunityAvg = finalEvidence.find(item => item.kind === 'community_reference')
   const acceptedFiling = finalEvidence.find(item => item.kind === 'filing_reference')
   const market = {
     listingAvg: average(listings) || (useCommunitySummary ? firstNumber([price.listingPrice]) : null),
-    recentDealAvg: average(sales), rentPerSqm: average(rents) || (useCommunitySummary ? firstNumber([price.rentPerSqm, community.rentals && community.rentals.avg_unit_rent]) : null),
+    listingP25: firstQuartile(listingSamples),
+    listingSampleCount: listingSamples.length,
+    recentDealAvg: useDealSummary ? summaryUnitPrice : average(sales),
+    recentDealSource: useDealSummary ? 'community_deal_summary' : sales.length ? 'individual_sale_evidence' : null,
+    rentPerSqm: average(rents) || (useCommunitySummary ? firstNumber([price.rentPerSqm, price.rent, community.rentals && community.rentals.avg_unit_rent]) : null),
     auctionDealAvg: average(auctionDeals), communityAvg: acceptedCommunityAvg ? acceptedCommunityAvg.unitPrice : average(listings),
-    filingPrice: acceptedFiling ? acceptedFiling.unitPrice : null, gongdiPrice: useCommunitySummary ? firstNumber([reference.gongdi_price]) : null, dealCount: sales.length
+    filingPrice: acceptedFiling ? acceptedFiling.unitPrice : null, gongdiPrice: useCommunitySummary ? firstNumber([reference.gongdi_price]) : null, dealCount: useDealSummary ? summaryCount : sales.length
   }
   const missingFields = []
   if (target.type === 'house') {
@@ -319,7 +356,7 @@ async function loadValuationData(db, request, now = new Date()) {
   }
   if (!target.propertyType) missingFields.push('propertyType')
   if (!sales.length) missingFields.push('saleDeals')
-  if (!market.listingAvg && !market.communityAvg && !market.filingPrice) missingFields.push('marketPriceReference')
+  if (!market.listingP25 && !market.communityAvg && !market.recentDealAvg) missingFields.push('marketPriceReference')
   if (finalEvidence.some(item => !item.date)) warnings.push('部分证据没有可验证日期，需核实数据时效')
   if (market.listingAvg && !listings.length) warnings.push('挂牌均价来自小区汇总，缺少逐条挂牌证据')
   if (market.rentPerSqm && !rents.length) warnings.push('租金来自小区汇总，缺少逐条租赁证据')

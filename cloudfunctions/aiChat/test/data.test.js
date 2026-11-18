@@ -163,8 +163,42 @@ test('supports explicit embedded transaction arrays and Extended JSON values', a
   assert.ok(result.warnings.some(warning => warning.includes('晚于评估日')))
 })
 
-test('aggregate recentDealPrice alone does not fabricate verified transaction records', async () => {
-  const result = await load({ communities: [community({ price: { recentDealPrice: 20000, auctionPrice: 10000 }, deals: { count: 10, avg_unit_price: 20000 } })] })
+test('a normal transaction summary anchors the baseline without creating individual evidence', async () => {
+  const result = await load({ communities: [community({
+    price: { recentDealPrice: 18862, auctionPrice: 10000 },
+    deals: { source: 'beike', count: { $numberInt: '2' }, avg_unit_price: { $numberInt: '16821' }, latest_date: '2026-08-01' }
+  })] })
+  assert.equal(result.market.recentDealAvg, 16821)
+  assert.equal(result.market.dealCount, 2)
+  assert.equal(result.market.recentDealSource, 'community_deal_summary')
+  assert.equal(result.dataQuality.saleDealCount, 0)
+  assert.equal(result.evidence.some(item => item.kind === 'sale_deal'), false)
+})
+
+test('uncounted price fields, auctions and future-dated summaries do not feed the normal sale baseline', async () => {
+  for (const deals of [{ count: 2 }, { count: 2, avg_unit_price: 16000, source: '法拍' }, { count: 2, avg_unit_price: 16000, latest_date: '2027-01-01' }]) {
+    const result = await load({ communities: [community({ price: { recentDealPrice: 20000, auctionPrice: 10000 }, deals })] })
+    assert.equal(result.market.recentDealAvg, null)
+    assert.equal(result.market.auctionDealAvg, null)
+    assert.equal(result.market.dealCount, 0)
+  }
+})
+
+test('derives interpolated P25 from eligible listings, excluding sold and auction records', async () => {
+  const prices = [20000, 24000, 28000, 32000]
+  const result = await load({ houses: [
+    ...prices.map((unit_price, i) => house({ _id: 'listing-' + i, unit_price })),
+    house({ _id: 'sold', status: '已成交', unit_price: 10000, deal_unit_price: 14000 }),
+    house({ _id: 'auction', category: '法拍', unit_price: 10000 })
+  ] })
+  assert.equal(result.market.listingP25, 23000)
+  assert.equal(result.market.listingSampleCount, 4)
+  assert.equal(result.market.listingAvg, 26000)
+  assert.equal(result.market.recentDealAvg, 14000)
+})
+
+test('an uncounted price field alone does not fabricate sale evidence', async () => {
+  const result = await load({ communities: [community({ price: { recentDealPrice: 20000, auctionPrice: 10000 } })] })
   assert.equal(result.market.recentDealAvg, null)
   assert.equal(result.market.auctionDealAvg, null)
   assert.equal(result.market.dealCount, 0)

@@ -2,6 +2,9 @@ const test = require('node:test')
 const assert = require('node:assert/strict')
 const exporter = require('../utils/report-export')
 const layout = require('../utils/report-layout')
+const { toValuationView } = require('../utils/valuation-result')
+const { createValuationService } = require('../cloudfunctions/aiChat/lib/service')
+const { memoryDb } = require('../cloudfunctions/aiChat/test/helpers/memory-db')
 
 function fixture(extra = {}) {
   return {
@@ -71,6 +74,48 @@ test('review PDF preserves exact server candidate total and keeps price details 
   assert.match(detailText, /1819296 元/)
   r.reviewReasons.forEach(reason => assert.ok(detailText.includes(reason)))
   assert.equal(pages.some(page => page.commands.some(c => c.text === '演示数据 · 仅用于功能验证')), false)
+})
+
+test('the current cloud rule and a separate model candidate survive the page and PDF path', async () => {
+  const communityId = 'c-merge-fixture'
+  const house = { city: '珠海', community: '示例小区', communityId, category: '二手房', propertyType: '住宅' }
+  const db = memoryDb({
+    communities: [{ _id: communityId, city: house.city, community: house.community, propertyType: '住宅',
+      deals: { count: 3, avg_unit_price: 25500 }, reference: { beian_price: 25000 } }],
+    houses: [{ ...house, _id: 'target', area_sqm: 90, floor: 5, total_floors: 18, rooms: '3室',
+      orientation: '南', decoration: '精装', occupancy: '空置', unit_price: 28000 },
+    { ...house, _id: 'listing-a', unit_price: 26000 },
+    { ...house, _id: 'listing-b', unit_price: 30000 }],
+    ai_config: [{ _id: 'main', maxDeviationRatio: 0.1 }]
+  })
+  const service = createValuationService({
+    db, environment: { DEEPSEEK_KEY: 'TEST_ONLY' }, now: () => new Date('2026-11-18T08:00:00Z'),
+    generate: async ({ context }) => ({
+      estimate: {
+        unitPrice: 25500, priceRange: { low: 24500, high: 26500 }, adjustments: [],
+        evidenceIds: [context.evidence.find(item => item.kind === 'listing').id],
+        buyerAdvice: '检查实际房况。', disposalAdvice: '核对交付条件。', missingFields: [], summary: '根据两条挂牌比较。'
+      }, usage: {}
+    })
+  })
+  const result = await service.handle({
+    action: 'createEvaluation', targetType: 'house', houseId: 'target', requestId: 'pdf-current-rule'
+  }, 'fixture-user')
+  assert.equal(result.ok, true)
+  const r = result.report
+  assert.equal(r.baseline.marketValue, 25530)
+  assert.equal(r.baselineUnitPrice, 25000)
+  assert.equal(r.status, 'needs_review')
+  assert.ok(r.reviewReasons.some(reason => reason.includes('备案')))
+  assert.equal(toValuationView(r).effectivePrice, '25,000')
+  assert.equal(toValuationView(r).candidatePrice, '25,500')
+
+  const data = exporter.collect({ data: { valuationReport: r, report: { evaluation: 12345 } } })
+  assert.equal(data.valuationId, r.valuationId)
+  assert.equal(data.valuationSummary.unitPrice, '25000')
+  assert.equal(data.valuationSummary.totalPrice, '2250000 元')
+  assert.match(allText(data), /候选总价（待复核） 2295000 元/)
+  assert.match(allText(data), /基准规则：baseline-v2/)
 })
 
 test('timeout fallback and insufficient evidence do not fabricate model advice or zero price', () => {

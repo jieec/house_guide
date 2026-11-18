@@ -80,6 +80,9 @@ function validateEstimate(estimate, { context = {}, baseline = {}, config = {}, 
       reviewReasons.push('模型候选价相对公式基准的偏离超过配置阈值')
     }
   } else reviewReasons.push('缺少有效公式基准，模型候选价需人工复核')
+  if (positive(baseline.filingPrice) && positive(estimate.unitPrice) && estimate.unitPrice > baseline.filingPrice) {
+    reviewReasons.push('模型候选价超过备案价上限，需人工复核')
+  }
   const missing = [...new Set([...(context.missingFields || []), ...(Array.isArray(estimate.missingFields) ? estimate.missingFields : [])])]
   const critical = missing.filter(field => typeof field === 'string' && /面积|楼层|户型|房屋性质|占用|交付|areaSqm|floor|rooms|propertyType|occupancy|delivery/i.test(field))
   if (critical.length) reviewReasons.push('关键房源信息待核实：' + critical.join('、'))

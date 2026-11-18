@@ -124,7 +124,7 @@ function createValuationService(options) {
     const id = reserved.row._id
     try {
       const context = await withinDeadline(() => readData(db, request, now()), deadline - reserveMs, now, 'DATA_READ_TIMEOUT')
-      const baseline = baselineFor(context, config.rules || {})
+      const baseline = baselineFor(context)
       const warnings = [...(context.warnings || []), ...(baseline.warnings || [])]
       let knowledge = { items: [], version: 'none', warnings: [] }
       let modelResult = null, accepted = null, status = 'insufficient_data', fallbackReason = null, reviewReasons = []

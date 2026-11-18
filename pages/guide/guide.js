@@ -11,12 +11,34 @@ function readyValuation(report) {
 }
 
 function num(v) {
+  if (v && typeof v === 'object') {
+    const numericKey = ['$numberInt', '$numberLong', '$numberDouble', '$numberDecimal'].find(key => Object.prototype.hasOwnProperty.call(v, key))
+    if (numericKey) v = v[numericKey]
+  }
   const n = parseFloat(String(v == null ? '' : v).replace(/[^\d.-]/g, ''))
   return Number.isFinite(n) ? n : 0
 }
 function avg(arr) {
   const list = arr.filter(v => Number.isFinite(v) && v > 0)
   return list.length ? list.reduce((s, v) => s + v, 0) / list.length : 0
+}
+function percentile(arr, q) {
+  if (!arr.length) return 0
+  const pos = (arr.length - 1) * q
+  const lo = Math.floor(pos), hi = Math.min(lo + 1, arr.length - 1)
+  return arr[lo] + (arr[hi] - arr[lo]) * (pos - lo)
+}
+function methodNote(basis, saleWeight) {
+  switch (basis) {
+    case 'recent_sales_and_listings':
+      return Number.isFinite(saleWeight)
+        ? '近期成交' + Math.round(saleWeight * 100) + '%＋挂牌P25×95% ' + Math.round((1 - saleWeight) * 100) + '%'
+        : '近期成交与挂牌P25×95%加权'
+    case 'recent_sales': return '仅采用近期成交（缺少挂牌样本）'
+    case 'listings': return '挂牌P25×95%（无可用近期成交）'
+    case 'community': return '小区参考均价×85%（样本不足）'
+    default: return '缺少估价样本'
+  }
 }
 function first() {
   for (let i = 0; i < arguments.length; i++) {
@@ -36,13 +58,33 @@ function parseDist(d) {
   if (s.indexOf('公里') >= 0 || /km/i.test(s)) n *= 1000
   return String(Math.round(n))
 }
-function poiNames(items, limit) {
-  return (items || []).slice(0, limit || 6).map(it => {
+const LOCAL_POI = /珠海|橫琴|横琴|香洲|斗門|斗门|金灣|金湾|拱北|湾仔|南屏|前山|吉大|翠微|新香洲|唐家|白蕉|平沙|三灶|紅旗|红旗|乾務|乾务|梅华|梅華|獅山|狮山|吉蓮|吉莲|九洲|九州|海濱|海滨|情侶|情侣|港珠澳大橋|港珠澳大桥|十字門|十字门|湾仔北|粵澳深度合作區|粤澳深度合作区|橫琴粵澳|横琴粤澳/
+const LOCAL_POI_WHITELIST = /澳门回归纪念公园|澳門回歸紀念公園|旺角百货|旺角百貨/
+const FOREIGN_POI = /澳门|澳門|香港|氹仔|路环|路環|妈阁|媽閣|葡京|黑沙|新界|九龙|港岛|离岛|氹仔线|新马路|大三巴|新八佰伴|八佰伴|信德堡|Circle\s*Square|威尼斯人|巴黎人|官也街|塔石|望厦|筷子基|高士德|水坑尾|贾伯乐|沙梨头|河边新街|下环|风顺堂|花王堂|大堂区|望德堂|圣安多尼堂|路氹|金鐘|金钟|中環|中环|銅鑼灣|铜锣湾|尖沙咀|旺角|深水埗|將軍澳|将军澳|太古廣場|太古广场|鰂魚涌|鲗鱼涌|九龍塘|九龙塘|紅磡|红磡|土瓜灣|土瓜湾|觀塘|观塘|黃大仙|黄大仙|鑽石山|钻石山|荔枝角|長沙灣|长沙湾|東涌|东涌|迪士尼|灣仔|萬茂臺|万茂台/i
+const TRAD_POI = /[學聖諾廣碼馬區園場圖醫銀東陽記紀會車產業務財觀覽購買賣點頭發結維綜絡統網經線級紙紅細組織讓與門間開關長們應際條華約龍羅理鐘臺萬灣]/
+function isLocalPoi(it) {
+  if (!it) return false
+  const text = [it.name, it.title, it.info, it.address, it.city, it.district, it.province].filter(Boolean).join(' ')
+  if (!text) return false
+  if (LOCAL_POI_WHITELIST.test(text) || LOCAL_POI.test(text)) return true
+  if (FOREIGN_POI.test(text)) return false
+  if (TRAD_POI.test(text)) return false
+  if (it.city && String(it.city).indexOf('珠海') < 0) return false
+  if (it.province && String(it.province).indexOf('广东') < 0) return false
+  return true
+}
+function poiNames(items, limit, city) {
+  const zhuhai = String(city || '').trim().replace(/市$/, '') === '珠海'
+  const out = [], seen = new Set()
+  ;(items || []).forEach(it => {
+    if (!it || (zhuhai && !isLocalPoi(it))) return
     const name = it.name || it.title || ''
-    if (!name) return ''
+    if (!name || seen.has(name)) return
+    seen.add(name)
     const d = parseDist(it.dist)
-    return name + (d && d !== '0' ? ' · ' + d + '米' : '')
-  }).filter(Boolean)
+    out.push(name + (d && d !== '0' ? ' · ' + d + '米' : ''))
+  })
+  return out.slice(0, limit || 6)
 }
 
 Page({
@@ -428,10 +470,11 @@ Page({
     const base = doc.base || {}, price = doc.price || {}, props = doc.ajk_props || {}
     const bk = doc.beike || {}, dealHistory = doc.deals || {}
     const pois = doc.pois || {}, cats = doc.categories || {}
-    const deals = auctionDeals.filter(it => /成交|已售|法拍|拍卖/.test([it.category, it.status, it.trade_status].join('')))
-    const salePrices = sales.map(it => num(it.unit_price)).filter(Boolean)
-    const dealPrices = deals.map(it => num(first(it.deal_unit_price, it.unit_price))).filter(Boolean)
-    const listingPrices = sales.map(it => num(it.unit_price)).filter(Boolean)
+    const salePrices = sales.filter(it => {
+      const statuses = [it.transactionStatus, it.transaction_status, it.status, it.trade_status, it.auction_status]
+      return !statuses.some(status => /^(成交|已成交|已售|已售出|拍卖成交|交易成功|sold|completed|auction_sold|未成交|流拍|已流拍|撤拍|已撤拍|中止|终止|cancelled|unsold|failed)$/i.test(String(status || '').trim()))
+        && !/法拍|拍卖|auction/i.test([it.category, it.transactionType, it.transaction_type].join(' '))
+    }).map(it => num(first(it.listing_unit_price, it.unit_price))).filter(value => value > 0)
     const saleAreas = sales.map(it => num(it.area_sqm)).filter(Boolean)
     
     // 户型分布
@@ -454,7 +497,10 @@ Page({
       return rent && area ? rent / area : 0
     }).filter(Boolean)
     const communityAvg = num(first(price.price, doc.ajk_avg_price, bk.avg_price, avg(salePrices)))
-    const recentAvg = num(first(price.recentDealPrice, price.dealPrice, dealHistory.avg_unit_price, avg(dealPrices)))
+    const dealAvg = num(dealHistory.avg_unit_price)
+    const dealCount = num(dealHistory.count)
+    const hasRecentDeals = Number.isSafeInteger(dealCount) && dealCount >= 1 && dealAvg > 0
+    const recentAvg = hasRecentDeals ? dealAvg : num(first(price.recentDealPrice, price.dealPrice))
     const listingAvg = num(first(price.listingPrice, avg(salePrices)))
     const rentAvg = num(first(price.rentPerSqm, price.rent, avg(rentsSqm)))
     const auctionAvg = num(first(price.auctionPrice, doc.auction_avg_price, avg(auctionDeals.map(it => num(it.unit_price)))))
@@ -465,9 +511,11 @@ Page({
     const propertyForRule = propertyType || '住宅'
     const completion = first(base.completionTime, props['竣工时间'], props['建筑年代'], props['建成年代'])
     const age = completion ? new Date().getFullYear() - num(completion) : 0
-    // ===== 评估价：市场比较法 + 收益还原法（2026-11 拟合校准 v3）=====
-    // 拟合结果：有备案价时 贝壳35% + 挂牌15% + 备案50%（收益法权重 0，租金样本不足）
-    // 无备案价时 贝壳70% + 挂牌30%，收益法20%（带异常保护）
+    // ===== 评估价：近期成交优先 + 挂牌低价辅助（2026-11 校准 v4）=====
+    // 成交≥3笔：成交80% + 挂牌P25×95% 20%
+    // 成交1-2笔：成交50% + 挂牌P25×95% 50%
+    // 仅有一种样本时，使用近期成交均价或挂牌P25×95%；均缺失时使用小区参考均价×85%
+    // 备案价只做上限，不参与加权；收益法仅展示，不参与评估
     const reference = doc.reference || {}
     const beianRef = num(reference.beian_price)
     const gongdiRef = num(reference.gongdi_price)
@@ -475,35 +523,47 @@ Page({
     const gongdiRate = discountRef > 0 ? discountRef : 0.902
     const gongdiValue = beianRef > 0 ? Math.round(beianRef * gongdiRate) : 0
     const gongdiRatePct = Math.round(gongdiRate * 1000) / 10
-    const comps = []
-    if (dealHistory.count >= 3 && recentAvg > 0) comps.push({ v: recentAvg, w: 1.0 })
-    if (beianRef > 0) {
-      if (communityAvg > 0) comps.push({ v: communityAvg, w: 0.35 })
-      if (listingAvg > 0) comps.push({ v: listingAvg, w: 0.15 })
-      comps.push({ v: beianRef, w: 0.5 })
-    } else {
-      if (communityAvg > 0) comps.push({ v: communityAvg, w: 0.7 })
-      if (listingAvg > 0) comps.push({ v: listingAvg, w: 0.3 })
+    const sortedSalePrices = salePrices.slice().sort((a, b) => a - b)
+    const listingLow = percentile(sortedSalePrices, 0.25)
+    const saleWeight = dealCount >= 3 ? 0.8 : 0.5
+    let marketValue = 0
+    let localBasis = null
+    if (hasRecentDeals && listingLow > 0) {
+      marketValue = dealAvg * saleWeight + listingLow * 0.95 * (1 - saleWeight)
+      localBasis = 'recent_sales_and_listings'
+    } else if (hasRecentDeals) {
+      marketValue = dealAvg
+      localBasis = 'recent_sales'
+    } else if (listingLow > 0) {
+      marketValue = listingLow * 0.95
+      localBasis = 'listings'
+    } else if (communityAvg > 0) {
+      marketValue = communityAvg * 0.85
+      localBasis = 'community'
     }
-    const marketValue = comps.length
-      ? comps.reduce((s, c) => s + c.v * c.w, 0) / comps.reduce((s, c) => s + c.w, 0)
-      : 0
+    // 备案价只做上限，不参与加权
+    const roundedMarketValue = Math.round(marketValue)
+    const cappedByBeian = beianRef > 0 && (marketValue > beianRef || roundedMarketValue > beianRef)
+    const localBaseline = cappedByBeian ? Math.floor(beianRef) : roundedMarketValue
     // 收益还原法：年有效租金 ÷ 资本化率（住宅 2.0%，商业 4.5%；空置及费用率 5%）
     const isCommercial = /商业|商铺|办公/.test(propertyForRule)
     const capRate = isCommercial ? 0.045 : 0.02
     const incomeValue = rentAvg > 0 ? rentAvg * 12 * 0.95 / capRate : 0
-    // 有备案价的项目收益法不参与（拟合权重为0）；普通小区保留20%并做异常保护
-    const incomeReliable = beianRef <= 0 && incomeValue > 0 && marketValue > 0 && incomeValue >= marketValue * 0.7 && incomeValue <= marketValue * 1.5
-    const localBaseline = incomeReliable ? marketValue * 0.8 + incomeValue * 0.2 : marketValue
     const hasValuation = valuation !== undefined && valuation !== null
     const evaluation = hasValuation
       ? (typeof valuation.effectiveUnitPrice === 'number' && Number.isFinite(valuation.effectiveUnitPrice) && valuation.effectiveUnitPrice > 0 ? valuation.effectiveUnitPrice : null)
-      : (localBaseline > 0 ? localBaseline : null)
+      : (Number.isSafeInteger(localBaseline) && localBaseline > 0 ? localBaseline : null)
+    const serverBaseline = hasValuation && valuation.baseline || {}
+    const baselineBasis = hasValuation ? serverBaseline.basis || null : localBasis
+    const baselineCappedByFiling = hasValuation ? serverBaseline.cappedByFiling === true : cappedByBeian
+    const serverSale = (serverBaseline.components || []).find(component => component.kind === 'sale_deal')
+    const marketMethod = hasValuation && !serverBaseline.basis
+      ? (serverBaseline.marketValue > 0 ? '后端报告的市场比较法明细' : '当前报告暂无方法明细')
+      : methodNote(baselineBasis, hasValuation ? serverSale && serverSale.weight : saleWeight)
     const evaluationNote = hasValuation
       ? (evaluation === null ? '数据不足，暂无采用价' : valuation.effectiveSource === 'model' ? '已采用结构化模型评估' : '公式参考价 · 模型未采用或待复核')
-      : '本地公式参考，尚未生成结构化评估'
+      : '本地公式参考 · ' + (baselineCappedByFiling ? '备案价上限校准' : marketMethod)
     const evaluationDisplay = evaluation === null ? '—' : String(Math.round(evaluation))
-    const serverBaseline = hasValuation && valuation.baseline || {}
     const reportedMarketValue = hasValuation ? (typeof serverBaseline.marketValue === 'number' && serverBaseline.marketValue > 0 ? serverBaseline.marketValue : null) : marketValue
     const reportedIncomeValue = hasValuation ? (typeof serverBaseline.incomeValue === 'number' && serverBaseline.incomeValue > 0 ? serverBaseline.incomeValue : null) : incomeValue
     // 市场评估价与工抵参考价的偏离：正数=评估高于工抵（即工抵折扣空间）
@@ -511,10 +571,14 @@ Page({
     const evalVsGongdiText = gongdiValue > 0 && evaluation > 0
       ? (evalVsGongdi >= 0 ? '+' : '') + evalVsGongdi.toFixed(1) + '%'
       : ''
+    const gongdiVsEval = gongdiValue > 0 && evaluation > 0 ? (gongdiValue / evaluation - 1) * 100 : 0
+    const gongdiVsEvalText = gongdiValue > 0 && evaluation > 0
+      ? (gongdiVsEval >= 0 ? '+' : '') + gongdiVsEval.toFixed(1) + '%'
+      : ''
     const history = first(price.history, doc.priceHistory, doc.history_prices, [])
-    const traffic = poiNames([].concat(pois.subway || [], pois.bus || [], cats.station || []), 8)
-    const schools = poiNames([].concat(pois.school || [], cats.school || []), 8)
-    const hospitals = poiNames(pois.hospital || [], 5)
+    const traffic = poiNames([].concat(pois.subway || [], pois.bus || [], cats.station || []), 8, doc.city)
+    const schools = poiNames([].concat(pois.school || [], cats.school || []), 8, doc.city)
+    const hospitals = poiNames([].concat(pois.hospital || [], cats.hospital || []), 5, doc.city)
     const nearCompetitors = (doc.nearComms || []).slice(0, 8).map(it => ({
       name: it.name || it.community || '周边小区', value: show(first(it.price, it.avgPrice), '元/㎡'), meta: parseDist(it.dist) ? parseDist(it.dist) + '米' : ''
     }))
@@ -595,6 +659,8 @@ Page({
       evaluationNote,
       evaluationSource: hasValuation ? valuation.effectiveSource : 'local_rule',
       valuationId: hasValuation ? valuation.valuationId : '',
+      baselineBasis,
+      baselineCappedByFiling,
       communityAverageDisplay: communityAvg > 0 ? String(Math.round(communityAvg)) : '—',
       cityAverageDisplay: cityAvg > 0 ? String(Math.round(cityAvg)) : '—',
       listingAverageDisplay: listingAvg > 0 ? String(Math.round(listingAvg)) : '—',
@@ -610,13 +676,25 @@ Page({
       gongdiRatePct,
       evalVsGongdi,
       evalVsGongdiText,
+      gongdiVsEval,
+      gongdiVsEvalText,
       priceChartMax,
       prices: chartItems,
       priceDetails: [
         { label: '楼盘平均租金', value: show(rentAvg ? rentAvg.toFixed(1) : '', '元/㎡/月') },
-        ...(hasValuation ? [{ label: '后端公式基准价', value: show(valuation.baselineUnitPrice > 0 ? Math.round(valuation.baselineUnitPrice) : '', '元/㎡'), note: '与当前报告编号绑定的基准参考' }] : []),
-        { label: '市场比较法估值', value: show(reportedMarketValue ? Math.round(reportedMarketValue) : '', '元/㎡'), note: hasValuation ? '后端返回的方法明细；未提供时不使用页面旧公式补齐' : '页面公式参考：近期成交、贝壳均价、挂牌价加权' },
-        { label: '收益还原法估值', value: reportedIncomeValue ? Math.round(reportedIncomeValue) + ' 元/㎡' : '暂无方法明细', note: hasValuation ? '采用后端返回的收益法明细' : (isCommercial ? '年租金×95% ÷ 4.5%' : '年租金×95% ÷ 2.0%') },
+        ...(hasValuation ? [{
+          label: '后端公式基准价',
+          value: show(valuation.baselineUnitPrice > 0 ? Math.round(valuation.baselineUnitPrice) : '', '元/㎡'),
+          note: baselineCappedByFiling ? '以备案价为上限' : '当前报告的公式基准'
+        }] : []),
+        { label: '市场比较法估值', value: show(reportedMarketValue ? Math.round(reportedMarketValue) : '', '元/㎡'), note: marketMethod },
+        {
+          label: '收益还原法估值',
+          value: reportedIncomeValue ? Math.round(reportedIncomeValue) + ' 元/㎡' : '暂无方法明细',
+          note: hasValuation
+            ? (serverBaseline.incomeWeight === 0 ? '仅供参考，未计入基准价' : '后端报告的收益法明细')
+            : (isCommercial ? '年租金×95% ÷ 4.5%' : '年租金×95% ÷ 2.0%') + '，仅供参考'
+        },
         ...(beianRef > 0 ? [{
           label: '备案价参考（工抵房源）',
           value: Math.round(beianRef) + ' 元/㎡',
@@ -629,10 +707,15 @@ Page({
           label: '工抵参考价（备案价×折扣）',
           value: gongdiValue + ' 元/㎡',
           note: '备案价 ' + Math.round(beianRef) + ' × ' + gongdiRatePct + '%（华发工抵实测折扣）'
-        }, {
+        }] : []),
+        ...(gongdiValue > 0 && evaluation > 0 ? [{
           label: '评估价较工抵参考价',
           value: evalVsGongdiText,
-          note: evalVsGongdi >= 0 ? '市场评估高于工抵参考价，差额即工抵折扣空间' : '市场评估低于工抵参考价，需谨慎'
+          note: '以工抵参考价为基准'
+        }, {
+          label: '工抵参考价较评估价',
+          value: gongdiVsEvalText,
+          note: '以当前评估价为基准'
         }] : [])
       ],
       advice: this.buildAdvice({

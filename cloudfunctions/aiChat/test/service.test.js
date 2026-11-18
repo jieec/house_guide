@@ -42,8 +42,10 @@ test('full pipeline reads server data, validates JSON, stores a snapshot, and re
   const result = await service.handle(request(), 'owner-a')
   assert.equal(result.ok, true)
   assert.equal(result.report.status, 'model_estimate')
-  assert.equal(result.report.effectiveUnitPrice, 20000)
-  assert.equal(result.report.totalPriceYuan, 1800000)
+  assert.equal(result.report.effectiveUnitPrice, 19000)
+  assert.equal(result.report.totalPriceYuan, 1710000)
+  assert.equal(result.report.baseline.basis, 'listings')
+  assert.equal(result.report.versions.rule, 'baseline-v2')
   assert.equal(result.report.effectiveSource, 'model')
   assert.equal(modelCalls(), 1)
   const stored = db.records.valuation_reports[0]
@@ -129,15 +131,29 @@ test('provider errors return stable codes without leaking raw error messages', a
 })
 
 test('uncalibrated model candidate is retained for review, without becoming the effective price', async () => {
-  const { db, service } = setup({ generate: async ({ context, baseline }) => ({ estimate: { ...estimate(context, baseline), unitPrice: 21000 }, usage: {} }) })
+  const { db, service } = setup({ generate: async ({ context, baseline }) => ({ estimate: { ...estimate(context, baseline), unitPrice: 19800 }, usage: {} }) })
   db.records.ai_config[0].maxDeviationRatio = null
   const { report } = await service.handle(request(), 'owner-a')
   assert.equal(report.status, 'needs_review')
-  assert.equal(report.modelUnitPrice, 21000)
-  assert.equal(report.effectiveUnitPrice, 20000)
+  assert.equal(report.modelUnitPrice, 19800)
+  assert.equal(report.effectiveUnitPrice, 19000)
   assert.equal(report.effectiveSource, 'rule')
   assert.equal(report.priceRange, null)
-  assert.equal(report.modelEstimate.priceRange.high, 21000)
+  assert.equal(report.modelEstimate.priceRange.high, 19950)
+})
+
+test('candidate above the filing ceiling stays available for review without becoming the effective price', async () => {
+  const { db, service } = setup({
+    generate: async ({ context, baseline }) => ({ estimate: { ...estimate(context, baseline), unitPrice: 18500 }, usage: {} })
+  })
+  db.records.communities[0].reference = { beian_price: 18000 }
+  const { report } = await service.handle(request(), 'owner-a')
+  assert.equal(report.status, 'needs_review')
+  assert.equal(report.modelUnitPrice, 18500)
+  assert.equal(report.baseline.cappedByFiling, true)
+  assert.equal(report.effectiveUnitPrice, 18000)
+  assert.equal(report.totalPriceYuan, 1620000)
+  assert.match(report.reviewReasons.join(''), /备案价上限/)
 })
 
 test('missing area never borrows average community area or fabricates a total', async () => {

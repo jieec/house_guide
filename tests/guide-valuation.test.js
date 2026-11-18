@@ -115,6 +115,82 @@ test('review candidate never replaces adopted rule price in charts or advice inp
   assert.match(result.evaluationNote, /公式参考价/)
 })
 
+test('guide uses deal aggregate and listing P25 with the filing ceiling and rent ignored', () => {
+  const { page } = setup()
+  const listings = [16000, 20000, 24000, 28000].map(unit_price => ({ unit_price }))
+  const sample = { sales: [...listings, { unit_price: 5000, status: '已成交' }, { unit_price: 9000, transactionType: '法拍' }] }
+  const selected = { ...doc(), deals: { avg_unit_price: 20000, count: 3 } }
+  const dense = page.buildReport(selected, sample)
+  assert.equal(dense.evaluationDisplay, '19610')
+  assert.match(dense.evaluationNote, /成交80%.*P25×95% 20%/)
+  assert.match(dense.priceDetails.find(x => x.label === '收益还原法估值').note, /仅供参考/)
+
+  selected.deals = { avg_unit_price: { $numberInt: '16821' }, count: { $numberInt: '2' } }
+  selected.reference = { beian_price: 16900 }
+  const capped = page.buildReport(selected, sample)
+  assert.equal(capped.marketValue, 17435.5)
+  assert.equal(capped.evaluationDisplay, '16900')
+  assert.equal(capped.baselineCappedByFiling, true)
+  assert.match(capped.priceDetails.find(x => x.label === '市场比较法估值').note, /成交50%.*P25×95% 50%/)
+
+  selected.reference.beian_price = 17435.7
+  assert.equal(page.buildReport(selected, sample).evaluation, 17435)
+})
+
+test('guide falls back to the available evidence without treating a missing sample as zero', () => {
+  const { page } = setup()
+  const selected = { ...doc(), deals: { avg_unit_price: 20000, count: 2 } }
+  const transactionOnly = page.buildReport(selected, { sales: [] })
+  assert.equal(transactionOnly.evaluationDisplay, '20000')
+  assert.equal(transactionOnly.baselineBasis, 'recent_sales')
+  const listingsOnly = page.buildReport(doc(), { sales: [{ unit_price: 20000 }] })
+  assert.equal(listingsOnly.evaluationDisplay, '19000')
+  assert.equal(listingsOnly.baselineBasis, 'listings')
+  const communityOnly = page.buildReport(doc(), { sales: [] })
+  assert.equal(communityOnly.evaluationDisplay, '21250')
+  assert.equal(communityOnly.baselineBasis, 'community')
+})
+
+test('guide shows the returned baseline basis and computes both Gongdi comparisons from the adopted price', () => {
+  const { page } = setup()
+  const selected = { ...doc(), reference: { beian_price: 25000, discount: 0.8 } }
+  const saved = report(selected._id, {
+    effectiveUnitPrice: 16000,
+    baseline: { marketValue: 27000, incomeValue: 23500, incomeWeight: 0, cappedByFiling: true,
+      basis: 'recent_sales_and_listings', components: [{ kind: 'sale_deal', weight: 0.8 }] }
+  })
+  const result = page.buildReport(selected, market(), {}, [], [], saved)
+  const details = Object.fromEntries(result.priceDetails.map(row => [row.label, row]))
+  assert.equal(result.evaluationDisplay, '16000')
+  assert.match(result.prices.find(item => item.key === 'evaluation').note, /已采用结构化模型评估/)
+  assert.equal(result.baselineCappedByFiling, true)
+  assert.match(details['后端公式基准价'].note, /备案价为上限/)
+  assert.match(details['市场比较法估值'].note, /成交80%.*P25×95% 20%/)
+  assert.match(details['收益还原法估值'].note, /仅供参考/)
+  assert.equal(details['评估价较工抵参考价'].value, '-20.0%')
+  assert.equal(details['工抵参考价较评估价'].value, '+25.0%')
+
+  const legacy = page.buildReport(selected, market(), {}, [], [], report(selected._id, {
+    baseline: { marketValue: 25000, incomeValue: 23000, incomeWeight: 0.2, ruleVersion: 'baseline-v1' }
+  }))
+  assert.equal(legacy.baselineBasis, null)
+  assert.doesNotMatch(legacy.priceDetails.find(x => x.label === '市场比较法估值').note, /P25/)
+})
+
+test('guide filters and deduplicates Zhuhai amenities while preserving other cities', () => {
+  const { page } = setup()
+  const pois = {
+    bus: [{ name: '香港金鐘站', city: '香港' }, { name: '珠海站', dist: '1公里' }],
+    school: [{ name: '澳門學校', city: '澳门' }, { name: '香洲小学' }]
+  }
+  const categories = { station: [{ title: '珠海站' }, { name: '横琴站' }] }
+  const local = page.buildReport({ ...doc(), city: '珠海市', pois, categories }, market())
+  assert.deepEqual(Array.from(local.traffic), ['珠海站 · 1000米', '横琴站'])
+  assert.deepEqual(Array.from(local.schools), ['香洲小学'])
+  const outside = page.buildReport({ ...doc(), city: '广州市', pois: { school: [{ name: '广州小学', city: '广州' }] } }, market())
+  assert.deepEqual(Array.from(outside.schools), ['广州小学'])
+})
+
 test('late result from another community cannot replace current valuation', async () => {
   const first = deferred(), second = deferred()
   const ctx = setup({ createEvaluation: request => request.communityId === 'A' ? first.promise : second.promise })
