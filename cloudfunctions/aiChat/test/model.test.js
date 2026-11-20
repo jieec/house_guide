@@ -42,6 +42,39 @@ test('JSON call uses configured model, fixed endpoint, schema prompt and a deadl
   assert.equal(result.model, 'configured-model')
 })
 
+test('preserves provider billing counts and ignores invalid or unrelated usage fields', async () => {
+  const reply = response(JSON.stringify(estimate))
+  reply.json.usage = {
+    prompt_tokens: 1200,
+    prompt_cache_hit_tokens: 300,
+    prompt_cache_miss_tokens: 900,
+    completion_tokens: 260,
+    total_tokens: 1460,
+    completion_tokens_details: { reasoning_tokens: 0, unrelated_field: 15 },
+    unrelated_field: 'ignored'
+  }
+  const result = await generateEstimate(options, async () => reply)
+  assert.deepEqual(result.usage, {
+    prompt_tokens: 1200,
+    prompt_cache_hit_tokens: 300,
+    prompt_cache_miss_tokens: 900,
+    completion_tokens: 260,
+    total_tokens: 1460,
+    completion_tokens_details: { reasoning_tokens: 0 }
+  })
+
+  reply.json.usage = {
+    prompt_tokens: '1200',
+    prompt_cache_hit_tokens: -1,
+    prompt_cache_miss_tokens: Infinity,
+    completion_tokens: 1.5,
+    total_tokens: 20,
+    completion_tokens_details: { reasoning_tokens: -3 }
+  }
+  const partial = await generateEstimate(options, async () => reply)
+  assert.deepEqual(partial.usage, { total_tokens: 20 })
+})
+
 test('prompt omits buyer purpose and private contact fields', () => {
   const messages = buildMessages({ context, baseline: options.baseline })
   assert.doesNotMatch(messages[1].content, /investment|private-contact/)

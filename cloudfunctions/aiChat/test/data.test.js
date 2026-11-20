@@ -91,6 +91,41 @@ test('loads house attributes, marks overrides, excludes own price, and omits con
   assert.equal(JSON.stringify(result).includes('private free text'), false)
 })
 
+test('passes only the recorded comparison facts of explicitly residential normal sales', async () => {
+  const result = await load({ houses: [
+    house({ communityId: 'c1', propertyType: '住宅', floor: 5, totalFloors: 6, structure: '砖混结构', managementGrade: '一般', has_basement: true }),
+    house({
+      _id: 'actual-sale', property_type: '住宅', status: '已成交', deal_unit_price: 21000, area_sqm: 86,
+      floor: '第2层', total_floors: '共7层', direction: '东', decoration_type: '精装', build_year: '2002年', elevator: false,
+      structure: '砖木结构', management_grade: '较完善', street_noise: '不临街，安静',
+      layout_quality: '合理', roof_type: '平屋面', has_basement: false, private_yard: true,
+      phone: 'PRIVATE_PHONE', address: 'PRIVATE_ADDRESS', occupancy: 'PRIVATE_OCCUPANCY', title: 'PRIVATE_TEXT'
+    }),
+    house({ _id: 'partial-sale', propertyType: '住宅', status: '已成交', deal_unit_price: 20000, area: 95,
+      floor: '高楼层', orientation: '南北向', managementGrade: 'PRIVATE_TEXT', privateYard: '未知' }),
+    house({ _id: 'unknown-type', status: '已成交', deal_unit_price: 22000, floor: 2 }),
+    house({ _id: 'other-use', propertyType: '商铺', status: '已成交', deal_unit_price: 15000, floor: 2 }),
+    house({ _id: 'listing-ref', propertyType: '住宅', unit_price: 20000, floor: 4 }),
+    house({ _id: 'auction-ref', propertyType: '住宅', category: '法拍', status: '已成交', deal_unit_price: 19000, floor: 4 })
+  ] }, { targetType: 'house', houseId: 'h1' })
+  assert.equal(result.target.attributes.structure, '砖混结构')
+  assert.equal(result.target.attributes.managementGrade, '一般')
+  assert.equal(result.target.attributes.hasBasement, true)
+  const sale = result.evidence.find(item => item.sourceRecordId === 'actual-sale')
+  assert.equal(sale.areaSqm, 86)
+  assert.deepEqual(sale.comparisonAttributes, {
+    propertyType: '住宅', floor: 2, totalFloors: 7, orientation: '东向', decoration: '精装', buildYear: 2002,
+    elevator: false, structure: '砖木结构', managementGrade: '较完善', streetNoise: '不临街安静',
+    layoutQuality: '合理', roofType: '平屋面', hasBasement: false, privateYard: true
+  })
+  assert.deepEqual(result.evidence.find(item => item.sourceRecordId === 'partial-sale').comparisonAttributes, { propertyType: '住宅' })
+  assert.equal(result.evidence.some(item => item.sourceRecordId === 'other-use'), false)
+  for (const id of ['unknown-type', 'listing-ref', 'auction-ref']) {
+    assert.equal(Object.hasOwn(result.evidence.find(item => item.sourceRecordId === id), 'comparisonAttributes'), false)
+  }
+  assert.doesNotMatch(JSON.stringify(result), /PRIVATE_/)
+})
+
 test('does not guess missing single-house area, and rejects arbitrary/invalid overrides', async () => {
   const records = { houses: [house({ communityId: 'c1' })] }
   const result = await load(records, { targetType: 'house', houseId: 'h1' })

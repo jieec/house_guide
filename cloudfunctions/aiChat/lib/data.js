@@ -1,4 +1,5 @@
 const crypto = require('crypto')
+const { usesResidentialGuide } = require('./residential-guide')
 
 const PAGE_SIZE = 100
 const MAX_HOUSES = 500
@@ -166,6 +167,47 @@ function attributes(row) {
   return result
 }
 
+function residentialDetails(row) {
+  // Only explicit source values in the guide's categories are usable. No
+  // defaults from the target, the community summary, or listing free text.
+  const result = {}
+  const choices = [
+    ['structure', row.structure ?? row.buildingStructure ?? row.building_structure, ['砖木', '砖木结构', '砖混', '砖混结构', '钢筋混凝土', '钢筋混凝土结构']],
+    ['managementGrade', row.managementGrade ?? row.management_grade, ['完善', '较完善', '一般', '无']],
+    ['streetNoise', row.streetNoise ?? row.street_noise, ['不临街安静', '临街不安静']],
+    ['layoutQuality', row.layoutQuality ?? row.layout_quality, ['合理', '不合理']],
+    ['roofType', row.roofType ?? row.roof_type, ['坡屋面', '坡屋顶', '平屋面', '平屋顶']]
+  ]
+  for (const [key, raw, allowed] of choices) {
+    const value = scalar(raw)
+    if (typeof value !== 'string') continue
+    const category = key === 'streetNoise' ? value.replace(/[\s，,、]/g, '') : value.trim()
+    if (allowed.includes(category)) result[key] = category
+  }
+  const hasBasement = scalar(row.hasBasement ?? row.has_basement)
+  const privateYard = scalar(row.privateYard ?? row.private_yard)
+  if (typeof hasBasement === 'boolean') result.hasBasement = hasBasement
+  if (typeof privateYard === 'boolean') result.privateYard = privateYard
+  return result
+}
+
+function residentialComparable(row, propertyType) {
+  const details = { propertyType, ...residentialDetails(row) }
+  const fields = attributes(row)
+  const floor = /^第?(\d{1,3})(?:层)?$/.exec(text(fields.floor))
+  const totalFloors = /^共?(\d{1,3})(?:层)?$/.exec(text(fields.totalFloors))
+  if (floor && Number(floor[1]) > 0 && (!totalFloors || Number(floor[1]) <= Number(totalFloors[1]))) details.floor = Number(floor[1])
+  if (totalFloors && Number(totalFloors[1]) > 0) details.totalFloors = Number(totalFloors[1])
+  const orientation = /^([北西东南])向?$/.exec(text(fields.orientation))
+  if (orientation) details.orientation = orientation[1] + '向'
+  const decoration = text(fields.decoration)
+  if (['毛坯', '普通装修', '精装', '精装修', '豪装', '豪华装修'].includes(decoration)) details.decoration = decoration
+  const buildYear = /^(\d{4})(?:年)?$/.exec(text(fields.buildYear))
+  if (buildYear && Number(buildYear[1]) >= 1800 && Number(buildYear[1]) <= 2200) details.buildYear = Number(buildYear[1])
+  if (typeof fields.elevator === 'boolean') details.elevator = fields.elevator
+  return details
+}
+
 function applyOverrides(target, overrides) {
   if (!overrides) return
   if (typeof overrides !== 'object' || Array.isArray(overrides)) throw error('INVALID_INPUT', '补录属性格式错误')
@@ -227,6 +269,8 @@ async function loadValuationData(db, request, now = new Date()) {
     areaSqm: house ? area(house) : null, attributes: attributes(house || {}), overrides: {},
     listingUnitPrice: house && !isAuction(house) && !isSold(house) ? listingUnitPrice(house) : null
   }
+  const residential = usesResidentialGuide(target)
+  if (house && residential) Object.assign(target.attributes, residentialDetails(house))
   applyOverrides(target, request.overrides)
   validateFloors(target)
   const warnings = []
@@ -259,11 +303,16 @@ async function loadValuationData(db, request, now = new Date()) {
       }
     }
     seen.add(key)
-    evidence.push({
+    const item = {
       id: 'ev_' + crypto.createHash('sha256').update(key).digest('hex').slice(0, 20), kind, unitPrice,
       areaSqm: area(row), date, source: firstText([row.source, origin]), url: safeUrl(row.source_url || row.sourceUrl || row.url),
       sourceRecordId: identity
-    })
+    }
+    if (residential && kind === 'sale_deal') {
+      const propertyType = firstText([row.propertyType, row.property_type])
+      if (usesResidentialGuide({ type: 'house', propertyType })) item.comparisonAttributes = residentialComparable(row, propertyType)
+    }
+    evidence.push(item)
   }
   rows.forEach((row, index) => {
     if (text(row._id) === targetId && house) return

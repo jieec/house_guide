@@ -115,8 +115,12 @@ async function completeJSON(options, transport = requestJSON) {
       throw modelError('MODEL_INVALID_JSON', '模型输出不是 JSON 对象')
     }
     const usage = {}
-    for (const key of ['prompt_tokens', 'completion_tokens', 'total_tokens']) {
+    for (const key of ['prompt_tokens', 'prompt_cache_hit_tokens', 'prompt_cache_miss_tokens', 'completion_tokens', 'total_tokens']) {
       if (json.usage && Number.isSafeInteger(json.usage[key]) && json.usage[key] >= 0) usage[key] = json.usage[key]
+    }
+    const details = json.usage && json.usage.completion_tokens_details
+    if (details && Number.isSafeInteger(details.reasoning_tokens) && details.reasoning_tokens >= 0) {
+      usage.completion_tokens_details = { reasoning_tokens: details.reasoning_tokens }
     }
     return { estimate, usage }
   } catch (error) {
